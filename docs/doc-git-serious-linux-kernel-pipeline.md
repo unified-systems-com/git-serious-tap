@@ -9,7 +9,7 @@ related_docs:
   - docs/doc-git-serious-cicd-shape-review.md
 ---
 
-> **Research pass, 2026-08-26.** How the kernel is developed, built, tested, signed and released without pull requests, rulesets or a required check — and what a kernel collector would imply for a forge-neutral vocabulary. Cursory research pass, 2026-08-26. Written by an AI research agent from public sources and
+> **Research pass, 2026-08-26.** How the kernel is developed, built, tested, signed and released without pull requests, rulesets or a required check — and what a kernel collector would imply for a forge-neutral vocabulary. Written by an AI research agent from public sources and
 > read-only API calls; claims carry citations, and the report flags what it could not verify.
 > Nothing here is canon — requirements live in specs, the fence lives in the roadmap.
 

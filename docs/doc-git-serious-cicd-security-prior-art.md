@@ -9,13 +9,13 @@ related_docs:
   - docs/doc-git-serious-cicd-shape-review.md
 ---
 
-> **Research pass, 2026-08-26.** The world git-serious operates in: commercial tools, open-source analyzers and graphs, name-brand guidance distilled to observable conditions, and 42 dated incidents with the precondition each one would have shown. Research pass, 2026-08-26. Written by an AI research agent from public sources and
+> **Research pass, 2026-08-26.** The world git-serious operates in: commercial tools, open-source analyzers and graphs, name-brand guidance distilled to observable conditions, and 42 dated incidents with the precondition each one would have shown. Written by an AI research agent from public sources and
 > read-only API calls; claims carry citations, and the report flags what it could not verify.
 > Nothing here is canon — requirements live in specs, the fence lives in the roadmap.
 
 # CI/CD security and software-supply-chain prior art — come-up-to-speed research for git-serious
 
-**Date:** 2026-08-26. **Purpose:** model the industry, environment and operations that git-serious ("Visualize, track, and secure your CI/CD system — for humans and agents") will exist in, well enough to regulate the product's design. **Method:** ~200 web searches and ~250 page fetches across three parallel research streams (commercial products; open source; incidents) plus a direct pass on canonical guidance and the GitHub API surface; see §7. **Status of claims:** every load-bearing claim carries a URL; items not verified from a primary source are marked **[partially verified]** or **[unverified]**. Nothing in the repository was modified.
+**Date:** 2026-08-26. **Purpose:** model the industry, environment and operations that git-serious ("Visualize, track, and secure your CI/CD system — for humans and agents") will exist in, well enough to regulate the product's design. **Method:** ~200 web searches and ~250 page fetches across three parallel research streams (commercial products; open source; incidents) plus a direct pass on canonical guidance and the GitHub API surface; see §7. **Status of claims:** every load-bearing claim carries a URL; items not verified from a primary source are marked **[partially verified]** or **[unverified]**. No external repository or system was modified during the pass; the reports themselves now live in this repo.
 
 ## Executive summary
 

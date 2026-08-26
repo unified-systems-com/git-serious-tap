@@ -9,13 +9,16 @@ related_docs:
   - docs/doc-git-serious-cicd-security-prior-art.md
 ---
 
-> **Research pass, 2026-08-26.** Inventory of one real GitHub organization's CI/CD system, the gap between it and what github_core collects today, the models/edges/icons that close the gap, and the landing-page story. Research pass, 2026-08-26; findings are proposals, not canon. Written by an AI research agent from public sources and
+> **Research pass, 2026-08-26.** Inventory of one real GitHub organization's CI/CD system, the gap between it and what github_core collects today, the models/edges/icons that close the gap, and the landing-page story. Written by an AI research agent from public sources and
 > read-only API calls; claims carry citations, and the report flags what it could not verify.
 > Nothing here is canon — requirements live in specs, the fence lives in the roadmap.
 
 # git-serious — CI/CD shape review (design-research pass, 2026-08-26)
 
-Scope: our own org `unified-systems-com` as the first git-serious target. Read-only `gh` inventory
+Scope: our own org `unified-systems-com` as the first git-serious target. **Redactions:** secret
+*names*, concrete App ID values, and maintainer handles are generalized in this published copy — they
+are reconnaissance value we control, and the specific inventory is exactly what a running instance
+is for. Structure (counts, permission shapes, policy flags, pin posture) is kept in full. Read-only `gh` inventory
 (OAuth token: `repo`, `read:org`, `project`, `gist` — NOT org admin scopes), the `github_core` plugin
 checkout at `_dev-plugins/github_core/`, the house skills (add-model / add-edge / add-page / add-panel),
 the page-story doctrine, and `plan/product-map.md` from `origin/session/strategy` (Iron Man 1 rule).
@@ -32,9 +35,9 @@ Legend for tiers: **self** = needed for the Aug 30 "gate view" Done-Test; **frie
 | Surface | Count | Where configured | Who can change it | What it gates |
 | --- | --- | --- | --- | --- |
 | Repos | 19 public (1 core `tap`, 12 live `tap-plugin-*` + 1 archived `tap-plugin-aws-secrets-source`, `tap-build-dependencies`, `.github`, `unified-ai-review`, `unified-ai-review-prompts`, `git-serious-tap`) | org | org owner (`notgeorge`); `members_can_create_repositories=false` | everything |
-| Org members / roles | 1 member (`notgeorge`, admin), 1 outside collaborator (`criticalsec`, write on `tap`), 1 team (`maintainers`, `maintain` on `tap`) | org settings | org owner | who can approve / bypass / push |
+| Org members / roles | 1 member (admin), 1 outside collaborator (write on `tap` — the same human's second account), 1 team (`maintainers`, `maintain` on `tap`) | org settings | org owner | who can approve / bypass / push |
 | Org posture | 2FA required; `default_repository_permission=none`; Dependabot alerts + secret scanning on for new repos; GHAS not default for new repos; plan `team` | org settings | org owner | baseline for every repo |
-| Workflows in `tap` | 14 files + 1 composite action (`.github/actions/ci-web-image`) | `tap/.github/workflows/` | anyone with a merged PR; `/.github/` is CODEOWNED (needs `@notgeorge` + `@criticalsec` approval) | PR gate, post-merge publish, release, nightly scans, dependency bots |
+| Workflows in `tap` | 14 files + 1 composite action (`.github/actions/ci-web-image`) | `tap/.github/workflows/` | anyone with a merged PR; `/.github/` is CODEOWNED (needs `a maintainer account` + `a maintainer account` approval) | PR gate, post-merge publish, release, nightly scans, dependency bots |
 | Reusable workflows (`workflow_call`) in `tap` | 3: `plugin-ci.yml`, `plugin-release-sbom.yml`, `api-fuzz.yml` | `tap` | same | every plugin repo's CI and release |
 | Plugin-repo workflows | 2 per repo (`ci.yml` → `plugin-ci.yml@main`; `release-sbom.yml` → `plugin-release-sbom.yml@main`); same in `tap-build-dependencies` | each plugin repo | plugin repo writers | plugin admission + release attestations |
 | `unified-ai-review` workflows | 4 (`capture.yml`, `review.yml`, `self-capture.yml`, `self-review.yml`) | that repo; consumed from `tap` by full SHA | its writers | AI review of every `tap` PR |
@@ -44,15 +47,15 @@ Legend for tiers: **self** = needed for the Aug 30 "gate view" Done-Test; **frie
 | Required check → producer | `gate` = the aggregator job in `product-lines.yml` (needs `setup`, `secret-scan`, `rids`, `line[test_all,samsite]`, `cold-boot`, `lean-boot`, `api-fuzz`; change-tier lets docs/specs skip lanes) | `product-lines.yml` | CODEOWNED | the whole promote |
 | Other checks on a PR (NOT required) | CodeQL default setup (`Analyze (actions/js/python)`, `CodeQL`), `SonarCloud Code Analysis` (failing on #180), `Codacy Static Code Analysis` (`action_required` on #180), `copilot-pull-request-reviewer`, AI review `capture`/`review` jobs, `dco`, `secret-scan` | apps + workflows | app installers | nothing — advisory |
 | GitHub Apps installed on the org | 4, **all `repository_selection: all`**: `tap-renovate` (contents:write, workflows:write, PRs:write, issues:write, checks:read, vuln_alerts:read), `tap-release-please` (contents:write, PRs:write), `sonarqubecloud` (checks/statuses/PRs:write, security_events:write, members:read), `codacy-production` (checks/statuses/PRs/issues:write, **repository_hooks:write, organization_hooks:write**, merge_queues:read, custom_properties:read) | org → Settings → Installations | org owner | bots that can push/PR/comment on every repo |
-| First-party platform apps | Dependabot (security updates on), CodeQL default setup (5 languages, weekly, `threat_model: remote`), GitHub Advanced Security app (57789), Copilot code review (via ruleset) | repo/org security settings | repo admin | advisory checks + alerts |
-| Secrets (names) on `tap` | 5: `OPENAI_API_KEY`, `XAI_API_KEY`, `RENOVATE_APP_ID`, `RENOVATE_APP_PRIVATE_KEY`, `TAP_RELEASE_PLEASE_APP_PRIVATE_KEY`; Dependabot secrets: 0 | repo settings | repo admin | AI review seats; bot identities |
-| Variables on `tap` | 1: `TAP_RELEASE_PLEASE_APP_ID=4558590` | repo settings | repo admin | release-please identity |
+| First-party platform apps | Dependabot (security updates on), CodeQL default setup (5 languages, weekly, `threat_model: remote`), GitHub Advanced Security app, Copilot code review (via ruleset) | repo/org security settings | repo admin | advisory checks + alerts |
+| Secrets (names) on `tap` | 5 (names generalized for publication — the live inventory belongs in the instance, not in a public file): two third-party AI-review provider keys, and the App ID + private key for each of the two org bots; Dependabot secrets: 0 | repo settings | repo admin | AI review seats; bot identities |
+| Variables on `tap` | 1: the release bot's App ID (value withheld here; it is a variable, not a secret, precisely because it is not sensitive) | repo settings | repo admin | release-please identity |
 | Org-level secrets/variables | **403** with this token (needs org admin or fine-grained org `Secrets: read`) | org | org owner | unknown to us right now |
 | Plugin-repo secrets/vars | 0 / 0 in all three sampled repos (`grid-fixtures/ci.yml` still references `secrets.TAP_CORE_RO_PAT` — dead reference, silently empty) | — | — | — |
 | Environments | `copilot` on `tap` and on `tap-build-dependencies` (created 2026-02-05, no protection rules, `can_admins_bypass=true`, referenced by NO workflow) | repo settings | repo admin | nothing — orphan |
 | Webhooks | `tap`: 1 (Codacy, `push` + `pull_request`, JSON, last response 200). Org hooks: 404 (needs `admin:org_hook`) | repo settings | repo admin | outbound event feed to Codacy |
 | Deploy keys | 0 on `tap` | — | — | — |
-| CODEOWNERS | 20 rules; owners `@notgeorge @criticalsec` on guard machinery, `pyproject.toml`, `/.github/`, `/ci/terraform/`, promote/gate scripts, Dockerfiles, `docker/`, compose, `.githooks/`, `**/guards/`; last rule un-owns `**/guards/baselines/` | `tap/.github/CODEOWNERS` (self-owning) | CODEOWNED | second-account approval on weakening moves |
+| CODEOWNERS | 20 rules; owners `the two maintainer accounts` on guard machinery, `pyproject.toml`, `/.github/`, `/ci/terraform/`, promote/gate scripts, Dockerfiles, `docker/`, compose, `.githooks/`, `**/guards/`; last rule un-owns `**/guards/baselines/` | `tap/.github/CODEOWNERS` (self-owning) | CODEOWNED | second-account approval on weakening moves |
 | Actions policy on `tap` | `allowed_actions: selected` (GitHub-owned + verified creators + `astral-sh/*`); **`sha_pinning_required: false`**; default `GITHUB_TOKEN` = read; `can_approve_pull_request_reviews=false`. Org-level Actions policy: 403 | repo/org settings | admin | which third-party code may run |
 | Third-party `uses:` in `tap` | 16 distinct actions, **all SHA-pinned with `# vX` comments** (checkout, cache, upload/download-artifact, setup-python, attest, attest-build-provenance, create-github-app-token, astral-sh/setup-uv, docker/{setup-buildx,build-push,login}, aquasecurity/trivy-action, github/codeql-action/upload-sarif, googleapis/release-please-action, renovatebot/github-action) + 2 cross-repo reusable workflows pinned by SHA (unified-ai-review) + local `./.github/...` | workflow files; Renovate `helpers:pinGitHubActionDigests` keeps them current | CODEOWNED | supply chain of the gate itself |
 | Cross-repo pin posture (plugins → core) | every plugin `ci.yml`/`release-sbom.yml` calls `unified-systems-com/tap/.github/workflows/*.yml@main` — a **mutable branch pin**, documented as deliberate | plugin repos | plugin writers | one `tap` main change alters all 13 plugin gates |
@@ -73,7 +76,7 @@ developer worktree ──.githooks (secret scan, DCO trailer)──▶ push sess
    └─ scripts/promote-to-main.sh: pre-push merge + local fast lane + opens PR (auto-merge armed)
 PR opened ──▶ rulesets on ~DEFAULT_BRANCH (4 active, 0 bypass actors)
    ├─ org-require-pr / main-required-checks: PR required · code-owner review on CODEOWNED paths
-   │     (@notgeorge cannot approve own PR ⇒ @criticalsec from a second device) · stale reviews
+   │     (a maintainer account cannot approve own PR ⇒ a maintainer account from a second device) · stale reviews
    │     dismissed · extra approval for unattributed commits
    ├─ copilot-review-floor: Copilot code review runs on push (advisory comments)
    └─ main-required-checks: required status check `gate` (GitHub Actions app 15368)
