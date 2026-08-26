@@ -1,0 +1,350 @@
+{
+  "metadata": {
+    "grift_version": "0"
+  },
+  "_reserved": {},
+  "batches": [
+    {
+      "batch_entity": {
+        "entity_id": "01a03f78-11fa-7029-823d-794360093bae",
+        "entity_type": "batch",
+        "name": "git-serious landing v0.1.0",
+        "dimensions": {}
+      },
+      "batch_node": {
+        "source": "plugins.git_serious.grift.landing",
+        "name": "git-serious landing v0.1.0",
+        "description": "First light (git-serious-tap#17): the observed account's CI/CD system as one graph — platform → account → repositories → workflows, plus the GitHub Apps enabled on them, runners, and the Actions OIDC issuer. A Gryphon seed search per label (github_core carries no tag dimension a bare scan could key on), an ORM all-edges search the graph panel filters to the matched node-set, and a minimal projection (one elevation, one arrangements-only layout → default cose placement). GitHub nodes single-tap to their html_url. Runs and jobs are deliberately OFF the landing graph — 10 runs × N repos is noise at this altitude; they belong to drill-down pages."
+      },
+      "nodes": [
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-7944e18dd24a",
+            "entity_type": "search",
+            "name": "git-serious — CI/CD system nodes",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — CI/CD system nodes",
+            "description": "Gryphon: every github_core node type that belongs on the account-level picture (platform, account, repository, workflow, app, runner) plus the identity_core OIDC issuer github mints. Explicit per-label MATCHes: github_core carries no tag dimension, so there is nothing for a bare MATCH (n) to key on.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (n0:github_core__github_platform)",
+                "MATCH (n1:github_core__github_account)",
+                "MATCH (n2:github_core__github_repository)",
+                "MATCH (n3:github_core__github_workflow)",
+                "MATCH (n4:github_core__github_app)",
+                "MATCH (n5:github_core__github_runner)",
+                "MATCH (oi:identity_core__oidc_issuer)"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-7945c7a844ab",
+            "entity_type": "search",
+            "name": "git-serious — all edges (graph_panel filters by node-set)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — all edges (graph_panel filters by node-set)",
+            "description": "All edges; the graph panel keeps only those whose endpoints are in the matched node-set (tap_viz panel-graph.js).",
+            "search_type": "orm",
+            "root": "edge",
+            "definition": {
+              "filters": {},
+              "order_by": [
+                "edge_type"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-7946a31a3ee2",
+            "entity_type": "layout",
+            "name": "git-serious-landing-layout",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious-landing-layout",
+            "description": "Arrangements-only, empty: first light takes the runtime's default placement. Arrangements (platform top, account below, repositories fanned, workflows under their repo) arrive with the gate view (git-serious-tap#6).",
+            "definition": {
+              "arrangements": []
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-79477cc4ab58",
+            "entity_type": "elevation",
+            "name": "git-serious-landing-elevation",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious-landing-elevation",
+            "description": "Single elevation: the account's CI/CD system at a glance.",
+            "definition": {
+              "zoom": 1.0,
+              "description": "The observed account's CI/CD system.",
+              "layouts": [
+                "01a03f78-11fa-7029-823d-7946a31a3ee2"
+              ],
+              "double_tap_targets": []
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-7948f2e17cfb",
+            "entity_type": "projection",
+            "name": "git-serious-landing-projection",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious-landing-projection",
+            "description": "git-serious landing projection — one elevation; icon-badge nodes.",
+            "definition": {
+              "node_style": {
+                "mode": "icon-badge"
+              },
+              "elevations": [
+                "01a03f78-11fa-7029-823d-79477cc4ab58"
+              ],
+              "default_elevation_id": "01a03f78-11fa-7029-823d-79477cc4ab58"
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-7949f273e155",
+            "entity_type": "panel",
+            "name": "git-serious Landing Graph",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "git-serious-landing-graph",
+            "name": "git-serious Landing Graph",
+            "description": "The account's CI/CD system as a graph. GitHub nodes open their html_url in a new tab.",
+            "view": "tap_viz/panels/graph_panel.html",
+            "config": {
+              "height": "100%",
+              "hide_header": true,
+              "nav_rules": [
+                {
+                  "entity_type": "github_core__github_platform",
+                  "url_field": "html_url",
+                  "external": true
+                },
+                {
+                  "entity_type": "github_core__github_account",
+                  "url_field": "html_url",
+                  "external": true
+                },
+                {
+                  "entity_type": "github_core__github_repository",
+                  "url_field": "html_url",
+                  "external": true
+                },
+                {
+                  "entity_type": "github_core__github_workflow",
+                  "url_field": "html_url",
+                  "external": true
+                },
+                {
+                  "entity_type": "github_core__github_app",
+                  "url_field": "html_url",
+                  "external": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-794a7b1f0350",
+            "entity_type": "page",
+            "name": "git-serious",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "git-serious",
+            "slug": "/git-serious",
+            "nav_weight": 100,
+            "layout": {
+              "full_bleed": true,
+              "columns": {
+                "col-1": {
+                  "width": "1fr",
+                  "rows": {
+                    "row-1": {
+                      "panel-id": "main",
+                      "height": "1fr"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-794b11dde136",
+            "entity_type": "landing_page",
+            "name": "git-serious Landing",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious Landing",
+            "description": "Default site landing page — the observed account's CI/CD system."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-794cbcf19a6c",
+            "entity_type": "edge",
+            "name": "Panel USES_SEARCH (nodes seed)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-7949f273e155",
+            "to_entity_id": "01a03f78-11fa-7029-823d-7944e18dd24a",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-794d61821bc5",
+            "entity_type": "edge",
+            "name": "Panel USES_SEARCH (edges seed)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-7949f273e155",
+            "to_entity_id": "01a03f78-11fa-7029-823d-7945c7a844ab",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-794ef527ccff",
+            "entity_type": "edge",
+            "name": "Panel USES_PROJECTION git-serious-landing-projection",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-7949f273e155",
+            "to_entity_id": "01a03f78-11fa-7029-823d-7948f2e17cfb",
+            "edge_type": "USES_PROJECTION",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-794f8a78ba42",
+            "entity_type": "edge",
+            "name": "Projection USES_ELEVATION git-serious-landing-elevation",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-7948f2e17cfb",
+            "to_entity_id": "01a03f78-11fa-7029-823d-79477cc4ab58",
+            "edge_type": "USES_ELEVATION",
+            "properties": {
+              "hotlink": {
+                "model": "projection",
+                "spec": "projection-elevations",
+                "value": "01a03f78-11fa-7029-823d-79477cc4ab58"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f78-11fa-7029-823d-79501b4686e3",
+            "entity_type": "edge",
+            "name": "Projection USES_DEFAULT_ELEVATION git-serious-landing-elevation",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-7948f2e17cfb",
+            "to_entity_id": "01a03f78-11fa-7029-823d-79477cc4ab58",
+            "edge_type": "USES_DEFAULT_ELEVATION",
+            "properties": {
+              "hotlink": {
+                "model": "projection",
+                "spec": "projection-default-elevation",
+                "value": "01a03f78-11fa-7029-823d-79477cc4ab58"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f77-4b57-70c9-9ac8-92749f15155b",
+            "entity_type": "edge",
+            "name": "Elevation USES_LAYOUT git-serious-landing-layout",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-79477cc4ab58",
+            "to_entity_id": "01a03f78-11fa-7029-823d-7946a31a3ee2",
+            "edge_type": "USES_LAYOUT",
+            "properties": {
+              "hotlink": {
+                "model": "elevation",
+                "spec": "elevation-layouts",
+                "value": "01a03f78-11fa-7029-823d-7946a31a3ee2"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f77-4b57-70c9-9ac8-9275a2976d69",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL git-serious Landing Graph",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-794a7b1f0350",
+            "to_entity_id": "01a03f78-11fa-7029-823d-7949f273e155",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "main"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a03f77-4b57-70c9-9ac8-9276251def93",
+            "entity_type": "edge",
+            "name": "USES_LANDING_PAGE",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-794b11dde136",
+            "to_entity_id": "01a03f78-11fa-7029-823d-794a7b1f0350",
+            "edge_type": "USES_LANDING_PAGE",
+            "properties": {}
+          }
+        }
+      ]
+    }
+  ]
+}
