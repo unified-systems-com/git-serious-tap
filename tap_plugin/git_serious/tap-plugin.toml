@@ -23,4 +23,4 @@ landing = "grift/landing.grift.json"
 [[boot.records]]
 name = "git_serious"
 description = "git-serious standing against one GitHub account: github_core (account-scoped collector) + identity_core + administrivia + the git-serious landing page. required_secrets declares the read-only github_pat."
-sha256 = "0487b264a993393d75bc9a13f7e0d971ff4b0500fade8df4c7618c43ce514b20"
+sha256 = "d5f9bf88cba2b5cde0148914ad5557891d43c58a8e29e377bf44125206fcfc6c"

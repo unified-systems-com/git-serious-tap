@@ -72,12 +72,12 @@
       {
         "type": "fire-collector",
         "key": "github_core:github_core",
-        "enabled": false,
+        "enabled": true,
         "secrets": [
           "github_core:collector"
         ],
         "timeout_seconds": 600,
-        "note": "Pulls the account's repositories, workflows, runs, jobs, runners, apps. DISABLED in the dev record until the account-scoped PAT is placed (the shared envelope is still the samsite repo-list credential) — fire it from the collectors page / run_collector once it is. Flip to true for the first-light record."
+        "note": "Pulls the configured scope onto the grid: the account's repositories, workflows, runs, jobs, runners, apps. Fires against whatever github_pat envelope is placed — until the account-scoped PAT lands this is the shared repos-only credential, which makes the first boot an end-to-end smoke test of the collector path rather than the org picture."
       }
     ]
   }
