@@ -495,7 +495,6 @@ whether a read-only credential can see the condition at all: ✅ yes · ⚠️ n
 ❌ not observable from this platform. Where a row is ❌, the *API surface* column says what would
 be needed instead — several are the natural second collector rather than a dead end.
 
-
 **A. Workflow-level (from YAML + runs)**
 
 | # | Observable condition | Recommended by | Read-only? | API surface | Incident evidence |
