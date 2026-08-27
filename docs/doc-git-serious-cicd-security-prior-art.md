@@ -489,53 +489,68 @@ Three consequences for the product's credential design (flagged, to be tested em
 
 ### 3.10 The observable-conditions checklist
 
-Format: **condition** — recommending sources — API surface (read-only reachable? ✅ / ⚠️ needs elevated / ❌ not observable). Ranked roughly by incident evidence (see §4) within each group.
+Forty conditions the sources above collectively say are worth checking, grouped by the level they
+live at and ranked roughly by incident evidence (§4) within each group. **Read-only?** records
+whether a read-only credential can see the condition at all: ✅ yes · ⚠️ needs elevated access ·
+❌ not observable from this platform. Where a row is ❌, the *API surface* column says what would
+be needed instead — several are the natural second collector rather than a dead end.
+
 
 **A. Workflow-level (from YAML + runs)**
-1. **Action `uses:` pinned by full 40-hex SHA, not tag/branch** — GitHub secure-use; OpenSSF; Wiz; Datadog; Scorecard Pinned-Dependencies; zizmor `unpinned-uses` — Contents read ✅. Incident evidence: tj-actions (2025-03), reviewdog, trivy-action (2026-03), Ultralytics chain.
-2. **Pinned SHA belongs to the canonical repo, not a fork; SHA's tag ≠ moved** (impostor commit / ref confusion) — GitHub secure-use; zizmor `impostor-commit`, `ref-confusion` — Contents read + public Git data ✅.
-3. **No `pull_request_target` / `workflow_run` / `issue_comment` that checks out PR head (`refs/pull/N/merge`, `head.sha`, `head_ref`) while secrets/write token are in scope; if checkout is v7+, `allow-unsafe-pr-checkout` absent** — GitHub secure-use; OpenSSF 2026 advisory; Orca; Datadog; zizmor `dangerous-triggers`; CodeQL — Contents read ✅. Evidence: Nx s1ngularity, hackerbot-claw, prt-scan, TanStack, PyTorch, Fortune-100 RCEs.
-4. **No `${{ github.event.* }}` / `github.head_ref` interpolation into `run:` / `GITHUB_ENV` / `GITHUB_PATH`** (template injection) — GitHub; OpenSSF; Legit; zizmor `template-injection`; CodeQL — Contents read ✅. Evidence: Ultralytics (branch-name injection), Nx (PR title), hackerbot-claw.
-5. **Workflow `permissions:` explicit and minimal; no default write; `permissions: {}` or per-job** — GitHub; OpenSSF; Scorecard Token-Permissions; zizmor `excessive-permissions` — Contents read ✅ (job-level *effective* permissions not returned by the runs API).
-6. **`id-token: write` only in publish/deploy jobs, bound to an environment** — PyPI security model; Unit 42 OH-MY-DC — Contents read ✅ (cloud-side sub/aud conditions ❌).
-7. **`persist-credentials: false` on checkout unless push needed; no artifact upload of the checkout dir** — Unit 42 ArtiPACKED; Wiz; zizmor `artipacked` — Contents read ✅; artifact content check via Actions read ✅ (download).
-8. **No `secrets: inherit` into reusable workflows; no `toJson(secrets)`** — Wiz; zizmor `secrets-inherit` — Contents read ✅.
-9. **Cache not shared across trust boundaries** (cache write in low-trust workflow that a high-trust workflow on the same default branch restores) — Adnan Khan; CodeQL cache-poisoning; zizmor `cache-poisoning` — Contents read ✅ (heuristic).
-10. **`runs-on` self-hosted labels only in private repos; no self-hosted on public repos** — GitHub; Synacktiv; Khan/Stawinski; zizmor `self-hosted-runner` — Contents read ✅ + repo visibility ✅.
-11. **Publishing via trusted publishing (OIDC) rather than `NPM_TOKEN`/`PYPI_API_TOKEN` secrets** — PyPI docs; Nesbitt; Wiz; zizmor `use-trusted-publishing` — Contents read + Secrets read (names) ✅.
-12. **Release/publish workflow emits provenance/attestations** (`actions/attest-build-provenance`, slsa-github-generator) — SLSA Build L2/L3; SSDF PS.3.2 — Contents read ✅; attestations endpoint ✅.
-13. **Bot-conditions (`github.actor == 'dependabot[bot]'`) not used as an authz gate** — zizmor `bot-conditions`; Checkmarx Dependabot-impersonation (2023) — Contents read ✅.
-14. **Known-vulnerable action versions** — Dependabot alerts (`ecosystem=actions`) ✅ (semver-only) + GitHub Advisory DB (public) ✅.
-15. **Runs triggered from forks (`head_repository.fork == true`) on privileged workflows; approval events for first-time contributors** — Actions read ✅.
+
+| # | Observable condition | Recommended by | Read-only? | API surface | Incident evidence |
+| ---: | --- | --- | :---: | --- | --- |
+| 1 | **Action `uses:` pinned by full 40-hex SHA, not tag/branch** | GitHub secure-use; OpenSSF; Wiz; Datadog; Scorecard Pinned-Dependencies; zizmor `unpinned-uses` | ✅ | Contents read ✅ | tj-actions (2025-03), reviewdog, trivy-action (2026-03), Ultralytics chain |
+| 2 | **Pinned SHA belongs to the canonical repo, not a fork; SHA's tag ≠ moved** (impostor commit / ref confusion) | GitHub secure-use; zizmor `impostor-commit`, `ref-confusion` | ✅ | Contents read + public Git data ✅ | — |
+| 3 | **No `pull_request_target` / `workflow_run` / `issue_comment` that checks out PR head (`refs/pull/N/merge`, `head.sha`, `head_ref`) while secrets/write token are in scope; if checkout is v7+, `allow-unsafe-pr-checkout` absent** | GitHub secure-use; OpenSSF 2026 advisory; Orca; Datadog; zizmor `dangerous-triggers`; CodeQL | ✅ | Contents read ✅ | Nx s1ngularity, hackerbot-claw, prt-scan, TanStack, PyTorch, Fortune-100 RCEs |
+| 4 | **No `${{ github.event.* }}` / `github.head_ref` interpolation into `run:` / `GITHUB_ENV` / `GITHUB_PATH`** (template injection) | GitHub; OpenSSF; Legit; zizmor `template-injection`; CodeQL | ✅ | Contents read ✅ | Ultralytics (branch-name injection), Nx (PR title), hackerbot-claw |
+| 5 | **Workflow `permissions:` explicit and minimal; no default write; `permissions: {}` or per-job** | GitHub; OpenSSF; Scorecard Token-Permissions; zizmor `excessive-permissions` | ✅ | Contents read ✅ (job-level *effective* permissions not returned by the runs API) | — |
+| 6 | **`id-token: write` only in publish/deploy jobs, bound to an environment** | PyPI security model; Unit 42 OH-MY-DC | ✅ | Contents read ✅ (cloud-side sub/aud conditions ❌) | — |
+| 7 | **`persist-credentials: false` on checkout unless push needed; no artifact upload of the checkout dir** | Unit 42 ArtiPACKED; Wiz; zizmor `artipacked` | ✅ | Contents read ✅; artifact content check via Actions read ✅ (download) | — |
+| 8 | **No `secrets: inherit` into reusable workflows; no `toJson(secrets)`** | Wiz; zizmor `secrets-inherit` | ✅ | Contents read ✅ | — |
+| 9 | **Cache not shared across trust boundaries** (cache write in low-trust workflow that a high-trust workflow on the same default branch restores) | Adnan Khan; CodeQL cache-poisoning; zizmor `cache-poisoning` | ✅ | Contents read ✅ (heuristic) | — |
+| 10 | **`runs-on` self-hosted labels only in private repos; no self-hosted on public repos** | GitHub; Synacktiv; Khan/Stawinski; zizmor `self-hosted-runner` | ✅ | Contents read ✅ + repo visibility ✅ | — |
+| 11 | **Publishing via trusted publishing (OIDC) rather than `NPM_TOKEN`/`PYPI_API_TOKEN` secrets** | PyPI docs; Nesbitt; Wiz; zizmor `use-trusted-publishing` | ✅ | Contents read + Secrets read (names) ✅ | — |
+| 12 | **Release/publish workflow emits provenance/attestations** (`actions/attest-build-provenance`, slsa-github-generator) | SLSA Build L2/L3; SSDF PS.3.2 | ✅ | Contents read ✅; attestations endpoint ✅ | — |
+| 13 | **Bot-conditions (`github.actor == 'dependabot[bot]'`) not used as an authz gate** | zizmor `bot-conditions`; Checkmarx Dependabot-impersonation (2023) | ✅ | Contents read ✅ | — |
+| 14 | **Known-vulnerable action versions** | — | ✅ | Dependabot alerts (`ecosystem=actions`) ✅ (semver-only) + GitHub Advisory DB (public) ✅ | — |
+| 15 | **Runs triggered from forks (`head_repository.fork == true`) on privileged workflows; approval events for first-time contributors** | — | ✅ | Actions read ✅ | — |
 
 **B. Repository / branch-level**
-16. **Default and release branches protected by ruleset/protection: PR required, ≥1 (SLSA Source L4: 2) approvals, dismiss stale, code-owner review, last-push approval, no force-push, no deletion, linear history, required status checks** — OWASP SEC-1; SLSA Source L2–L4; CIS; SSDF PS.1.1; Scorecard Branch-Protection — Administration (repo) read ✅ / effective rules via Metadata read ✅.
-17. **Bypass actors on rulesets (apps, roles, teams) and `enforce_admins=false` on classic protection** — OWASP SEC-1 ("avoid exclusion of user accounts"); Scorecard — ⚠️ needs write access to the ruleset for `bypass_actors`; `enforce_admins` is in classic protection read ✅.
-18. **Ruleset `enforcement: evaluate` or `disabled` (control exists but is not enforcing)** — GitHub Evaluate Mode; SLSA Source L3 continuity — org rulesets ⚠️ (write) / repo rulesets ✅.
-19. **CODEOWNERS covers `.github/workflows/` and code-owner review is required** — GitHub secure-use; SSDF PS.1.1 — Contents read + protection read ✅.
-20. **Tags protected / immutable releases enabled for repos that publish actions or artifacts** — GitHub immutable releases; SLSA Source L2 — org immutable-releases setting ⚠️ (admin) / release objects ✅.
-21. **Signed commits required; `web_commit_signoff_required`** — OWASP SEC-9; CISA/NSA; SSDF PS.1.1 — protection read ✅ / org detail (owner) ⚠️.
-22. **Environments for deploy/publish with `required_reviewers`, `prevent_self_review`, branch policy** — GitHub; OWASP SEC-1; Orca — Deployments read ✅.
-23. **Repo secrets that duplicate cloud keys where OIDC exists (name heuristics: `AWS_SECRET_ACCESS_KEY`, `GOOGLE_CREDENTIALS`, `AZURE_CLIENT_SECRET`, `NPM_TOKEN`, `PYPI_API_TOKEN`, `DOCKER_PASSWORD`)** and **secret age > N days** — OWASP SEC-6; CISA "minimize long-term credentials"; GitHub OIDC — Secrets read ✅ (names + timestamps only).
-24. **Deploy keys with write, unused >90d** — OWASP SEC-2/6 — Administration (repo) read ✅.
-25. **Webhooks to unknown hosts / `insecure_ssl` / no secret** — OWASP SEC-8 — Webhooks read ✅.
-26. **Self-hosted runners `ephemeral=false`; runner groups with `allows_public_repositories=true`; runner `version` stale** — GitHub; OWASP SEC-5; Synacktiv — Administration/self-hosted runners read ✅.
-27. **Fork-PR settings: `require_approval_for_fork_pr_workflows`, `send_secrets_and_variables=false`, `send_write_tokens_to_workflows=false`, `approval_policy` for first-time contributors** — GitHub; Synacktiv — Actions policy read ✅.
+
+| # | Observable condition | Recommended by | Read-only? | API surface | Incident evidence |
+| ---: | --- | --- | :---: | --- | --- |
+| 16 | **Default and release branches protected by ruleset/protection: PR required, ≥1 (SLSA Source L4: 2) approvals, dismiss stale, code-owner review, last-push approval, no force-push, no deletion, linear history, required status checks** | OWASP SEC-1; SLSA Source L2–L4; CIS; SSDF PS.1.1; Scorecard Branch-Protection | ✅ | Administration (repo) read ✅ / effective rules via Metadata read ✅ | — |
+| 17 | **Bypass actors on rulesets (apps, roles, teams) and `enforce_admins=false` on classic protection** | OWASP SEC-1 ("avoid exclusion of user accounts"); Scorecard | ⚠️ | ⚠️ needs write access to the ruleset for `bypass_actors`; `enforce_admins` is in classic protection read ✅ | — |
+| 18 | **Ruleset `enforcement: evaluate` or `disabled` (control exists but is not enforcing)** | GitHub Evaluate Mode; SLSA Source L3 continuity | ⚠️ | org rulesets ⚠️ (write) / repo rulesets ✅ | — |
+| 19 | **CODEOWNERS covers `.github/workflows/` and code-owner review is required** | GitHub secure-use; SSDF PS.1.1 | ✅ | Contents read + protection read ✅ | — |
+| 20 | **Tags protected / immutable releases enabled for repos that publish actions or artifacts** | GitHub immutable releases; SLSA Source L2 | ⚠️ | org immutable-releases setting ⚠️ (admin) / release objects ✅ | — |
+| 21 | **Signed commits required; `web_commit_signoff_required`** | OWASP SEC-9; CISA/NSA; SSDF PS.1.1 | ✅ | protection read ✅ / org detail (owner) ⚠️ | — |
+| 22 | **Environments for deploy/publish with `required_reviewers`, `prevent_self_review`, branch policy** | GitHub; OWASP SEC-1; Orca | ✅ | Deployments read ✅ | — |
+| 23 | **Repo secrets that duplicate cloud keys where OIDC exists (name heuristics: `AWS_SECRET_ACCESS_KEY`, `GOOGLE_CREDENTIALS`, `AZURE_CLIENT_SECRET`, `NPM_TOKEN`, `PYPI_API_TOKEN`, `DOCKER_PASSWORD`)** and **secret age > N days** | OWASP SEC-6; CISA "minimize long-term credentials"; GitHub OIDC | ✅ | Secrets read ✅ (names + timestamps only) | — |
+| 24 | **Deploy keys with write, unused >90d** | OWASP SEC-2/6 | ✅ | Administration (repo) read ✅ | — |
+| 25 | **Webhooks to unknown hosts / `insecure_ssl` / no secret** | OWASP SEC-8 | ✅ | Webhooks read ✅ | — |
+| 26 | **Self-hosted runners `ephemeral=false`; runner groups with `allows_public_repositories=true`; runner `version` stale** | GitHub; OWASP SEC-5; Synacktiv | ✅ | Administration/self-hosted runners read ✅ | — |
+| 27 | **Fork-PR settings: `require_approval_for_fork_pr_workflows`, `send_secrets_and_variables=false`, `send_write_tokens_to_workflows=false`, `approval_policy` for first-time contributors** | GitHub; Synacktiv | ✅ | Actions policy read ✅ | — |
 
 **C. Organization-level**
-28. **`sha_pinning_required=true`; `allowed_actions=selected` with `verified_allowed`/`patterns_allowed` tight; blocked actions list** — GitHub Aug-2025 policy; SSDF PO.3.1 — Actions policy read ✅.
-29. **`default_workflow_permissions=read`; `can_approve_pull_request_reviews=false`** — GitHub; OpenSSF — Actions policy read ✅.
-30. **Two-factor required (`two_factor_requirement_enabled`); members without 2FA** — CISA/NSA; OWASP SEC-2; CIS — ⚠️ org owner.
-31. **`default_repository_permission` ≤ read; member repo creation restricted** — OWASP SEC-2 ("refrain from granting base permissions ... to all users") — ⚠️ owner.
-32. **GitHub App installations: permission map (esp. `contents: write`, `administration`, `secrets`, `actions: write`, `workflows: write`), `repository_selection=all`, suspended, events subscribed, install date, last activity** — OWASP SEC-8 (granted vs used); Astrix/Arnica NHI research — Administration (org) read ✅ (owner-minted).
-33. **Fine-grained PATs with org access: expiry present & near, `token_last_used_at` stale, permissions breadth, `repository_selection=all`; classic PATs (only via audit log)** — OWASP SEC-2/6; Chainguard "end of PATs" — ⚠️ GitHub-App-only endpoint; classic PATs ❌ except GHEC audit log.
-34. **OAuth apps with org access** — OWASP SEC-8 — ❌ no API.
-35. **Outside collaborators with write/admin; teams with admin on many repos; bot/service accounts (heuristic) with write and no expiry** — OWASP SEC-2 — members/collaborators ⚠️ (owner-level reads).
-36. **Org-level secrets with `visibility=all`** — OWASP SEC-5 — Secrets read ✅.
-37. **Artifact/log retention** — SSDF PO.3.3; OWASP SEC-10 — Actions policy read ✅.
-38. **Audit-log coverage** (GHEC) / snapshot-diff cadence (Team) — OWASP SEC-10; GitHub — ⚠️ GHEC.
-39. **Cloud/registry-side OIDC trust policies (sub/aud conditions, wildcards)** — Unit 42, Wiz, Datadog — ❌ from GitHub; requires a cloud collector (AWS IAM trust policies, GCP WIF, Azure federated credentials) — a natural second collector, not v0.
-40. **Package-registry-side state (npm/PyPI publisher config, 2FA on registry accounts, provenance on published versions)** — npm/PyPI docs — ❌ from GitHub; observable from registry APIs (npm `provenance`, PyPI trusted-publisher listing is per-project UI) — later collector.
+
+| # | Observable condition | Recommended by | Read-only? | API surface | Incident evidence |
+| ---: | --- | --- | :---: | --- | --- |
+| 28 | **`sha_pinning_required=true`; `allowed_actions=selected` with `verified_allowed`/`patterns_allowed` tight; blocked actions list** | GitHub Aug-2025 policy; SSDF PO.3.1 | ✅ | Actions policy read ✅ | — |
+| 29 | **`default_workflow_permissions=read`; `can_approve_pull_request_reviews=false`** | GitHub; OpenSSF | ✅ | Actions policy read ✅ | — |
+| 30 | **Two-factor required (`two_factor_requirement_enabled`); members without 2FA** | CISA/NSA; OWASP SEC-2; CIS | ⚠️ | ⚠️ org owner | — |
+| 31 | **`default_repository_permission` ≤ read; member repo creation restricted** | OWASP SEC-2 ("refrain from granting base permissions ... to all users") | ⚠️ | ⚠️ owner | — |
+| 32 | **GitHub App installations: permission map (esp. `contents: write`, `administration`, `secrets`, `actions: write`, `workflows: write`), `repository_selection=all`, suspended, events subscribed, install date, last activity** | OWASP SEC-8 (granted vs used); Astrix/Arnica NHI research | ✅ | Administration (org) read ✅ (owner-minted) | — |
+| 33 | **Fine-grained PATs with org access: expiry present & near, `token_last_used_at` stale, permissions breadth, `repository_selection=all`; classic PATs (only via audit log)** | OWASP SEC-2/6; Chainguard "end of PATs" | ⚠️ | ⚠️ GitHub-App-only endpoint; classic PATs ❌ except GHEC audit log | — |
+| 34 | **OAuth apps with org access** | OWASP SEC-8 | ❌ | ❌ no API | — |
+| 35 | **Outside collaborators with write/admin; teams with admin on many repos; bot/service accounts (heuristic) with write and no expiry** | OWASP SEC-2 | ⚠️ | members/collaborators ⚠️ (owner-level reads) | — |
+| 36 | **Org-level secrets with `visibility=all`** | OWASP SEC-5 | ✅ | Secrets read ✅ | — |
+| 37 | **Artifact/log retention** | SSDF PO.3.3; OWASP SEC-10 | ✅ | Actions policy read ✅ | — |
+| 38 | **Audit-log coverage** (GHEC) / snapshot-diff cadence (Team) | OWASP SEC-10; GitHub | ⚠️ | ⚠️ GHEC | — |
+| 39 | **Cloud/registry-side OIDC trust policies (sub/aud conditions, wildcards)** | Unit 42, Wiz, Datadog | ❌ | ❌ from GitHub; requires a cloud collector (AWS IAM trust policies, GCP WIF, Azure federated credentials) — a natural second collector, not v0 | — |
+| 40 | **Package-registry-side state (npm/PyPI publisher config, 2FA on registry accounts, provenance on published versions)** | npm/PyPI docs | ❌ | ❌ from GitHub; observable from registry APIs (npm `provenance`, PyPI trusted-publisher listing is per-project UI) — later collector | — |
+
 ## 4. Critical incidents — dated, with the observable precondition git-serious could have shown
 
 Selection rule: incidents where a *GitHub-org-shaped* precondition existed before the event, plus a few non-GitHub anchors (SolarWinds, CircleCI, xz) that define the field. 27 entries, chronological. "Graph would have shown" = the state visible to a read-only observer *before* the incident; "Detection to ship" = the one-line rule. Primary sources cited; anything not verified from a primary source is marked **[partially verified]**.
