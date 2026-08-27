@@ -1,0 +1,21 @@
+# CI for git-serious-tap — a thin caller of the reusable plugin admission gate in the core TAP
+# repo (.github/workflows/plugin-ci.yml, req-plugin-extdev-repo-ci): every plugin and product
+# repo runs the SAME gate, improved in one place. Conformance-only for now; the boot-and-test
+# leg arrives with a ci/nightly.boot.json (the samsite precedent).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tap:
+    uses: unified-systems-com/tap/.github/workflows/plugin-ci.yml@main
+    with:
+      plugin_slug: git_serious
+      harness_ref: main
