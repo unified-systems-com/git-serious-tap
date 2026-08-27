@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "profile_kind": "dev_local",
+  "description": "git-serious CI/nightly boot-and-test profile (req-plugin-extdev-repo-ci; consumed by tap's plugin-ci.yml boot-and-test job). Derived from the shipped record in tap_plugin/git_serious/boot/: the SAME sibling closure at the SAME pins — the record test cold-resolves the shipped record, which references every seed slug and collector key, so the full set must be installed — but git_serious itself installs EDITABLE from _external/git_serious (the path plugin-ci.yml checks this repo out to inside the harness tree), so CI tests THIS repo's HEAD against pinned siblings rather than a released tag. Population is seed-only: CI runs with an empty secrets root and never fires collectors, so there is no fire-collector step and correspondingly no required_secrets (coherence rule req-boot-required-secrets-4: an entry must be consumed by an enabled step). Bump the sibling pins here deliberately, in step with the shipped record — the two drifting apart is the failure this file is most likely to have.",
+  "install": {
+    "plugins": [
+      {
+        "slug": "administrivia",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/tap-plugin-administrivia",
+          "rev": "v0.1.0"
+        },
+        "note": "Package-mode (tap_plugin.administrivia). TAP admin pages + grid landing; seeded in population."
+      },
+      {
+        "slug": "identity_core",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/tap-plugin-identity-core",
+          "rev": "v0.1.1"
+        },
+        "note": "Package-mode (tap_plugin.identity_core). Install-only substrate: the oidc_issuer convergence node github_core mints. No GRIFT seed."
+      },
+      {
+        "slug": "github_core",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/tap-plugin-github-core",
+          "rev": "v0.4.0"
+        },
+        "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector. Installed but NOT seeded and NOT fired: the shipped record's fire-collector step names the collector key `github_core:github_core`, and the record test resolves that key against the live collector registry, so the plugin must be installed for the test to mean anything."
+      },
+      {
+        "slug": "git_serious",
+        "enabled": true,
+        "source": {
+          "type": "editable",
+          "path": "_external/git_serious"
+        },
+        "note": "Package-mode (tap_plugin.git_serious), installed EDITABLE from the CI checkout at _external/git_serious so the suite runs against this repo's HEAD, not a released tag."
+      }
+    ]
+  },
+  "population": {
+    "on_failure": "abort",
+    "steps": [
+      {
+        "type": "seed-plugin",
+        "plugin": "administrivia",
+        "enabled": true,
+        "note": "TAP admin pages + grid landing."
+      },
+      {
+        "type": "seed-plugin",
+        "plugin": "git_serious",
+        "enabled": true,
+        "note": "git-serious landing page: the account's CI/CD system as a graph."
+      }
+    ]
+  }
+}

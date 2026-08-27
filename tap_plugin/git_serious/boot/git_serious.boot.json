@@ -6,7 +6,7 @@
       "scope": "github_core",
       "key": "collector",
       "kind": "github_pat",
-      "note": "Fine-grained GitHub PAT, READ-ONLY, whose resource owner is the observed account (`data.owner`). Permissions are the union of what github_core's collection manifest declares per source — Metadata + Contents + Actions read; Administration read only if runner nodes are wanted. Minted and verified by github_core's provision-github-pat skill."
+      "note": "Fine-grained GitHub PAT, READ-ONLY, whose resource owner is the observed account (`data.owner`). Permissions are the union of what github_core's collection manifest declares per source — Metadata + Contents + Actions read; Administration read only if runner nodes are wanted. Minted by hand in GitHub's fine-grained-token UI; there is no PAT skill. github_core's create-github-app skill mints an App-shaped credential instead, which this record cannot yet consume — the collector's github_app auth path is req-github-core-app-auth-1, still In Development."
     }
   ],
   "description": "git-serious — the product composition (plan/product-map.md: a product is an umbrella plugin whose boot record IS what it is). Stands the product up against one GitHub account: installs the substrate (identity_core), the GitHub vocabulary + collector (github_core, account-scoped per req-github-core-org-scope), the admin pages (administrivia), and git-serious itself (the landing page); seeds the GRIFT; then fires the github_core collector to pull the account's CI/CD system onto the grid. DEV-PHASE record: revs are branches while the pieces land (git_serious self-reference and github_core's org-scope branch); the first tagged release pins immutable tags per req-boot-bootstrap-stage0-3. Install order lists substrate before consumers so git-sourced dependency resolution finds them installed.",
@@ -38,9 +38,9 @@
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/tap-plugin-github-core",
-          "rev": "feat/org-scope"
+          "rev": "v0.4.0"
         },
-        "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector, account-scoped (req-github-core-org-scope). DEV: branch rev until the org-scope work releases; NOT seeded here — its repo landing page is samsite-shaped (/samsite/repo) and git-serious owns its own pages."
+        "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector, account-scoped (req-github-core-org-scope), pinned at v0.4.0; NOT seeded here — its repo landing page is samsite-shaped (/samsite/repo) and git-serious owns its own pages."
       },
       {
         "slug": "git_serious",
