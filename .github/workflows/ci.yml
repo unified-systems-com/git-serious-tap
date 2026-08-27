@@ -1,0 +1,26 @@
+# CI for git-serious-tap — a thin caller of the reusable plugin admission gate in the core TAP
+# repo (.github/workflows/plugin-ci.yml, req-plugin-extdev-repo-ci): every plugin and product
+# repo runs the SAME gate, improved in one place. Both legs run here: conformance (Django-free
+# structure gate) and boot-and-test, which stands the product's sibling closure up in a real
+# stack and runs this repo's suite against it (ci/nightly.boot.json, the samsite precedent).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tap:
+    uses: unified-systems-com/tap/.github/workflows/plugin-ci.yml@main
+    with:
+      plugin_slug: git_serious
+      harness_ref: main
+      # Opt into the boot-and-test leg. Conformance alone is Django-free and would have
+      # passed this repo's skeleton commit while its own suite was red — the boot record
+      # IS the product here, and the record test is what proves it resolves.
+      boot_profile: ci/nightly.boot.json

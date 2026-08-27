@@ -1,0 +1,52 @@
+# git-serious — a TAP product: an umbrella plugin whose in-package boot record IS the product
+# composition (plan/product-map.md, "A product is an over-arching plugin with its own repo").
+#
+# Identity chain (req-tap-plugin-arch-identity, gate-enforced; the <slug>-tap convention since
+# 2026-08-26, req-tap-plugin-arch-identity-2):
+#   slug             = "git_serious"                  (tap-plugin.toml slug — never renames)
+#   distribution     = "git-serious-tap"              (PEP 503: slug `_`->`-`, `-tap` suffix)
+#   import namespace = "tap_plugin.git_serious"       (PEP 420 native namespace; NO tap_plugin/__init__.py)
+#   entry-point key  = "git_serious"                  (== slug)
+[project]
+name = "git-serious-tap"
+description = "git-serious — visualize, track, and secure your CI/CD system, for humans and agents. A TAP product."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.14"
+dynamic = ["version"]
+
+# Tier-0 install dependencies (req-tap-plugin-arch-dependencies-1). git-serious is a
+# composition: it ships no models or collectors of its own, but its pages reference these
+# plugins' ENTITY TYPES by string (github_core__*, identity_core__oidc_issuer) in Gryphon, and
+# its boot record fires github_core's collector — so they must be INSTALLED, which is a real
+# install dep even though nothing here imports their Python (hence NOT a code `depends_on`,
+# the samsite precedent). Dependencies are referenced by the name they are currently
+# published under; the legacy tap-plugin-* names rename in the tap#147 wave.
+dependencies = [
+    "tap-plugin-github-core",
+    "tap-plugin-identity-core",
+    "tap-plugin-administrivia",
+]
+
+[project.entry-points."tap.plugins"]
+git_serious = "tap_plugin.git_serious.apps:GitSeriousConfig"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-django>=4.9",
+    "factory-boy>=3.3",
+]
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+fallback_version = "0.0.0"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["tap_plugin/git_serious"]

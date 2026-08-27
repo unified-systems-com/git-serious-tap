@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "profile_kind": "dev_local",
+  "required_secrets": [
+    {
+      "scope": "github_core",
+      "key": "collector",
+      "kind": "github_pat",
+      "note": "Fine-grained GitHub PAT, READ-ONLY, whose resource owner is the observed account (`data.owner`). Permissions are the union of what github_core's collection manifest declares per source — Metadata + Contents + Actions read; Administration read only if runner nodes are wanted. Minted by hand in GitHub's fine-grained-token UI; there is no PAT skill. github_core's create-github-app skill mints an App-shaped credential instead, which this record cannot yet consume — the collector's github_app auth path is req-github-core-app-auth-1, still In Development."
+    }
+  ],
+  "description": "git-serious — the product composition (plan/product-map.md: a product is an umbrella plugin whose boot record IS what it is). Stands the product up against one GitHub account: installs the substrate (identity_core), the GitHub vocabulary + collector (github_core, account-scoped per req-github-core-org-scope), the admin pages (administrivia), and git-serious itself (the landing page); seeds the GRIFT; then fires the github_core collector to pull the account's CI/CD system onto the grid. DEV-PHASE record: revs are branches while the pieces land (git_serious self-reference and github_core's org-scope branch); the first tagged release pins immutable tags per req-boot-bootstrap-stage0-3. Install order lists substrate before consumers so git-sourced dependency resolution finds them installed.",
+  "install": {
+    "plugins": [
+      {
+        "slug": "administrivia",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/tap-plugin-administrivia",
+          "rev": "v0.1.0"
+        },
+        "note": "Package-mode (tap_plugin.administrivia). TAP admin pages + grid landing; seeded in population."
+      },
+      {
+        "slug": "identity_core",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/tap-plugin-identity-core",
+          "rev": "v0.1.1"
+        },
+        "note": "Package-mode (tap_plugin.identity_core). Install-only substrate: the oidc_issuer convergence node github_core mints. No GRIFT seed."
+      },
+      {
+        "slug": "github_core",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/tap-plugin-github-core",
+          "rev": "v0.4.0"
+        },
+        "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector, account-scoped (req-github-core-org-scope), pinned at v0.4.0; NOT seeded here — its repo landing page is samsite-shaped (/samsite/repo) and git-serious owns its own pages."
+      },
+      {
+        "slug": "git_serious",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/git-serious-tap",
+          "rev": "feat/skeleton"
+        },
+        "note": "Package-mode (tap_plugin.git_serious). The product itself: landing page. Self-reference (req-boot-bootstrap-stage0-3): the carrier this record is fetched FROM and the version it INSTALLS are independent coordinates. DEV: branch rev."
+      }
+    ]
+  },
+  "population": {
+    "on_failure": "abort",
+    "steps": [
+      {
+        "type": "seed-plugin",
+        "plugin": "administrivia",
+        "enabled": true,
+        "note": "TAP admin pages + grid landing."
+      },
+      {
+        "type": "seed-plugin",
+        "plugin": "git_serious",
+        "enabled": true,
+        "note": "git-serious landing page: the account's CI/CD system as a graph."
+      },
+      {
+        "type": "fire-collector",
+        "key": "github_core:github_core",
+        "enabled": true,
+        "secrets": [
+          "github_core:collector"
+        ],
+        "timeout_seconds": 600,
+        "note": "Pulls the configured scope onto the grid: the account's repositories, workflows, runs, jobs, runners, apps. Fires against whatever github_pat envelope is placed — until the account-scoped PAT lands this is the shared repos-only credential, which makes the first boot an end-to-end smoke test of the collector path rather than the org picture."
+      }
+    ]
+  }
+}

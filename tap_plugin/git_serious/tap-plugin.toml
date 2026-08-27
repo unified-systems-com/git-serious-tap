@@ -1,0 +1,26 @@
+manifest_version = "0"
+plugin_version = "0.1.0"
+slug = "git_serious"
+name = "git-serious"
+description = "Visualize, track, and secure your CI/CD system — for humans and agents. A TAP product composed of github_core + identity_core + administrivia via the in-package boot record."
+
+# No code-import dependencies: git-serious references other plugins' ENTITY TYPES by string
+# (Gryphon in its pages) and fires github_core's collector from its boot record — both are
+# INSTALL deps (pyproject `dependencies`), not import-time edges. See pyproject.toml.
+depends_on = []
+
+# Pure composition — no crypto, no native deps (spec-fips.md, req-tap-plugin-manifest-v0-fips).
+[fips]
+status = "compatible"
+
+[grift]
+landing = "grift/landing.grift.json"
+
+# In-package boot record (req-boot-bootstrap-records-in-package): THE product composition.
+# Digest is the canonical sha256 of the record (sorted keys, tight separators) — regenerate
+# with scripts/boot-record-hash --refresh in a core checkout, or the shipped
+# test_boot_record_resolves digest assertion; never hand-edit.
+[[boot.records]]
+name = "git_serious"
+description = "git-serious standing against one GitHub account: github_core (account-scoped collector) + identity_core + administrivia + the git-serious landing page. required_secrets declares the read-only github_pat."
+sha256 = "4e9f03dc5bd8ebc55ea07b7903bfd7a699f18d9f8fd3e56dc4bf2abee753cb80"
