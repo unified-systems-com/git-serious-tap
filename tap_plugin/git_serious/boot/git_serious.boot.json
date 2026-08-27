@@ -48,9 +48,9 @@
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/git-serious-tap",
-          "rev": "feat/skeleton"
+          "rev": "main"
         },
-        "note": "Package-mode (tap_plugin.git_serious). The product itself: landing page. Self-reference (req-boot-bootstrap-stage0-3): the carrier this record is fetched FROM and the version it INSTALLS are independent coordinates. DEV: branch rev."
+        "note": "Package-mode (tap_plugin.git_serious). The product itself: landing page. Self-reference (req-boot-bootstrap-stage0-3): the carrier this record is fetched FROM and the version it INSTALLS are independent coordinates. DEV-PHASE: a branch rev, because a record cannot pin its own unreleased tag. `main` rather than a feature branch — a feature branch is deleted at merge, and this pin then names a ref that no longer resolves. The first tagged release replaces this with the tag and drops the DEV-PHASE marker."
       }
     ]
   },
