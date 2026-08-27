@@ -1,0 +1,475 @@
+{
+  "metadata": {
+    "grift_version": "0"
+  },
+  "_reserved": {},
+  "batches": [
+    {
+      "batch_entity": {
+        "entity_id": "01a04571-e211-731b-8db7-647a297c24e4",
+        "entity_type": "batch",
+        "name": "git-serious gate view v0.1.0",
+        "dimensions": {}
+      },
+      "batch_node": {
+        "source": "plugins.git_serious.grift.gate",
+        "name": "git-serious gate view v0.1.0",
+        "description": "The gate (git-serious-tap#6): for a repository's default branch, what must be true for a commit to land \u2014 and what we cannot see. Four Gryphon-backed table panels over the self-tier vocabulary: the rulesets and what they enforce, the bypass lists a read-only credential cannot read, the declared jobs that check out a ref they were handed, and the cache entries written from outside an observed ref. Two of the four are ABSENCE panels by design \u2014 an empty bypass column and a missing ref edge each mean something specific, and rendering either as nothing would be the most reassuring possible lie. Tables rather than a graph at this altitude: the landing page carries the picture, this page carries the adjudication."
+      },
+      "nodes": [
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-646d661f90d7",
+            "entity_type": "search",
+            "name": "git-serious \u2014 the gate on each ref",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious \u2014 the gate on each ref",
+            "description": "Every ruleset on the account, with what it enforces and whether its bypass list could be read at all. One node per ruleset however many repositories it protects \u2014 an organization ruleset is a single object, and the repositories it covers are the PROTECTS edges.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (rs:github_core__github_ruleset)"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-646ea22c5b90",
+            "entity_type": "search",
+            "name": "git-serious \u2014 bypass lists we could not read",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious \u2014 bypass lists we could not read",
+            "description": "Rulesets whose bypass-actor list this credential cannot see. GitHub returns it only to a caller with WRITE access to the ruleset, which a read-only observer deliberately does not have. These rows are the reason the gate page does not render an empty bypass column as 'nobody can bypass'.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (rs:github_core__github_ruleset) WHERE rs.data.bypass_observability = \"unobservable\""
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-646f046034fe",
+            "entity_type": "search",
+            "name": "git-serious \u2014 jobs that check out a caller-supplied ref",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious \u2014 jobs that check out a caller-supplied ref",
+            "description": "Declared jobs that pass an explicit `ref:` to actions/checkout. Read together with the job's trigger: a `pull_request_target` workflow checking out the pull request's head runs a contributor's code with the base repository's secrets \u2014 the most-cited shape in the incident corpus.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (j:github_core__workflow_job) WHERE j.data.checkout_ref != \"\""
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-6470ca703f39",
+            "entity_type": "search",
+            "name": "git-serious \u2014 cache entries from outside an observed ref",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious \u2014 cache entries from outside an observed ref",
+            "description": "Stored cache entries with no SCOPED_TO edge, which in practice means the entry was written from a pull-request ref. A cache written outside a branch and restored inside it is the shape five documented compromises share. The NOT EXISTS anti-join needs an edge in the main pattern, hence the HAS_CACHE hop.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (repo:github_core__github_repository)-[e:HAS_CACHE__github_core]->(c:github_core__actions_cache)",
+                "NOT EXISTS { MATCH (c)-[:SCOPED_TO__github_core]->(r:github_core__git_ref) }"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-6471fcd2f025",
+            "entity_type": "panel",
+            "name": "What gates a commit",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "git-serious-gate-rulesets",
+            "name": "What gates a commit",
+            "description": "Every ruleset, what it enforces, and the state of its bypass list.",
+            "view": "tap_web/panels/table_panel.html",
+            "config": {
+              "default_page_size": 100,
+              "quick_filter": true,
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "Ruleset",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.target",
+                  "title": "Targets",
+                  "width": 90
+                },
+                {
+                  "field": "data.enforcement",
+                  "title": "Enforcement",
+                  "width": 120
+                },
+                {
+                  "field": "data.source_type",
+                  "title": "Defined at",
+                  "width": 110
+                },
+                {
+                  "field": "data.bypass_observability",
+                  "title": "Bypass",
+                  "width": 130
+                },
+                {
+                  "field": "data.bypass_actor_count",
+                  "title": "Actors",
+                  "width": 80
+                },
+                {
+                  "field": "data.rules",
+                  "title": "Rules",
+                  "formatter": "json",
+                  "widthGrow": 3,
+                  "tooltip": "full_value"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-6472e3407768",
+            "entity_type": "panel",
+            "name": "Who can bypass \u2014 and what we cannot see",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "git-serious-gate-bypass-unknown",
+            "name": "Who can bypass \u2014 and what we cannot see",
+            "description": "A blank bypass column means one of two very different things. These are the rulesets where it means WE COULD NOT LOOK, not that nobody can bypass.",
+            "view": "tap_web/panels/table_panel.html",
+            "config": {
+              "default_page_size": 50,
+              "quick_filter": true,
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "Ruleset",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.source",
+                  "title": "Owner",
+                  "widthGrow": 1
+                },
+                {
+                  "field": "data.bypass_observability",
+                  "title": "Bypass list",
+                  "width": 140
+                },
+                {
+                  "field": "data.configuration",
+                  "title": "Why",
+                  "formatter": "json",
+                  "widthGrow": 2,
+                  "tooltip": "full_value"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-6473c827762b",
+            "entity_type": "panel",
+            "name": "Jobs that check out a ref they were handed",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "git-serious-gate-checkout-refs",
+            "name": "Jobs that check out a ref they were handed",
+            "description": "The declared side of the pipeline: which jobs check out something other than the commit that triggered them, and what those jobs are permitted to do while they do it.",
+            "view": "tap_web/panels/table_panel.html",
+            "config": {
+              "default_page_size": 50,
+              "quick_filter": true,
+              "columns": [
+                {
+                  "field": "data.full_name",
+                  "title": "Repository",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.workflow_path",
+                  "title": "Workflow",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.job_key",
+                  "title": "Job",
+                  "widthGrow": 1
+                },
+                {
+                  "field": "data.checkout_ref",
+                  "title": "Checks out",
+                  "widthGrow": 3,
+                  "tooltip": "full_value"
+                },
+                {
+                  "field": "data.permissions",
+                  "title": "Permissions",
+                  "formatter": "json",
+                  "widthGrow": 2,
+                  "tooltip": "full_value"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-6474e1a1a2f8",
+            "entity_type": "panel",
+            "name": "Caches written from outside the branch",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "git-serious-gate-foreign-caches",
+            "name": "Caches written from outside the branch",
+            "description": "Cache entries whose ref is not one of the repository's branches or tags \u2014 in practice, written by a pull request. Present because the absence of a ref edge is the signal.",
+            "view": "tap_web/panels/table_panel.html",
+            "config": {
+              "default_page_size": 100,
+              "quick_filter": true,
+              "columns": [
+                {
+                  "field": "data.full_name",
+                  "title": "Repository",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.ref",
+                  "title": "Written from",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.key",
+                  "title": "Key",
+                  "widthGrow": 3,
+                  "tooltip": "full_value"
+                },
+                {
+                  "field": "data.last_accessed_at",
+                  "title": "Last restored",
+                  "formatter": "datetime",
+                  "width": 170
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-6475129961b7",
+            "entity_type": "page",
+            "name": "The gate",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "The gate",
+            "slug": "/git-serious/gate",
+            "nav_weight": 110,
+            "layout": {
+              "columns": {
+                "col-1": {
+                  "width": "1fr",
+                  "rows": {
+                    "row-1": {
+                      "panel-id": "gate",
+                      "height": "auto"
+                    },
+                    "row-2": {
+                      "panel-id": "bypass",
+                      "height": "auto"
+                    },
+                    "row-3": {
+                      "panel-id": "checkout",
+                      "height": "auto"
+                    },
+                    "row-4": {
+                      "panel-id": "caches",
+                      "height": "auto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "edges": [
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-6476ad6b9240",
+            "entity_type": "edge",
+            "name": "Gate panel USES_SEARCH",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6471fcd2f025",
+            "to_entity_id": "01a04571-e211-731b-8db7-646d661f90d7",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-64778d2c1368",
+            "entity_type": "edge",
+            "name": "Bypass panel USES_SEARCH",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6472e3407768",
+            "to_entity_id": "01a04571-e211-731b-8db7-646ea22c5b90",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-64788def2f98",
+            "entity_type": "edge",
+            "name": "Checkout panel USES_SEARCH",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6473c827762b",
+            "to_entity_id": "01a04571-e211-731b-8db7-646f046034fe",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-647978ec8e3e",
+            "entity_type": "edge",
+            "name": "Caches panel USES_SEARCH",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6474e1a1a2f8",
+            "to_entity_id": "01a04571-e211-731b-8db7-6470ca703f39",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-647b000000a1",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL (gate)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6475129961b7",
+            "to_entity_id": "01a04571-e211-731b-8db7-6471fcd2f025",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "gate"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-647b000000a2",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL (bypass)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6475129961b7",
+            "to_entity_id": "01a04571-e211-731b-8db7-6472e3407768",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "bypass"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-647b000000a3",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL (checkout)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6475129961b7",
+            "to_entity_id": "01a04571-e211-731b-8db7-6473c827762b",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "checkout"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a04571-e211-731b-8db7-647b000000a4",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL (caches)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6475129961b7",
+            "to_entity_id": "01a04571-e211-731b-8db7-6474e1a1a2f8",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "caches"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
