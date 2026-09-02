@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Secret-in-code detection
 ----
 RID: `req-git-serious-secret-in-code-detection`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `everyone`

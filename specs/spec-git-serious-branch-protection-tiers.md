@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Branch-protection tiers
 ----
 RID: `req-git-serious-branch-protection-tiers`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `self`

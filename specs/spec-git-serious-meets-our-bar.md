@@ -32,6 +32,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Does this meet our bar
 ----
 RID: `req-git-serious-meets-our-bar`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `self`
@@ -48,6 +49,7 @@ The instance scores every repository of the observed account against a stated se
 ### Principles with executable expressions, evaluated against config and operation
 ----
 RID: `req-git-serious-meets-our-bar-executable-principles`
+
 Status: `Proposed`
 Feature: `improvement`
 Milestone: `self`

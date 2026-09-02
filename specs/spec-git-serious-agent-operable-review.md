@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Agent-operable review — the third player reads the graph
 ----
 RID: `req-git-serious-agent-operable-review`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `everyone`

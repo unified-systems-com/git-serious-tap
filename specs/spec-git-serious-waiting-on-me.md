@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### What is waiting on me
 ----
 RID: `req-git-serious-waiting-on-me`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `everyone`

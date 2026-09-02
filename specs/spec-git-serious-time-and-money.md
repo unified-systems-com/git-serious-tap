@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Time and money
 ----
 RID: `req-git-serious-time-and-money`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `friends`
