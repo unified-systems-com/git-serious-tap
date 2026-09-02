@@ -41,6 +41,6 @@ The instance carries per-workflow lint findings from at least one established sc
 
 | ACID | Title | Status | Description | Notes |
 | --- | --- | :---: | --- | --- |
-| req-git-serious-workflow-lint-findings-1 | Scanner Findings On The Graph | Proposed | After a collection run, a workflow that a scanner flags carries a finding node naming the scanner and rule, reachable from the workflow node; a workflow the scanner did not evaluate carries no finding and is marked as not scanned. | The done-test: the feature's Status flips only when this is OBSERVED on a running instance. |
+| req-git-serious-workflow-lint-findings-1 | Scanner Findings On The Graph | Proposed | After a collection run, a workflow that a scanner flags carries a finding node naming the scanner and rule, reachable from the workflow node; a workflow the scanner did not evaluate carries no finding and renders as *not observed* by that scanner — never as clean. | The done-test: the feature's Status flips only when this is OBSERVED on a running instance. |
 
 ---
