@@ -16,6 +16,7 @@
  */
 
 import {projectNested} from "/static/tap_viz/js/runtime/nested-projection.js";
+import {applyStandardChrome, placeParentLabels, parentLabelInset} from "/static/tap_viz/js/runtime/chrome.js";
 
 const T = {
     platform: "github_core__github_platform",
@@ -63,19 +64,12 @@ export async function execute(context) {
     // Edge-type labels are noise at this altitude: containment carries the
     // structure and the only free-standing edges are the apps' ENABLED_ON
     // lines, whose meaning is the line itself.
-    cy.style()
-        // Edge labels off; edges drawn ABOVE the compound boxes — with every node
-        // inside the opaque github.com container the default edge depth would
-        // paint the apps' ENABLED_ON lines underneath it.
-        .selector("edge")
-        .style({label: "", "z-compound-depth": "top", "z-index": 1})
-        .selector("node")
-        .style({"font-size": "14px"})
-        .selector(".tap-viewport-parent")
-        .style({"font-size": "15px", "font-weight": "600", "text-margin-y": 8})
-        .selector(`node[entity_type = "${T.workflow}"], node[entity_type = "${T.app}"], node[entity_type = "${T.runner}"]`)
-        .style({"font-size": "14px", "text-wrap": "ellipsis", "text-max-width": "170px", "text-valign": "center", "text-halign": "center"})
-        .update();
+    // Label sizing and container chrome are the shared conventions
+    // (tap_viz runtime/chrome.js, which took this view's numbers): edge
+    // labels off and edges above the boxes, 14px nodes, 15px/600 parents,
+    // centred + ellipsised leaves.
+    const chrome = applyStandardChrome(cy, {leafTypes: [T.workflow, T.app, T.runner, T.repository], leafMaxWidth: 170});
+    const labelInset = parentLabelInset(chrome);
 
     // Repositories sit inside their owner's box, so the "owner/" prefix on
     // every label is redundant and is what pushed the long names past their
@@ -107,7 +101,13 @@ export async function execute(context) {
         ],
         baseSizes: BASE_SIZES,
         padding: 14,
-        paddings: {[T.account]: 34, [T.platform]: 40},
+        // Containers reserve their label's height on top; labels are anchored
+        // upper-left after sizing.
+        paddings: {
+            [T.platform]: {top: 40 + labelInset, right: 40, bottom: 40, left: 40},
+            [T.account]: {top: 24 + labelInset, right: 34, bottom: 34, left: 34},
+            [T.repository]: {top: 4 + labelInset, right: 14, bottom: 14, left: 14},
+        },
         // github.com is the one root. Inside it the account box sits above
         // the apps row (tiers); repositories tile inside the account;
         // workflows tile inside their repository.
@@ -127,6 +127,8 @@ export async function execute(context) {
             [T.repository]: {name: "grid", spacing: 1.1},
         },
     });
+
+    placeParentLabels(cy, {anchor: "upper-left", inset: 8, parentFontSize: chrome.parentFontSize, parentFontWeight: chrome.parentFontWeight});
 
     // Framing on initial load is owned by the projection runtime (it fits
     // after badges are placed); re-entries keep the viewer's viewport.
