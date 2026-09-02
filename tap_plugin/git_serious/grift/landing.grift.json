@@ -6,15 +6,15 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a0632f-738b-739e-a69a-d26574b25138",
+        "entity_id": "01a0632f-738b-739e-a69a-d266456bf071",
         "entity_type": "batch",
-        "name": "git-serious landing v0.5.0",
+        "name": "git-serious landing v0.5.1",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.landing",
-        "name": "git-serious landing v0.5.0",
-        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. v0.4.0 tightens the wall's columns: the trigger as a glyph first (CI-universal trigger icons TAP ships, mapped from GitHub's event vocabulary), the run number links to the run on GitHub, the branch links to the repository's branch page, and an Elapsed column is derived from started/completed — the GitHub URL column is gone. v0.5.0: the page scrolls — the graph keeps 75vh, the tables take their own fixed heights (640 / 360 px, Tabulator-owned scroll with a sticky header) so the reader scrolls down to them; Elapsed carries the run's ratio to the median of the other loaded runs of the same workflow and trigger (successful runs as the baseline, three states: outlier / within / not enough history). Re-publish of v0.4.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved."
+        "name": "git-serious landing v0.5.1",
+        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. v0.4.0 tightens the wall's columns: the trigger as a glyph first (CI-universal trigger icons TAP ships, mapped from GitHub's event vocabulary), the run number links to the run on GitHub, the branch links to the repository's branch page, and an Elapsed column is derived from started/completed — the GitHub URL column is gone. v0.5.0: the page scrolls — the graph keeps 75vh, the tables take their own fixed heights (640 / 360 px, Tabulator-owned scroll with a sticky header) so the reader scrolls down to them; Elapsed carries the run's ratio to the median of the other loaded runs of the same workflow and trigger (successful runs as the baseline, three states: outlier / within / not enough history). v0.5.1: a `history` link on every wall row to the workflow page (/git-serious/workflow?workflow_id=…, req-git-serious-workflow-page-4). Re-publish of v0.5.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved."
       },
       "nodes": [
         {
@@ -484,6 +484,18 @@
                       "flag_ratio": 1.5,
                       "mad_k": 3
                     }
+                  }
+                },
+                {
+                  "field": "data.configuration.workflow_id",
+                  "title": "History",
+                  "width": 90,
+                  "headerSort": false,
+                  "formatter": "link",
+                  "formatter_params": {
+                    "href_template": "/git-serious/workflow?workflow_id={data.configuration.workflow_id}",
+                    "text": "history",
+                    "external": false
                   }
                 }
               ],
