@@ -1,0 +1,398 @@
+{
+  "metadata": {
+    "grift_version": "0"
+  },
+  "_reserved": {},
+  "batches": [
+    {
+      "batch_entity": {
+        "entity_id": "01a063cc-47af-77a8-a428-f81f2b5008a8",
+        "entity_type": "batch",
+        "name": "git-serious workflow page v0.1.0",
+        "dimensions": {}
+      },
+      "batch_node": {
+        "source": "plugins.git_serious.grift.workflow",
+        "name": "git-serious workflow page v0.1.0",
+        "description": "First light of the workflow-level view (spec-git-serious-workflow-page; the surface where reliability history and time-and-money land): one workflow, its runs over the collected window, and — at the top — a placeholder for the workflow's machinery (github_core's machinery projection scoped to one workflow, github-core#28/#35). Parameterised by ?workflow_id=<GitHub numeric id>; both searches declare it as an integer input and the panels coerce it from the URL. v0.1.0 ships the identity row, the runs table with trigger glyph, links, conclusion, Elapsed and the per-trigger outlier ratio; the sparkline, queue time and attempts wait on the collector (github-core#34, #46, #47)."
+      },
+      "nodes": [
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f824359acd9f",
+            "entity_type": "search",
+            "name": "git-serious — workflow by id",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — workflow by id",
+            "description": "The workflow the page is about: github_workflow by GitHub's numeric workflow_id (?workflow_id=…). Envelope mode so the identity table receives the node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (w:github_core__github_workflow)",
+                "WHERE w.data.workflow_id = $workflow_id",
+                "RETURN w"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "workflow_id": {
+                  "type": "integer",
+                  "description": "GitHub's numeric workflow id (github_workflow.workflow_id), from the page URL ?workflow_id=…"
+                }
+              },
+              "required": [
+                "workflow_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f8256cb1caa0",
+            "entity_type": "search",
+            "name": "git-serious — runs of a workflow, newest first",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — runs of a workflow, newest first",
+            "description": "Every collected run of one workflow, newest first, by the run's configuration.workflow_id (a type-scan — ORDER BY is not allowed on traversal patterns in v0, and the run node carries the workflow id). Covers the collected window (github-core#34 widens it to a month per workflow).",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_actions_run)",
+                "WHERE r.data.configuration.workflow_id = $workflow_id",
+                "RETURN r",
+                "ORDER BY r.data.run_started_at DESC"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "workflow_id": {
+                  "type": "integer",
+                  "description": "GitHub's numeric workflow id (github_workflow.workflow_id), from the page URL ?workflow_id=…"
+                }
+              },
+              "required": [
+                "workflow_id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f82150fbb944",
+            "entity_type": "panel",
+            "name": "This workflow's machinery",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "This workflow's machinery",
+            "slug": "git-serious-workflow-machinery",
+            "description": "PLACEHOLDER — the machinery view of this one workflow: its declared jobs and their needs-edges, the actions and reusable workflows they use, the environments and secrets they touch, with the latest run's job conclusions painted on. This is github_core's machinery projection (spec-github-core-machinery-projection, github-core#28) scoped to one workflow instead of one repository; it lands here when that module ships (git-serious-tap#35).",
+            "view": "tap_web/panels/text_panel.html",
+            "config": {
+              "text": "Machinery view of this workflow — coming from github_core's machinery projection scoped to one workflow (github-core#28, git-serious-tap#35). Declared jobs and their needs-edges, the actions and reusable workflows they use, environments and secrets, with the latest run's job conclusions painted on."
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f82207349f01",
+            "entity_type": "panel",
+            "name": "Workflow",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "Workflow",
+            "slug": "git-serious-workflow-identity",
+            "description": "The workflow this page is about.",
+            "view": "tap_web/panels/table_panel.html",
+            "config": {
+              "default_page_size": 5,
+              "columns": [
+                {
+                  "field": "data.full_name",
+                  "title": "Repository",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.name",
+                  "title": "Workflow",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.path",
+                  "title": "Path",
+                  "widthGrow": 2,
+                  "tooltip": "full_value"
+                },
+                {
+                  "field": "data.state",
+                  "title": "State",
+                  "width": 100
+                },
+                {
+                  "field": "data.html_url",
+                  "title": "GitHub",
+                  "formatter": "externalLink",
+                  "widthGrow": 2
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f823285eab29",
+            "entity_type": "panel",
+            "name": "Runs",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "Runs",
+            "slug": "git-serious-workflow-runs",
+            "description": "Every collected run of this workflow, newest first. Elapsed carries the ratio to the median of the other successful runs with the same trigger; ▲ is slower than the workflow's own baseline, ▼ faster, n=<k> when history is thin. The window is what the collector has gathered — a month per workflow once github-core#34 lands.",
+            "view": "tap_web/panels/table_panel.html",
+            "config": {
+              "default_page_size": 200,
+              "quick_filter": true,
+              "height": 640,
+              "columns": [
+                {
+                  "field": "data.event",
+                  "title": "",
+                  "width": 40,
+                  "headerSort": false,
+                  "formatter": "iconMap",
+                  "formatter_params": {
+                    "icons": {
+                      "push": "/static/tap_web/icons/trigger-push.svg",
+                      "pull_request": "/static/tap_web/icons/trigger-pull-request.svg",
+                      "pull_request_target": "/static/tap_web/icons/trigger-pull-request.svg",
+                      "schedule": "/static/tap_web/icons/trigger-schedule.svg",
+                      "workflow_dispatch": "/static/tap_web/icons/trigger-manual.svg",
+                      "workflow_run": "/static/tap_web/icons/trigger-chained.svg",
+                      "workflow_call": "/static/tap_web/icons/trigger-chained.svg",
+                      "dynamic": "/static/tap_web/icons/trigger-platform.svg",
+                      "repository_dispatch": "/static/tap_web/icons/trigger-manual.svg"
+                    },
+                    "labels": {
+                      "push": "push",
+                      "pull_request": "pull request",
+                      "pull_request_target": "pull request (target)",
+                      "schedule": "schedule",
+                      "workflow_dispatch": "manual dispatch",
+                      "workflow_run": "chained off another run",
+                      "workflow_call": "called by another workflow",
+                      "dynamic": "platform-originated (CodeQL, Copilot, Dependabot…)",
+                      "repository_dispatch": "repository dispatch"
+                    }
+                  }
+                },
+                {
+                  "field": "data.run_number",
+                  "title": "Run",
+                  "width": 80,
+                  "formatter": "link",
+                  "formatter_params": {
+                    "href_field": "data.html_url"
+                  }
+                },
+                {
+                  "field": "data.head_branch",
+                  "title": "Branch",
+                  "widthGrow": 2,
+                  "tooltip": "full_value",
+                  "formatter": "link",
+                  "formatter_params": {
+                    "href_template": "https://github.com/{data.full_name}/tree/{data.head_branch}"
+                  }
+                },
+                {
+                  "field": "data.conclusion",
+                  "title": "Conclusion",
+                  "formatter": "conclusionBadge",
+                  "width": 120
+                },
+                {
+                  "field": "data.run_started_at",
+                  "title": "Started",
+                  "formatter": "datetime",
+                  "widthGrow": 1
+                },
+                {
+                  "field": "data.completed_at",
+                  "title": "Completed",
+                  "formatter": "datetime",
+                  "widthGrow": 1
+                },
+                {
+                  "field": "data.completed_at",
+                  "title": "Elapsed",
+                  "formatter": "elapsed",
+                  "width": 130,
+                  "formatter_params": {
+                    "start": "data.run_started_at",
+                    "end": "data.completed_at",
+                    "baseline": {
+                      "group_by": [
+                        "data.event"
+                      ],
+                      "where": {
+                        "data.conclusion": "success"
+                      },
+                      "min_n": 3,
+                      "flag_ratio": 1.5,
+                      "mad_k": 3
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f82077de1a8b",
+            "entity_type": "page",
+            "name": "git-serious workflow",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "git-serious workflow",
+            "slug": "/git-serious/workflow",
+            "description": "One workflow across its runs: identity, machinery (placeholder), runs. Parameterised by ?workflow_id=<GitHub numeric workflow id>.",
+            "layout": {
+              "full_bleed": true,
+              "columns": {
+                "col-1": {
+                  "width": "1fr",
+                  "rows": {
+                    "row-1": {
+                      "panel-id": "machinery",
+                      "height": "auto"
+                    },
+                    "row-2": {
+                      "panel-id": "workflow",
+                      "height": "auto"
+                    },
+                    "row-3": {
+                      "panel-id": "runs",
+                      "height": "auto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "edges": [
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f826822bc78f",
+            "entity_type": "edge",
+            "name": "Workflow panel USES_SEARCH workflow by id",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a063cc-47af-77a8-a428-f82207349f01",
+            "to_entity_id": "01a063cc-47af-77a8-a428-f824359acd9f",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f827d35cfaee",
+            "entity_type": "edge",
+            "name": "Runs panel USES_SEARCH runs of a workflow",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a063cc-47af-77a8-a428-f823285eab29",
+            "to_entity_id": "01a063cc-47af-77a8-a428-f8256cb1caa0",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f8289ac1a9e2",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL machinery",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a063cc-47af-77a8-a428-f82077de1a8b",
+            "to_entity_id": "01a063cc-47af-77a8-a428-f82150fbb944",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "machinery"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f829ecc5d235",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL workflow",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a063cc-47af-77a8-a428-f82077de1a8b",
+            "to_entity_id": "01a063cc-47af-77a8-a428-f82207349f01",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "workflow"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a063cc-47af-77a8-a428-f82a9b537dc8",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL runs",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a063cc-47af-77a8-a428-f82077de1a8b",
+            "to_entity_id": "01a063cc-47af-77a8-a428-f823285eab29",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "runs"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
