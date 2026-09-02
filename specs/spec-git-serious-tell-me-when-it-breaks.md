@@ -17,7 +17,7 @@ Governing step: `step-products-git-serious-self` in `plan/road-products.md` (tap
 
 ## Prior Art
 
-Overlay survey, feature **09 · Tell me when it breaks** — [`doc-git-serious-overlay-consensus.md`](../docs/doc-git-serious-overlay-consensus.md) (§The nine; the coverage matrix places it by category). Built by effectively every tool named incumbents, listed there. Axis: **operations** — this is a legibility feature first, not a security feature (register item 12, *more than security*).
+Overlay survey, feature **09 · Tell me when it breaks** — [`doc-git-serious-overlay-consensus.md`](../docs/doc-git-serious-overlay-consensus.md) (§The nine; the coverage matrix places it by category). Built by effectively every tool in the survey, in some form. Axis: **operations** — this is a legibility feature first, not a security feature (register item 12, *more than security*).
 
 Provenance of every claim in this skeleton: **documented** (drawn from the sources above) unless
 marked *observed* or *inferred* (tap#206's provenance markers).
