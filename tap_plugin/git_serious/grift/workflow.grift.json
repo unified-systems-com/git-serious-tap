@@ -6,14 +6,14 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a06404-6600-76b5-9ebe-4a5e52440684",
+        "entity_id": "01a06406-c450-7211-8d87-f7fa01222a3c",
         "entity_type": "batch",
-        "name": "git-serious workflow page v0.1.1",
+        "name": "git-serious workflow page v0.1.2",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.workflow",
-        "name": "git-serious workflow page v0.1.1",
+        "name": "git-serious workflow page v0.1.2",
         "description": "First light of the workflow-level view (spec-git-serious-workflow-page; the surface where reliability history and time-and-money land): one workflow, its runs over the collected window, and — at the top — a placeholder for the workflow's machinery (github_core's machinery projection scoped to one workflow, github-core#28/#35). Parameterised by ?workflow_id=<GitHub numeric id>; both searches declare it as an integer input and the panels coerce it from the URL. v0.1.0 ships the identity row, the runs table with trigger glyph, links, conclusion, Elapsed and the per-trigger outlier ratio; the sparkline, queue time and attempts wait on the collector (github-core#34, #46, #47)."
       },
       "nodes": [
@@ -125,7 +125,8 @@
                 {
                   "field": "data.full_name",
                   "title": "Repository",
-                  "widthGrow": 2
+                  "widthGrow": 2,
+                  "formatter": "tailSegment"
                 },
                 {
                   "field": "data.name",
@@ -201,7 +202,8 @@
                       "dynamic": "platform-originated (CodeQL, Copilot, Dependabot…)",
                       "repository_dispatch": "repository dispatch"
                     }
-                  }
+                  },
+                  "header_tooltip": "Trigger — what started the run. Hover a glyph for its name."
                 },
                 {
                   "field": "data.run_number",
@@ -210,7 +212,8 @@
                   "formatter": "link",
                   "formatter_params": {
                     "href_field": "data.html_url"
-                  }
+                  },
+                  "header_tooltip": "GitHub's run number within the repository. Opens the run on GitHub."
                 },
                 {
                   "field": "data.head_branch",
@@ -220,13 +223,15 @@
                   "formatter": "link",
                   "formatter_params": {
                     "href_template": "https://github.com/{data.full_name}/tree/{data.head_branch}"
-                  }
+                  },
+                  "header_tooltip": "The branch or ref the run built. Opens the branch on GitHub."
                 },
                 {
                   "field": "data.conclusion",
                   "title": "Conclusion",
                   "formatter": "conclusionBadge",
-                  "width": 120
+                  "width": 120,
+                  "header_tooltip": "GitHub's terminal conclusion. A dash means the run has not concluded."
                 },
                 {
                   "field": "data.completed_at",
@@ -237,7 +242,8 @@
                     "start": "data.run_started_at",
                     "end": "data.completed_at",
                     "require_field": "data.conclusion"
-                  }
+                  },
+                  "header_tooltip": "Wall-clock time from run start to completion. A dash means the run has not concluded."
                 },
                 {
                   "field": "data.completed_at",
@@ -259,7 +265,8 @@
                       "flag_ratio": 1.5,
                       "mad_k": 3
                     }
-                  }
+                  },
+                  "header_tooltip": "This run's elapsed over the median of this workflow's other successful runs with the same trigger. ▲ slower, ▼ faster, plain = within, – = not enough history (see n)."
                 },
                 {
                   "field": "data.completed_at",
@@ -281,21 +288,25 @@
                       "flag_ratio": 1.5,
                       "mad_k": 3
                     }
-                  }
+                  },
+                  "header_tooltip": "Comparable runs (same trigger, successful) loaded on this page to form the baseline; grey below 3."
                 },
                 {
                   "field": "data.run_started_at",
                   "title": "Started",
                   "formatter": "datetime",
-                  "widthGrow": 1
+                  "widthGrow": 1,
+                  "header_tooltip": "When the run started, in your local time. Hover for UTC."
                 },
                 {
                   "field": "data.completed_at",
                   "title": "Completed",
                   "formatter": "datetime",
-                  "widthGrow": 1
+                  "widthGrow": 1,
+                  "header_tooltip": "When the run completed, in your local time. Hover for UTC."
                 }
-              ]
+              ],
+              "refresh_seconds": 60
             }
           }
         },
