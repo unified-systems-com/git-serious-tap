@@ -1,0 +1,441 @@
+{
+  "metadata": {
+    "grift_version": "0"
+  },
+  "_reserved": {},
+  "batches": [
+    {
+      "batch_entity": {
+        "entity_id": "01a06316-280e-7762-8a41-3f700c77f47b",
+        "entity_type": "batch",
+        "name": "git-serious org view v0.1.0",
+        "dimensions": {}
+      },
+      "batch_node": {
+        "source": "plugins.git_serious.grift.org",
+        "name": "git-serious org view v0.1.0",
+        "description": "The organization-level view, split out of the landing bundle 2026-09-02 so the landing can be refactored toward the TAP machinery while this picture keeps evolving on its own: the observed account's CI/CD system as containment — account ⊃ repositories ⊃ workflows — with the platform above and the GitHub Apps + Actions OIDC issuer below, and the status wall riding the workflow cards as badges (red = failed runs in the collected window, grey = no run observed). A full copy of landing v0.2.0 with fresh ids and its own layout module (static/git_serious/js/projections/org.js): no entity is shared with the landing bundle, so the two pages diverge without coupling."
+      },
+      "nodes": [
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f71b704f0f5",
+            "entity_type": "search",
+            "name": "git-serious org — CI/CD system nodes",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious org — CI/CD system nodes",
+            "description": "Gryphon: every github_core node type that belongs on the account-level picture (platform, account, repository, workflow, app, runner) plus the identity_core OIDC issuer github mints. Explicit per-label MATCHes: github_core carries no tag dimension, so there is nothing for a bare MATCH (n) to key on.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (n0:github_core__github_platform)",
+                "MATCH (n1:github_core__github_account)",
+                "MATCH (n2:github_core__github_repository)",
+                "MATCH (n3:github_core__github_workflow)",
+                "MATCH (n4:github_core__github_app)",
+                "MATCH (n5:github_core__github_runner)",
+                "MATCH (oi:identity_core__oidc_issuer)"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f724177e48b",
+            "entity_type": "search",
+            "name": "git-serious org — all edges (graph_panel filters by node-set)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious org — all edges (graph_panel filters by node-set)",
+            "description": "All edges; the graph panel keeps only those whose endpoints are in the matched node-set (tap_viz panel-graph.js).",
+            "search_type": "orm",
+            "root": "edge",
+            "definition": {
+              "filters": {},
+              "order_by": [
+                "edge_type"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f7308146e59",
+            "entity_type": "search",
+            "name": "git-serious org — failed runs per workflow (count)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious org — failed runs per workflow (count)",
+            "description": "Status-badge population (rows of entity_id + count): for each workflow, how many of the runs github_core collected concluded `failure`. Counts the collected window, not all of history; a workflow with no row has no failed run in that window — which is not the same as no run at all (see the no-run-observed search).",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_actions_run)-[e:EXECUTES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "WHERE r.data.conclusion = \"failure\"",
+                "RETURN w.entity_id AS entity_id, COUNT(r.entity_id) AS count"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f745cde8cdc",
+            "entity_type": "search",
+            "name": "git-serious org — failed runs per workflow (detail)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious org — failed runs per workflow (detail)",
+            "description": "Info-window rows (entity_id + name) for the failed-runs badge: the branch each failed run was on, so the window reads as *which branch is red*, not a run number.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_actions_run)-[e:EXECUTES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "WHERE r.data.conclusion = \"failure\"",
+                "RETURN w.entity_id AS entity_id, r.data.head_branch AS name"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f75f95a9ea8",
+            "entity_type": "search",
+            "name": "git-serious org — workflows with no run observed (count)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious org — workflows with no run observed (count)",
+            "description": "Status-badge population for the third state: workflows github_core collected NO run for. Absence of a run edge is the signal; rendering these as plain green cards would report 'passing' on no evidence (presence is not correctness). The NOT EXISTS anti-join hangs off DEFINES_WORKFLOW because Gryphon needs an edge in the main pattern.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (repo:github_core__github_repository)-[e:DEFINES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "NOT EXISTS { MATCH (r:github_core__github_actions_run)-[:EXECUTES_WORKFLOW__github_core]->(w) }",
+                "RETURN w.entity_id AS entity_id, COUNT(w.entity_id) AS count"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f7659ac952a",
+            "entity_type": "search",
+            "name": "git-serious org — workflows with no run observed (detail)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious org — workflows with no run observed (detail)",
+            "description": "Info-window rows for the no-run-observed badge: the workflow file path, so the window names what was not observed.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (repo:github_core__github_repository)-[e:DEFINES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "NOT EXISTS { MATCH (r:github_core__github_actions_run)-[:EXECUTES_WORKFLOW__github_core]->(w) }",
+                "RETURN w.entity_id AS entity_id, w.data.path AS name"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f779ace198c",
+            "entity_type": "layout",
+            "name": "git-serious-org-layout",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious-org-layout",
+            "description": "Layout module + no arrangements: static/git_serious/js/projections/org.js nests workflows in their repository and repositories in the account (projectNested), tiers the roots platform / account / apps, and silences edge-type labels. Arrangements are unnecessary once structure is drawn as containment.",
+            "definition": {
+              "js_file": "tap_plugin/git_serious/static/git_serious/js/projections/org.js",
+              "arrangements": []
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f78c2b4dce1",
+            "entity_type": "elevation",
+            "name": "git-serious-org-elevation",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious-org-elevation",
+            "description": "Single elevation: the account's CI/CD system at a glance.",
+            "definition": {
+              "zoom": 1.0,
+              "description": "The observed account's CI/CD system.",
+              "layouts": [
+                "01a06316-280e-7762-8a41-3f779ace198c"
+              ],
+              "double_tap_targets": []
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f79e78a4fde",
+            "entity_type": "projection",
+            "name": "git-serious-org-projection",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious-org-projection",
+            "description": "git-serious org projection — one elevation; icon-badge nodes; status badges carry the status wall (failed runs / no run observed).",
+            "definition": {
+              "node_style": {
+                "mode": "icon-badge"
+              },
+              "elevations": [
+                "01a06316-280e-7762-8a41-3f78c2b4dce1"
+              ],
+              "default_elevation_id": "01a06316-280e-7762-8a41-3f78c2b4dce1",
+              "min_zoom": "fit",
+              "status_badges": {
+                "refresh_seconds": 120,
+                "badge_sets": [
+                  {
+                    "name": "failed-runs",
+                    "label": "Failed runs in the collected window",
+                    "color": "#CF222E",
+                    "text_color": "#FFFFFF",
+                    "population": {
+                      "type": "search",
+                      "search_id": "01a06316-280e-7762-8a41-3f7308146e59"
+                    },
+                    "info_window": {
+                      "search_id": "01a06316-280e-7762-8a41-3f745cde8cdc"
+                    }
+                  },
+                  {
+                    "name": "no-run-observed",
+                    "label": "No run observed for this workflow",
+                    "color": "#6E7781",
+                    "text_color": "#FFFFFF",
+                    "population": {
+                      "type": "search",
+                      "search_id": "01a06316-280e-7762-8a41-3f75f95a9ea8"
+                    },
+                    "info_window": {
+                      "search_id": "01a06316-280e-7762-8a41-3f7659ac952a"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f7a7f660243",
+            "entity_type": "panel",
+            "name": "git-serious Org Graph",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "git-serious-org-graph",
+            "name": "git-serious Org Graph",
+            "description": "The account's CI/CD system as a graph. GitHub nodes open their html_url in a new tab.",
+            "view": "tap_viz/panels/graph_panel.html",
+            "config": {
+              "height": "100%",
+              "hide_header": true,
+              "nav_rules": [
+                {
+                  "entity_type": "github_core__github_platform",
+                  "url_field": "html_url",
+                  "external": true
+                },
+                {
+                  "entity_type": "github_core__github_account",
+                  "url_field": "html_url",
+                  "external": true
+                },
+                {
+                  "entity_type": "github_core__github_repository",
+                  "url_field": "html_url",
+                  "external": true
+                },
+                {
+                  "entity_type": "github_core__github_workflow",
+                  "url_field": "html_url",
+                  "external": true
+                },
+                {
+                  "entity_type": "github_core__github_app",
+                  "url_field": "html_url",
+                  "external": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f7b0f5da41a",
+            "entity_type": "page",
+            "name": "Organization",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "Organization",
+            "slug": "/git-serious/org",
+            "nav_weight": 105,
+            "layout": {
+              "full_bleed": true,
+              "columns": {
+                "col-1": {
+                  "width": "1fr",
+                  "rows": {
+                    "row-1": {
+                      "panel-id": "main",
+                      "height": "1fr"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "edges": [
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f7ca1a0976f",
+            "entity_type": "edge",
+            "name": "Panel USES_SEARCH (nodes seed)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a06316-280e-7762-8a41-3f7a7f660243",
+            "to_entity_id": "01a06316-280e-7762-8a41-3f71b704f0f5",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f7ddf982d83",
+            "entity_type": "edge",
+            "name": "Panel USES_SEARCH (edges seed)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a06316-280e-7762-8a41-3f7a7f660243",
+            "to_entity_id": "01a06316-280e-7762-8a41-3f724177e48b",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f7ecc7e68c9",
+            "entity_type": "edge",
+            "name": "Panel USES_PROJECTION git-serious-org-projection",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a06316-280e-7762-8a41-3f7a7f660243",
+            "to_entity_id": "01a06316-280e-7762-8a41-3f79e78a4fde",
+            "edge_type": "USES_PROJECTION",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f7fda917126",
+            "entity_type": "edge",
+            "name": "Projection USES_ELEVATION git-serious-org-elevation",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a06316-280e-7762-8a41-3f79e78a4fde",
+            "to_entity_id": "01a06316-280e-7762-8a41-3f78c2b4dce1",
+            "edge_type": "USES_ELEVATION",
+            "properties": {
+              "hotlink": {
+                "model": "projection",
+                "spec": "projection-elevations",
+                "value": "01a06316-280e-7762-8a41-3f78c2b4dce1"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f805ba0fb56",
+            "entity_type": "edge",
+            "name": "Projection USES_DEFAULT_ELEVATION git-serious-org-elevation",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a06316-280e-7762-8a41-3f79e78a4fde",
+            "to_entity_id": "01a06316-280e-7762-8a41-3f78c2b4dce1",
+            "edge_type": "USES_DEFAULT_ELEVATION",
+            "properties": {
+              "hotlink": {
+                "model": "projection",
+                "spec": "projection-default-elevation",
+                "value": "01a06316-280e-7762-8a41-3f78c2b4dce1"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f81e9716ddd",
+            "entity_type": "edge",
+            "name": "Elevation USES_LAYOUT git-serious-org-layout",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a06316-280e-7762-8a41-3f78c2b4dce1",
+            "to_entity_id": "01a06316-280e-7762-8a41-3f779ace198c",
+            "edge_type": "USES_LAYOUT",
+            "properties": {
+              "hotlink": {
+                "model": "elevation",
+                "spec": "elevation-layouts",
+                "value": "01a06316-280e-7762-8a41-3f779ace198c"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a06316-280e-7762-8a41-3f82e730d498",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL git-serious Org Graph",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a06316-280e-7762-8a41-3f7b0f5da41a",
+            "to_entity_id": "01a06316-280e-7762-8a41-3f7a7f660243",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "main"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
