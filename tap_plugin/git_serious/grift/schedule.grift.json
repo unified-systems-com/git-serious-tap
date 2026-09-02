@@ -6,7 +6,7 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "",
+        "entity_id": "01a0640b-3df5-7121-9da6-1f4cfc8176e4",
         "entity_type": "batch",
         "name": "git-serious collector schedule v0.1.0",
         "dimensions": {}
