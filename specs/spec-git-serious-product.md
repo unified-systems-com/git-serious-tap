@@ -125,7 +125,7 @@ prior art §6 item; **R** = impressions register item; **A** = day-one audit sec
 
 | Improvement | In spec | Milestone | Status | Verification |
 | --- | --- | :---: | :---: | --- |
-| Criticality sort and the not-observed state | status-wall | self | Proposed | unfilled |
+| Criticality sort and the not-observable state | status-wall | self | Proposed | unfilled |
 | When it became flaky, not that it is | reliability-history | friends | Proposed | unfilled |
 | The ruleset → check → workflow chain | why-not-merging | self | Proposed | unfilled |
 | Collected, not declared, so it cannot rot | who-owns-this | friends | Proposed | unfilled |

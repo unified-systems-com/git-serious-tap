@@ -27,7 +27,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
 | req-git-serious-status-wall | [The status wall](#the-status-wall) | Proposed | Table-stakes (built by 6 named incumbents; overlay survey #01) |
-| req-git-serious-status-wall-criticality | [Criticality sort and the not-observed state](#criticality-sort-and-the-not-observed-state) | Proposed | Improvement — the switching argument (tap#211 sketch); four fields, verification unfilled |
+| req-git-serious-status-wall-criticality | [Criticality sort and the not-observable state](#criticality-sort-and-the-not-observable-state) | Proposed | Improvement — the switching argument (tap#211 sketch); four fields, verification unfilled |
 
 ### The status wall
 ----
@@ -45,7 +45,7 @@ One page lists the latest run of every workflow across every repository of the o
 | req-git-serious-status-wall-1 | Every Repository, One Glance | Proposed | On an instance observing an account with N repositories, the wall shows the latest run of every workflow in all N without a per-repository action, and a repository with no runs collected renders as *not observed*, never as absent or green. | The done-test: the feature's Status flips only when this is OBSERVED on a running instance. |
 
 ---
-### Criticality sort and the not-observed state
+### Criticality sort and the not-observable state
 ----
 RID: `req-git-serious-status-wall-criticality`
 Status: `Proposed`
