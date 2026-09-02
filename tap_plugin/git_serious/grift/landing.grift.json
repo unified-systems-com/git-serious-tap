@@ -6,39 +6,52 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a0632f-738b-739e-a69a-d264de16574f",
+        "entity_id": "01a06351-ffed-724b-a104-561408557d1e",
         "entity_type": "batch",
-        "name": "git-serious landing v0.3.0",
+        "name": "git-serious landing v0.4.0",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.landing",
-        "name": "git-serious landing v0.3.0",
-        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. Re-publish of v0.2.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved."
+        "name": "git-serious landing v0.4.0",
+        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. Re-publish of v0.2.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved. v0.4.0 (2026-09-02): the landing graph IS the machinery view of the primary repository (github_core's machinery projection module; git-serious-tap#35) — the account-wide picture lives on /git-serious/org. Node upserts only: the layout's js_file, the projection's `machinery` key, and the node search's scoped query; edges are untouched because the importer keys an edge on its endpoints. The status-wall tables beneath are unchanged."
       },
       "nodes": [
         {
           "entity": {
             "entity_id": "01a03f78-11fa-7029-823d-7944e18dd24a",
             "entity_type": "search",
-            "name": "git-serious — CI/CD system nodes",
+            "name": "git-serious — machinery scene nodes (one repository)",
             "dimensions": {}
           },
           "node": {
-            "name": "git-serious — CI/CD system nodes",
-            "description": "Gryphon: every github_core node type that belongs on the account-level picture (platform, account, repository, workflow, app, runner) plus the identity_core OIDC issuer github mints. Explicit per-label MATCHes: github_core carries no tag dimension, so there is nothing for a bare MATCH (n) to key on.",
+            "name": "git-serious — machinery scene nodes (one repository)",
+            "description": "Gryphon, one global WHERE scoped per variable: github.com + the account (unfiltered, one each), and the selected repository's row, workflows, declared jobs and refs by `full_name = $repo`; environments, rulesets and apps unfiltered because their attachment is an edge (HAS_ENVIRONMENT, PROTECTS, ENABLED_ON) and the layout module hides any no repository in the scene owns. `$repo` comes from the page URL (?repo=owner/name) and defaults to the primary repository (input_schema default; req-grid-search-obj-5-2) until the boot profile names it (git-serious-tap#18).",
             "search_type": "gryphon",
             "root": "node",
             "definition": {
               "query": [
-                "MATCH (n0:github_core__github_platform)",
-                "MATCH (n1:github_core__github_account)",
-                "MATCH (n2:github_core__github_repository)",
-                "MATCH (n3:github_core__github_workflow)",
-                "MATCH (n4:github_core__github_app)",
-                "MATCH (n5:github_core__github_runner)",
-                "MATCH (oi:identity_core__oidc_issuer)"
+                "MATCH (p:github_core__github_platform)",
+                "MATCH (a:github_core__github_account)",
+                "MATCH (r:github_core__github_repository)",
+                "MATCH (w:github_core__github_workflow)",
+                "MATCH (j:github_core__workflow_job)",
+                "MATCH (g:github_core__git_ref)",
+                "MATCH (e:github_core__github_environment)",
+                "MATCH (rs:github_core__github_ruleset)",
+                "MATCH (ap:github_core__github_app)",
+                "WHERE r.data.full_name = $repo AND w.data.full_name = $repo AND j.data.full_name = $repo AND g.data.full_name = $repo"
               ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "repo": {
+                  "type": "string",
+                  "default": "unified-systems-com/tap",
+                  "description": "The repository's full_name (owner/name). Defaults to the instance's primary repository until the boot profile names it (git-serious-tap#18)."
+                }
+              }
             }
           }
         },
@@ -155,9 +168,9 @@
           },
           "node": {
             "name": "git-serious-landing-layout",
-            "description": "Layout module + no arrangements: static/git_serious/js/projections/landing.js nests workflows in their repository and repositories in the account (projectNested), tiers the roots platform / account / apps, and silences edge-type labels. Arrangements are unnecessary once structure is drawn as containment.",
+            "description": "Layout module + no arrangements: github_core's MACHINERY projection (tap_plugin/github_core/static/github_core/js/projections/machinery.js, spec-github-core-machinery-projection.md) draws the primary repository's CI system as nested machinery — github.com ⊃ account ⊃ repository ⊃ workflow ⊃ job; sources right, outputs left under `machinery.flow: rtl`. v0.4.0 (2026-09-02, git-serious-tap#35): replaced the account-wide landing.js, which now lives on /git-serious/org. Consumer-owned instance; the module is github_core's.",
             "definition": {
-              "js_file": "tap_plugin/git_serious/static/git_serious/js/projections/landing.js",
+              "js_file": "tap_plugin/github_core/static/github_core/js/projections/machinery.js",
               "arrangements": []
             }
           }
@@ -191,7 +204,7 @@
           },
           "node": {
             "name": "git-serious-landing-projection",
-            "description": "git-serious landing projection — one elevation; icon-badge nodes; status badges carry the status wall (failed runs / no run observed).",
+            "description": "git-serious landing projection — one elevation; icon-badge nodes; `machinery.flow: rtl` (sources RIGHT, outputs LEFT; ltr mirrors); status badges carry the status wall onto the workflow boxes (failed runs / no run observed).",
             "definition": {
               "node_style": {
                 "mode": "icon-badge"
@@ -231,6 +244,10 @@
                     }
                   }
                 ]
+              },
+              "machinery": {
+                "flow": "rtl",
+                "stack_refs_over": 3
               }
             }
           }
@@ -247,7 +264,7 @@
           "node": {
             "slug": "git-serious-landing-graph",
             "name": "git-serious Landing Graph",
-            "description": "The account's CI/CD system as a graph. GitHub nodes open their html_url in a new tab.",
+            "description": "The primary repository's CI system as nested machinery (git-serious-tap#35); ?repo=owner/name selects another. GitHub nodes open their html_url in a new tab.",
             "view": "tap_viz/panels/graph_panel.html",
             "config": {
               "height": "100%",
