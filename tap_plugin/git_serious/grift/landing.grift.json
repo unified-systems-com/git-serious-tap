@@ -6,7 +6,7 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a0632f-38b6-7440-9de9-3d5d76eb0581",
+        "entity_id": "01a06403-5fc2-7140-b615-4be067800160",
         "entity_type": "batch",
         "name": "git-serious landing v0.5.1",
         "dimensions": {}
