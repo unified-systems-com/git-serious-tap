@@ -26,7 +26,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-principles-as-predicate | [Principles as predicate — executable operational principles](#principles-as-predicate-executable-operational-principles) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
+| req-git-serious-principles-as-predicate | [Principles as predicate — executable operational principles](#principles-as-predicate--executable-operational-principles) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
 
 ### Principles as predicate — executable operational principles
 ----

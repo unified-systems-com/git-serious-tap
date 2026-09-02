@@ -26,7 +26,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-incidents-pack | [git-serious-incidents — historical compromises as grid representations](#git-serious-incidents-historical-compromises-as-grid-representations) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
+| req-git-serious-incidents-pack | [git-serious-incidents — historical compromises as grid representations](#git-serious-incidents--historical-compromises-as-grid-representations) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
 
 ### git-serious-incidents — historical compromises as grid representations
 ----

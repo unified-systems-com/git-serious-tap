@@ -26,7 +26,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-rule-packs | [Rule packs — shareable, publishable checks](#rule-packs-shareable-publishable-checks) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
+| req-git-serious-rule-packs | [Rule packs — shareable, publishable checks](#rule-packs--shareable-publishable-checks) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
 
 ### Rule packs — shareable, publishable checks
 ----

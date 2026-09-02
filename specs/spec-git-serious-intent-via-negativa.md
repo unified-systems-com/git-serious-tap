@@ -26,7 +26,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-intent-via-negativa | [Intent and via negativa — drift against the intended shape](#intent-and-via-negativa-drift-against-the-intended-shape) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
+| req-git-serious-intent-via-negativa | [Intent and via negativa — drift against the intended shape](#intent-and-via-negativa--drift-against-the-intended-shape) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
 
 ### Intent and via negativa — drift against the intended shape
 ----

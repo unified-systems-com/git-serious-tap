@@ -26,7 +26,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-past-the-event-horizon | [Past the event horizon — collectors on the third parties themselves](#past-the-event-horizon-collectors-on-the-third-parties-themselves) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
+| req-git-serious-past-the-event-horizon | [Past the event horizon — collectors on the third parties themselves](#past-the-event-horizon--collectors-on-the-third-parties-themselves) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
 
 ### Past the event horizon — collectors on the third parties themselves
 ----

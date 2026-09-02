@@ -26,7 +26,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-agent-operable-review | [Agent-operable review — the third player reads the graph](#agent-operable-review-the-third-player-reads-the-graph) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
+| req-git-serious-agent-operable-review | [Agent-operable review — the third player reads the graph](#agent-operable-review--the-third-player-reads-the-graph) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
 
 ### Agent-operable review — the third player reads the graph
 ----

@@ -26,8 +26,8 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-why-not-merging | [Why isn't this merging](#why-isn-t-this-merging) | Proposed | Table-stakes (built by 5 named incumbents; overlay survey #05) |
-| req-git-serious-why-not-merging-gate-chain | [The ruleset → check → workflow chain](#the-ruleset-check-workflow-chain) | Proposed | Improvement — the switching argument (tap#211 sketch); four fields, verification unfilled |
+| req-git-serious-why-not-merging | [Why isn't this merging](#why-isnt-this-merging) | Proposed | Table-stakes (built by 5 named incumbents; overlay survey #05) |
+| req-git-serious-why-not-merging-gate-chain | [The ruleset → check → workflow chain](#the-ruleset--check--workflow-chain) | Proposed | Improvement — the switching argument (tap#211 sketch); four fields, verification unfilled |
 
 ### Why isn't this merging
 ----

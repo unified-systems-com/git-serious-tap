@@ -26,7 +26,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-what-changed | [What changed — the shape of the system over time](#what-changed-the-shape-of-the-system-over-time) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
+| req-git-serious-what-changed | [What changed — the shape of the system over time](#what-changed--the-shape-of-the-system-over-time) | Proposed | Innovation (register disposition CANON unless noted); falsifier field is the MVP entry gate |
 
 ### What changed — the shape of the system over time
 ----
