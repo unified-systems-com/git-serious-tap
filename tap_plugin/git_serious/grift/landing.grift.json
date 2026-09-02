@@ -6,15 +6,15 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a03f78-11fa-7029-823d-794360093bae",
+        "entity_id": "01a0630b-4f01-76d1-b7a0-e4db36e981ce",
         "entity_type": "batch",
-        "name": "git-serious landing v0.1.0",
+        "name": "git-serious landing v0.2.0",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.landing",
-        "name": "git-serious landing v0.1.0",
-        "description": "First light (git-serious-tap#17): the observed account's CI/CD system as one graph — platform → account → repositories → workflows, plus the GitHub Apps enabled on them, runners, and the Actions OIDC issuer. A Gryphon seed search per label (github_core carries no tag dimension a bare scan could key on), an ORM all-edges search the graph panel filters to the matched node-set, and a minimal projection (one elevation, one arrangements-only layout → default cose placement). GitHub nodes single-tap to their html_url. Runs and jobs are deliberately OFF the landing graph — 10 runs × N repos is noise at this altitude; they belong to drill-down pages."
+        "name": "git-serious landing v0.2.0",
+        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. Re-publish of v0.1.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved."
       },
       "nodes": [
         {
@@ -64,6 +64,90 @@
         },
         {
           "entity": {
+            "entity_id": "01a0630b-4f01-76d1-b7a0-e4dcc2849331",
+            "entity_type": "search",
+            "name": "git-serious — failed runs per workflow (count)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — failed runs per workflow (count)",
+            "description": "Status-badge population (rows of entity_id + count): for each workflow, how many of the runs github_core collected concluded `failure`. Counts the collected window, not all of history; a workflow with no row has no failed run in that window — which is not the same as no run at all (see the no-run-observed search).",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_actions_run)-[e:EXECUTES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "WHERE r.data.conclusion = \"failure\"",
+                "RETURN w.entity_id AS entity_id, COUNT(r.entity_id) AS count"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0630b-4f01-76d1-b7a0-e4dd2b8a79ec",
+            "entity_type": "search",
+            "name": "git-serious — failed runs per workflow (detail)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — failed runs per workflow (detail)",
+            "description": "Info-window rows (entity_id + name) for the failed-runs badge: the branch each failed run was on, so the window reads as *which branch is red*, not a run number.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_actions_run)-[e:EXECUTES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "WHERE r.data.conclusion = \"failure\"",
+                "RETURN w.entity_id AS entity_id, r.data.head_branch AS name"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0630b-4f01-76d1-b7a0-e4de19dd2e2a",
+            "entity_type": "search",
+            "name": "git-serious — workflows with no run observed (count)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — workflows with no run observed (count)",
+            "description": "Status-badge population for the third state: workflows github_core collected NO run for. Absence of a run edge is the signal; rendering these as plain green cards would report 'passing' on no evidence (presence is not correctness). The NOT EXISTS anti-join hangs off DEFINES_WORKFLOW because Gryphon needs an edge in the main pattern.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (repo:github_core__github_repository)-[e:DEFINES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "NOT EXISTS { MATCH (r:github_core__github_actions_run)-[:EXECUTES_WORKFLOW__github_core]->(w) }",
+                "RETURN w.entity_id AS entity_id, COUNT(w.entity_id) AS count"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0630b-4f01-76d1-b7a0-e4dfc172d290",
+            "entity_type": "search",
+            "name": "git-serious — workflows with no run observed (detail)",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — workflows with no run observed (detail)",
+            "description": "Info-window rows for the no-run-observed badge: the workflow file path, so the window names what was not observed.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (repo:github_core__github_repository)-[e:DEFINES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "NOT EXISTS { MATCH (r:github_core__github_actions_run)-[:EXECUTES_WORKFLOW__github_core]->(w) }",
+                "RETURN w.entity_id AS entity_id, w.data.path AS name"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
             "entity_id": "01a03f78-11fa-7029-823d-7946a31a3ee2",
             "entity_type": "layout",
             "name": "git-serious-landing-layout",
@@ -71,8 +155,9 @@
           },
           "node": {
             "name": "git-serious-landing-layout",
-            "description": "Arrangements-only, empty: first light takes the runtime's default placement. Arrangements (platform top, account below, repositories fanned, workflows under their repo) arrive with the gate view (git-serious-tap#6).",
+            "description": "Layout module + no arrangements: static/git_serious/js/projections/landing.js nests workflows in their repository and repositories in the account (projectNested), tiers the roots platform / account / apps, and silences edge-type labels. Arrangements are unnecessary once structure is drawn as containment.",
             "definition": {
+              "js_file": "tap_plugin/git_serious/static/git_serious/js/projections/landing.js",
               "arrangements": []
             }
           }
@@ -106,7 +191,7 @@
           },
           "node": {
             "name": "git-serious-landing-projection",
-            "description": "git-serious landing projection — one elevation; icon-badge nodes.",
+            "description": "git-serious landing projection — one elevation; icon-badge nodes; status badges carry the status wall (failed runs / no run observed).",
             "definition": {
               "node_style": {
                 "mode": "icon-badge"
@@ -114,7 +199,39 @@
               "elevations": [
                 "01a03f78-11fa-7029-823d-79477cc4ab58"
               ],
-              "default_elevation_id": "01a03f78-11fa-7029-823d-79477cc4ab58"
+              "default_elevation_id": "01a03f78-11fa-7029-823d-79477cc4ab58",
+              "min_zoom": "fit",
+              "status_badges": {
+                "refresh_seconds": 120,
+                "badge_sets": [
+                  {
+                    "name": "failed-runs",
+                    "label": "Failed runs in the collected window",
+                    "color": "#CF222E",
+                    "text_color": "#FFFFFF",
+                    "population": {
+                      "type": "search",
+                      "search_id": "01a0630b-4f01-76d1-b7a0-e4dcc2849331"
+                    },
+                    "info_window": {
+                      "search_id": "01a0630b-4f01-76d1-b7a0-e4dd2b8a79ec"
+                    }
+                  },
+                  {
+                    "name": "no-run-observed",
+                    "label": "No run observed for this workflow",
+                    "color": "#6E7781",
+                    "text_color": "#FFFFFF",
+                    "population": {
+                      "type": "search",
+                      "search_id": "01a0630b-4f01-76d1-b7a0-e4de19dd2e2a"
+                    },
+                    "info_window": {
+                      "search_id": "01a0630b-4f01-76d1-b7a0-e4dfc172d290"
+                    }
+                  }
+                ]
+              }
             }
           }
         },
