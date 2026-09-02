@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "grift_version": "0"
+  },
+  "_reserved": {},
+  "batches": [
+    {
+      "batch_entity": {
+        "entity_id": "",
+        "entity_type": "batch",
+        "name": "git-serious collector schedule v0.1.0",
+        "dimensions": {}
+      },
+      "batch_node": {
+        "source": "plugins.git_serious.grift.schedule",
+        "name": "git-serious collector schedule v0.1.0",
+        "description": "The re-fire path for the github_core collector (github-core#33): a tap_cares Schedule that fires it every ten minutes, so the status wall, the graph badges and the workflow pages read the collector's incremental run fetch instead of a boot-time snapshot. The consumer owns the instance (the samsite/aws_core precedent): git-serious decides the cadence, github_core owns the collector. Each fire is incremental — one call per repository for runs newer than the latest on the grid — so ten minutes costs ~20 rate-limit points per fire on a 20-repository account. The SCHEDULED_TARGET edge names the collector by its derived id uuid5(NAMESPACE_COLLECTOR, 'github_core:github_core'); the schedule-grift-targets guard fails authoring-time drift."
+      },
+      "nodes": [
+        {
+          "entity": {
+            "entity_id": "01a0640a-33fa-7318-9ba6-f430eed07307",
+            "entity_type": "schedule",
+            "name": "github_core collector — every 10 minutes",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "github_core collector — every 10 minutes",
+            "enabled": true,
+            "cron_expression": "*/10 * * * *",
+            "max_active_runs": 1,
+            "description": "Re-fires the github_core collector every ten minutes (UTC minute cron). Incremental after the first population: runs newer than the latest on the grid per repository, non-terminal runs refreshed. Pause from the administrivia schedules page; the status wall's own 60 s auto-refresh only re-reads the grid this schedule feeds."
+          }
+        }
+      ],
+      "edges": [
+        {
+          "entity": {
+            "entity_id": "01a0640a-33fa-7318-9ba6-f431e03e87f5",
+            "entity_type": "edge",
+            "name": "Schedule SCHEDULED_TARGET github_core collector",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0640a-33fa-7318-9ba6-f430eed07307",
+            "to_entity_id": "8e6d0bcf-e997-50e8-ab56-f22ca82528ef",
+            "edge_type": "SCHEDULED_TARGET",
+            "properties": {}
+          }
+        }
+      ]
+    }
+  ]
+}
