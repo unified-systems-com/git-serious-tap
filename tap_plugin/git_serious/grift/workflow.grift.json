@@ -6,14 +6,14 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a063cc-47af-77a8-a428-f81f2b5008a8",
+        "entity_id": "01a0632f-738b-739e-a69a-d2672e59f859",
         "entity_type": "batch",
-        "name": "git-serious workflow page v0.1.0",
+        "name": "git-serious workflow page v0.1.1",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.workflow",
-        "name": "git-serious workflow page v0.1.0",
+        "name": "git-serious workflow page v0.1.1",
         "description": "First light of the workflow-level view (spec-git-serious-workflow-page; the surface where reliability history and time-and-money land): one workflow, its runs over the collected window, and — at the top — a placeholder for the workflow's machinery (github_core's machinery projection scoped to one workflow, github-core#28/#35). Parameterised by ?workflow_id=<GitHub numeric id>; both searches declare it as an integer input and the panels coerce it from the URL. v0.1.0 ships the identity row, the runs table with trigger glyph, links, conclusion, Elapsed and the per-trigger outlier ratio; the sparkline, queue time and attempts wait on the collector (github-core#34, #46, #47)."
       },
       "nodes": [
@@ -229,25 +229,25 @@
                   "width": 120
                 },
                 {
-                  "field": "data.run_started_at",
-                  "title": "Started",
-                  "formatter": "datetime",
-                  "widthGrow": 1
-                },
-                {
-                  "field": "data.completed_at",
-                  "title": "Completed",
-                  "formatter": "datetime",
-                  "widthGrow": 1
-                },
-                {
                   "field": "data.completed_at",
                   "title": "Elapsed",
                   "formatter": "elapsed",
-                  "width": 130,
+                  "width": 100,
                   "formatter_params": {
                     "start": "data.run_started_at",
                     "end": "data.completed_at",
+                    "require_field": "data.conclusion"
+                  }
+                },
+                {
+                  "field": "data.completed_at",
+                  "title": "vs usual",
+                  "formatter": "baselineRatio",
+                  "width": 90,
+                  "formatter_params": {
+                    "start": "data.run_started_at",
+                    "end": "data.completed_at",
+                    "require_field": "data.conclusion",
                     "baseline": {
                       "group_by": [
                         "data.event"
@@ -260,6 +260,40 @@
                       "mad_k": 3
                     }
                   }
+                },
+                {
+                  "field": "data.completed_at",
+                  "title": "n",
+                  "formatter": "baselineN",
+                  "width": 55,
+                  "formatter_params": {
+                    "start": "data.run_started_at",
+                    "end": "data.completed_at",
+                    "require_field": "data.conclusion",
+                    "baseline": {
+                      "group_by": [
+                        "data.event"
+                      ],
+                      "where": {
+                        "data.conclusion": "success"
+                      },
+                      "min_n": 3,
+                      "flag_ratio": 1.5,
+                      "mad_k": 3
+                    }
+                  }
+                },
+                {
+                  "field": "data.run_started_at",
+                  "title": "Started",
+                  "formatter": "datetime",
+                  "widthGrow": 1
+                },
+                {
+                  "field": "data.completed_at",
+                  "title": "Completed",
+                  "formatter": "datetime",
+                  "widthGrow": 1
                 }
               ]
             }
