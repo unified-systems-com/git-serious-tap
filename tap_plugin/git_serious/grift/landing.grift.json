@@ -6,15 +6,15 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a0630b-4f01-76d1-b7a0-e4db36e981ce",
+        "entity_id": "01a0632f-738b-739e-a69a-d264de16574f",
         "entity_type": "batch",
-        "name": "git-serious landing v0.2.0",
+        "name": "git-serious landing v0.3.0",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.landing",
-        "name": "git-serious landing v0.2.0",
-        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. Re-publish of v0.1.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved."
+        "name": "git-serious landing v0.3.0",
+        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. Re-publish of v0.2.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved."
       },
       "nodes": [
         {
@@ -303,6 +303,14 @@
                   "rows": {
                     "row-1": {
                       "panel-id": "main",
+                      "height": "3fr"
+                    },
+                    "row-2": {
+                      "panel-id": "status-wall",
+                      "height": "2fr"
+                    },
+                    "row-3": {
+                      "panel-id": "not-observed",
                       "height": "1fr"
                     }
                   }
@@ -321,6 +329,164 @@
           "node": {
             "name": "git-serious Landing",
             "description": "Default site landing page — the observed account's CI/CD system."
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0632f-38b6-7440-9de9-3d5852051662",
+            "entity_type": "search",
+            "name": "git-serious — status wall: runs, newest first",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — status wall: runs, newest first",
+            "description": "The status wall's rows (req-git-serious-status-wall-1): every workflow run github_core collected, across every repository of the observed account, newest first by run_started_at. Envelope mode (RETURN r) so the table panel receives hydrated run nodes with their typed fields; projection-mode rows would render nothing in a v1 table panel. Covers the collected window only — github_core seeds initial_run_limit runs per repository (10 by default) and grows only when the collector fires again.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_actions_run)",
+                "RETURN r",
+                "ORDER BY r.data.run_started_at DESC"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0632f-38b6-7440-9de9-3d59de91dfcc",
+            "entity_type": "search",
+            "name": "git-serious — status wall: workflows with no run in the collected window",
+            "dimensions": {}
+          },
+          "node": {
+            "name": "git-serious — status wall: workflows with no run in the collected window",
+            "description": "The wall's third state as rows: workflows a repository defines for which no run was collected. Envelope mode (RETURN w) for the table panel; the badge on the graph uses the projection-mode twin of this query. Reads 'not observed in the window', never 'never ran': with 10 runs per repository a 17-workflow repository lands here on its quieter workflows.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (repo:github_core__github_repository)-[e:DEFINES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "NOT EXISTS { MATCH (r:github_core__github_actions_run)-[:EXECUTES_WORKFLOW__github_core]->(w) }",
+                "RETURN w"
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0632f-38b6-7440-9de9-3d5a3dadeb2a",
+            "entity_type": "panel",
+            "name": "Status wall",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "Status wall",
+            "slug": "git-serious-status-wall",
+            "description": "Is anything broken right now? Every collected run across every repository, newest first. Red and green are the run's conclusion; the collected window is the last 10 runs per repository until the collector fires again. Click a row for the run on the grid; the GitHub column opens the run on github.com.",
+            "view": "tap_web/panels/table_panel.html",
+            "config": {
+              "default_page_size": 200,
+              "quick_filter": true,
+              "columns": [
+                {
+                  "field": "data.full_name",
+                  "title": "Repository",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.run_number",
+                  "title": "Run",
+                  "width": 70
+                },
+                {
+                  "field": "data.head_branch",
+                  "title": "Branch",
+                  "widthGrow": 2,
+                  "tooltip": "full_value"
+                },
+                {
+                  "field": "data.event",
+                  "title": "Event",
+                  "width": 110
+                },
+                {
+                  "field": "data.conclusion",
+                  "title": "Conclusion",
+                  "formatter": "conclusionBadge",
+                  "width": 120
+                },
+                {
+                  "field": "data.run_started_at",
+                  "title": "Started",
+                  "formatter": "datetime",
+                  "widthGrow": 1
+                },
+                {
+                  "field": "data.completed_at",
+                  "title": "Completed",
+                  "formatter": "datetime",
+                  "widthGrow": 1
+                },
+                {
+                  "field": "data.html_url",
+                  "title": "GitHub",
+                  "formatter": "externalLink",
+                  "widthGrow": 2
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0632f-38b6-7440-9de9-3d5ba8eadfc4",
+            "entity_type": "panel",
+            "name": "Not observed in the collected window",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "Not observed in the collected window",
+            "slug": "git-serious-status-wall-not-observed",
+            "description": "Workflows with no run in the collected window. This is the wall's third state — not green, not red: we could not say. The window is 10 runs per repository, so a busy repository's quieter workflows land here even though they have run; a workflow that has truly never run looks identical until the collector re-fires with a per-workflow window.",
+            "view": "tap_web/panels/table_panel.html",
+            "config": {
+              "default_page_size": 200,
+              "quick_filter": true,
+              "columns": [
+                {
+                  "field": "data.full_name",
+                  "title": "Repository",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.name",
+                  "title": "Workflow",
+                  "widthGrow": 2
+                },
+                {
+                  "field": "data.path",
+                  "title": "Path",
+                  "widthGrow": 2,
+                  "tooltip": "full_value"
+                },
+                {
+                  "field": "data.state",
+                  "title": "State",
+                  "width": 100
+                },
+                {
+                  "field": "data.html_url",
+                  "title": "GitHub",
+                  "formatter": "externalLink",
+                  "widthGrow": 2
+                }
+              ]
+            }
           }
         }
       ],
@@ -459,6 +625,74 @@
             "to_entity_id": "01a03f78-11fa-7029-823d-794a7b1f0350",
             "edge_type": "USES_LANDING_PAGE",
             "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0632f-38b6-7440-9de9-3d5c127d7fa5",
+            "entity_type": "edge",
+            "name": "Status wall USES_SEARCH runs newest first",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0632f-38b6-7440-9de9-3d5a3dadeb2a",
+            "to_entity_id": "01a0632f-38b6-7440-9de9-3d5852051662",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0632f-38b6-7440-9de9-3d5d76eb0581",
+            "entity_type": "edge",
+            "name": "Not-observed USES_SEARCH workflows with no run",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0632f-38b6-7440-9de9-3d5ba8eadfc4",
+            "to_entity_id": "01a0632f-38b6-7440-9de9-3d59de91dfcc",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0632f-738b-739e-a69a-d26574b25138",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL status-wall",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-794a7b1f0350",
+            "to_entity_id": "01a0632f-38b6-7440-9de9-3d5a3dadeb2a",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "status-wall"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0632f-738b-739e-a69a-d266456bf071",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL not-observed",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-794a7b1f0350",
+            "to_entity_id": "01a0632f-38b6-7440-9de9-3d5ba8eadfc4",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "not-observed"
+              }
+            }
           }
         }
       ]
