@@ -7,7 +7,7 @@
 > **Status: pre-alpha.** git-serious is being built in the open, first against our own
 > CI/CD system. Nothing below is installable yet; the roadmap is in this repo's milestones.
 
-![git-serious landing page: the organisation's CI/CD system drawn as nested machinery — GitHub, the account, every repository and its workflows, with the apps and services wired beneath — and under it the status wall: every workflow run across every repository, newest first, red and green, plus the workflows no run was observed for.](docs/images/landing-status-wall.png)
+![git-serious landing page: the organisation's CI/CD system as nested machinery, with the status wall of workflow runs beneath it](docs/images/landing-status-wall.png)
 
 *The landing page, running against our own organisation on 2 September 2026: the CI/CD system
 as one picture, and beneath it the status wall — every run, every repository, newest first — with
