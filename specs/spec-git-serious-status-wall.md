@@ -56,7 +56,7 @@ The improvement to the table-stakes feature above — the switching argument. Fo
 required (tap#206); a claim that needs special-case work rather than falling out of the
 architecture is a feature commitment wearing an improvement's clothes.
 
-- **Capability:** The wall sorts by the criticality of what is red — the gate lane of the repository that ships the product outranks a nightly on a nostalgia repo — and renders three states per cell: green, red, and *not observed with this credential*.
+- **Capability:** The wall sorts by the criticality of what is red — the gate lane of the repository that ships the product outranks a nightly on a nostalgia repo — and renders three states per cell: green, red, and *not observable with this credential*.
 - **Incumbent's specific limitation:** Incumbents hold a run-history model only; they cannot rank because they do not know what any lane is for, and a cell they could not fetch renders identically to a cell that is fine.
 - **Mechanism (why ours differs):** Criticality is derived from the graph (which ruleset requires which check, which workflow publishes) and the observation dimension carries what the credential could not see; both are already on the grid, so the sort and the third state are a query, not a feature.
 - **Five-minute verification:** *(unfilled — the tap#211 improvements pass fills this; a claim a prospect cannot check in five minutes is not a selling point)*
