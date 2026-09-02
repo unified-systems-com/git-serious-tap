@@ -17,7 +17,7 @@ Governing step: `step-products-git-serious-self` in `plan/road-products.md` (tap
 
 ## Prior Art
 
-CI/CD security prior art — [`doc-git-serious-cicd-security-prior-art.md`](../docs/doc-git-serious-cicd-security-prior-art.md), §6 *Recommendations* item 9 (*where it is table stakes*), with the observable-conditions tables in §3.10 and the ranked v0 list in item 7. Axis: **security**. The incumbents named there do this better than we will; the requirement is that it exist on the graph, beside the operations features, not that it win.
+CI/CD security prior art — [`doc-git-serious-cicd-security-prior-art.md`](../docs/doc-git-serious-cicd-security-prior-art.md), §6 *Implications for git-serious* item 9 (*where it is table stakes*), with the observable-conditions tables in §3.10 and the ranked v0 list in item 7. Axis: **security**. The incumbents named there do this better than we will; the requirement is that it exist on the graph, beside the operations features, not that it win.
 
 Provenance of every claim in this skeleton: **documented** (drawn from the sources above) unless
 marked *observed* or *inferred* (tap#206's provenance markers).
