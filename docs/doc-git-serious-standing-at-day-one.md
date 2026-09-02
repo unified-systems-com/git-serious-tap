@@ -14,7 +14,7 @@ related_docs:
 > product's first build day, and whether the morning's via-negativa thesis survived a second look.
 > Written by the build session for George. It is a dated snapshot: several "open" and "broken" items
 > below have since moved (github_core PR #4 merged; the core commits were pushed; `verify_app.py`
-> was fixed in github-core PR #26). Read it for the reasoning and the failure-shape count, not for
+> was fixed in github_core PR #26). Read it for the reasoning and the failure-shape count, not for
 > current state — current state lives in the issues. Landed from the published artifact on
 > 2026-09-02 (git-serious-tap#26, item 1).
 
