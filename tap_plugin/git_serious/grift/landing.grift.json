@@ -6,15 +6,15 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a063ab-0cb9-7052-9487-69c403ae18b0",
+        "entity_id": "01a0632f-738b-739e-a69a-d2672e59f859",
         "entity_type": "batch",
-        "name": "git-serious landing v0.4.1",
+        "name": "git-serious landing v0.5.0",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.landing",
-        "name": "git-serious landing v0.4.1",
-        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. Re-publish of v0.2.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved. v0.4.0 (2026-09-02): the landing graph IS the machinery view of the primary repository (github_core's machinery projection module; git-serious-tap#35) — the account-wide picture lives on /git-serious/org. Node upserts only: the layout's js_file, the projection's `machinery` key, and the node search's scoped query; edges are untouched because the importer keys an edge on its endpoints. The status-wall tables beneath are unchanged. v0.4.1: the graph row takes 9fr of 12 (~75% of the page) while the machinery view is being dialed in."
+        "name": "git-serious landing v0.5.0",
+        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. Re-publish of v0.2.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved. v0.4.0 (2026-09-02): the landing graph IS the machinery view of the primary repository (github_core's machinery projection module; git-serious-tap#35) — the account-wide picture lives on /git-serious/org. Node upserts only: the layout's js_file, the projection's `machinery` key, and the node search's scoped query; edges are untouched because the importer keys an edge on its endpoints. The status-wall tables beneath are unchanged. v0.4.1: the graph row takes 9fr of 12 (~75% of the page) while the machinery view is being dialed in. v0.5.0 (wall port onto the machinery landing): the page scrolls — the graph keeps 75vh, the tables take fixed heights (640 / 360 px, Tabulator-owned scroll, sticky header); the wall's columns are the trigger as a glyph (TAP's CI-universal trigger icons mapped from GitHub's event vocabulary), run number linking to the run, branch linking to the repository's branch page, conclusion, viewer-local started/completed, Elapsed with the ratio to the median of the other successful runs of the same workflow and trigger (outlier / within / not enough history), and a history link to the workflow page (/git-serious/workflow?workflow_id=…, git-serious-tap#41). Re-publish: every id stable; only the batch id moved."
       },
       "nodes": [
         {
@@ -320,15 +320,15 @@
                   "rows": {
                     "row-1": {
                       "panel-id": "main",
-                      "height": "9fr"
+                      "height": "75vh"
                     },
                     "row-2": {
                       "panel-id": "status-wall",
-                      "height": "2fr"
+                      "height": "auto"
                     },
                     "row-3": {
                       "panel-id": "not-observed",
-                      "height": "1fr"
+                      "height": "auto"
                     }
                   }
                 }
@@ -402,12 +402,43 @@
           "node": {
             "name": "Status wall",
             "slug": "git-serious-status-wall",
-            "description": "Is anything broken right now? Every collected run across every repository, newest first. Red and green are the run's conclusion; the collected window is the last 10 runs per repository until the collector fires again. Click a row for the run on the grid; the GitHub column opens the run on github.com.",
+            "description": "Is anything broken right now? Every collected run across every repository, newest first. The glyph is the trigger, the run number opens the run on GitHub, the branch opens the repository's branch page, Elapsed is started→completed with the run's ratio to its workflow's own baseline, and history opens the workflow page. Red and green are the run's conclusion; the collected window is the last 10 runs per repository until the collector fires again. Click anywhere else on a row for the run on the grid.",
             "view": "tap_web/panels/table_panel.html",
             "config": {
               "default_page_size": 200,
               "quick_filter": true,
               "columns": [
+                {
+                  "field": "data.event",
+                  "title": "",
+                  "width": 40,
+                  "headerSort": false,
+                  "formatter": "iconMap",
+                  "formatter_params": {
+                    "icons": {
+                      "push": "/static/tap_web/icons/trigger-push.svg",
+                      "pull_request": "/static/tap_web/icons/trigger-pull-request.svg",
+                      "pull_request_target": "/static/tap_web/icons/trigger-pull-request.svg",
+                      "schedule": "/static/tap_web/icons/trigger-schedule.svg",
+                      "workflow_dispatch": "/static/tap_web/icons/trigger-manual.svg",
+                      "workflow_run": "/static/tap_web/icons/trigger-chained.svg",
+                      "workflow_call": "/static/tap_web/icons/trigger-chained.svg",
+                      "dynamic": "/static/tap_web/icons/trigger-platform.svg",
+                      "repository_dispatch": "/static/tap_web/icons/trigger-manual.svg"
+                    },
+                    "labels": {
+                      "push": "push",
+                      "pull_request": "pull request",
+                      "pull_request_target": "pull request (target)",
+                      "schedule": "schedule",
+                      "workflow_dispatch": "manual dispatch",
+                      "workflow_run": "chained off another run",
+                      "workflow_call": "called by another workflow",
+                      "dynamic": "platform-originated (CodeQL, Copilot, Dependabot…)",
+                      "repository_dispatch": "repository dispatch"
+                    }
+                  }
+                },
                 {
                   "field": "data.full_name",
                   "title": "Repository",
@@ -416,18 +447,21 @@
                 {
                   "field": "data.run_number",
                   "title": "Run",
-                  "width": 70
+                  "width": 80,
+                  "formatter": "link",
+                  "formatter_params": {
+                    "href_field": "data.html_url"
+                  }
                 },
                 {
                   "field": "data.head_branch",
                   "title": "Branch",
                   "widthGrow": 2,
-                  "tooltip": "full_value"
-                },
-                {
-                  "field": "data.event",
-                  "title": "Event",
-                  "width": 110
+                  "tooltip": "full_value",
+                  "formatter": "link",
+                  "formatter_params": {
+                    "href_template": "https://github.com/{data.full_name}/tree/{data.head_branch}"
+                  }
                 },
                 {
                   "field": "data.conclusion",
@@ -448,12 +482,41 @@
                   "widthGrow": 1
                 },
                 {
-                  "field": "data.html_url",
-                  "title": "GitHub",
-                  "formatter": "externalLink",
-                  "widthGrow": 2
+                  "field": "data.completed_at",
+                  "title": "Elapsed",
+                  "formatter": "elapsed",
+                  "width": 130,
+                  "formatter_params": {
+                    "start": "data.run_started_at",
+                    "end": "data.completed_at",
+                    "baseline": {
+                      "group_by": [
+                        "data.configuration.workflow_id",
+                        "data.event"
+                      ],
+                      "where": {
+                        "data.conclusion": "success"
+                      },
+                      "min_n": 3,
+                      "flag_ratio": 1.5,
+                      "mad_k": 3
+                    }
+                  }
+                },
+                {
+                  "field": "data.configuration.workflow_id",
+                  "title": "History",
+                  "width": 90,
+                  "headerSort": false,
+                  "formatter": "link",
+                  "formatter_params": {
+                    "href_template": "/git-serious/workflow?workflow_id={data.configuration.workflow_id}",
+                    "text": "history",
+                    "external": false
+                  }
                 }
-              ]
+              ],
+              "height": 640
             }
           }
         },
@@ -502,7 +565,8 @@
                   "formatter": "externalLink",
                   "widthGrow": 2
                 }
-              ]
+              ],
+              "height": 360
             }
           }
         }
