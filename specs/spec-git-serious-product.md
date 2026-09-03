@@ -163,10 +163,10 @@ OCSF proposal (R-21 — after a second forge); the plugin hitlist (R-19 — ecos
 view, and github-core PRs #19 and #27 are open. Split core versus plugins; every gap cites the
 requirement IDs it serves and is filed as a sub-issue of the feature issue.
 
-Known before the pass runs (*observed* 2026-09-02): the shipped boot record cannot boot against the
-shared host store — github_core v0.4.0 and kind `github_pat` versus the combined `github` App
-envelope (git-serious-tap#33); and product-repo specs are outside the core traceability ratchet
-(tap#286).
+Known before the pass runs: the shipped boot record could not boot against the shared host store —
+github_core v0.4.0 and kind `github_pat` versus the combined `github` App envelope (*observed*
+2026-09-02, git-serious-tap#33; closed 2026-09-03 by pinning github_core v0.5.0 and declaring kind
+`github`); and product-repo specs are outside the core traceability ratchet (tap#286).
 
 ## MVP
 

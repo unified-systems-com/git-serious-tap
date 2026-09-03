@@ -30,7 +30,7 @@
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/tap-plugin-github-core",
-          "rev": "v0.4.0"
+          "rev": "v0.5.0"
         },
         "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector. Installed but NOT seeded and NOT fired: the shipped record's fire-collector step names the collector key `github_core:github_core`, and the record test resolves that key against the live collector registry, so the plugin must be installed for the test to mean anything."
       },
