@@ -17,6 +17,7 @@ status = "compatible"
 landing = "grift/landing.grift.json"
 org = "grift/org.grift.json"
 gate = "grift/gate.grift.json"
+schedule = "grift/schedule.grift.json"
 workflow = "grift/workflow.grift.json"
 
 # In-package boot record (req-boot-bootstrap-records-in-package): THE product composition.
