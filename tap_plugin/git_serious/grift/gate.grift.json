@@ -6,27 +6,48 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a04571-e211-731b-8db7-647a297c24e4",
+        "entity_id": "01a067e1-8266-71e1-bb86-fba986971fac",
         "entity_type": "batch",
-        "name": "git-serious gate view v0.1.0",
+        "name": "git-serious gate view v0.1.1",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.gate",
-        "name": "git-serious gate view v0.1.0",
-        "description": "The gate (git-serious-tap#6): for a repository's default branch, what must be true for a commit to land \u2014 and what we cannot see. Four Gryphon-backed table panels over the self-tier vocabulary: the rulesets and what they enforce, the bypass lists a read-only credential cannot read, the declared jobs that check out a ref they were handed, and the cache entries written from outside an observed ref. Two of the four are ABSENCE panels by design \u2014 an empty bypass column and a missing ref edge each mean something specific, and rendering either as nothing would be the most reassuring possible lie. Tables rather than a graph at this altitude: the landing page carries the picture, this page carries the adjudication."
+        "name": "git-serious gate view v0.1.1",
+        "description": "The gate (git-serious-tap#6): for a repository's default branch, what must be true for a commit to land — and what we cannot see. Four Gryphon-backed table panels over the self-tier vocabulary: the rulesets and what they enforce, the bypass lists a read-only credential cannot read, the declared jobs that check out a ref they were handed, and the cache entries written from outside an observed ref. Two of the four are ABSENCE panels by design — an empty bypass column and a missing ref edge each mean something specific, and rendering either as nothing would be the most reassuring possible lie. Tables rather than a graph at this altitude: the landing page carries the picture, this page carries the adjudication. v0.1.1 (git-serious-tap#47): the per-repository gates table at the top — the four per-ruleset panels below it are the parts; this is the posture."
       },
       "nodes": [
         {
           "entity": {
+            "entity_id": "01a067e1-8266-71e1-bb86-fba70412f6ec",
+            "entity_type": "panel",
+            "name": "Each repository's gate",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "Each repository's gate",
+            "slug": "git-serious-gate-gates",
+            "description": "What gates each repository's default branch, and what we cannot see. One row per repository: the rulesets governing its default branch, whether a pull request is required, each required check and what produces it — a workflow in this repository, an installed App, or nothing observed (the branch cannot merge) — the bypass list in three states (not observable / counted / observed), and the checks its peers require that it does not. Derived by github_core's github-gates panel from the PROTECTS, REQUIRES_CHECK, PRODUCES_CHECK and DEFINES_WORKFLOW edges; worst gate first. Serves req-git-serious-branch-protection-tiers-1, req-git-serious-configured-the-same-1 and the gate chain of req-git-serious-why-not-merging (git-serious-tap#47).",
+            "view": "github_core/panels/gates.html",
+            "config": {
+              "quick_filter": true,
+              "height": 480,
+              "refresh_seconds": 300
+            }
+          }
+        },
+        {
+          "entity": {
             "entity_id": "01a04571-e211-731b-8db7-646d661f90d7",
             "entity_type": "search",
-            "name": "git-serious \u2014 the gate on each ref",
+            "name": "git-serious — the gate on each ref",
             "dimensions": {}
           },
           "node": {
-            "name": "git-serious \u2014 the gate on each ref",
-            "description": "Every ruleset on the account, with what it enforces and whether its bypass list could be read at all. One node per ruleset however many repositories it protects \u2014 an organization ruleset is a single object, and the repositories it covers are the PROTECTS edges.",
+            "name": "git-serious — the gate on each ref",
+            "description": "Every ruleset on the account, with what it enforces and whether its bypass list could be read at all. One node per ruleset however many repositories it protects — an organization ruleset is a single object, and the repositories it covers are the PROTECTS edges.",
             "search_type": "gryphon",
             "root": "node",
             "definition": {
@@ -40,11 +61,11 @@
           "entity": {
             "entity_id": "01a04571-e211-731b-8db7-646ea22c5b90",
             "entity_type": "search",
-            "name": "git-serious \u2014 bypass lists we could not read",
+            "name": "git-serious — bypass lists we could not read",
             "dimensions": {}
           },
           "node": {
-            "name": "git-serious \u2014 bypass lists we could not read",
+            "name": "git-serious — bypass lists we could not read",
             "description": "Rulesets whose bypass-actor list this credential cannot see. GitHub returns it only to a caller with WRITE access to the ruleset, which a read-only observer deliberately does not have. These rows are the reason the gate page does not render an empty bypass column as 'nobody can bypass'.",
             "search_type": "gryphon",
             "root": "node",
@@ -59,12 +80,12 @@
           "entity": {
             "entity_id": "01a04571-e211-731b-8db7-646f046034fe",
             "entity_type": "search",
-            "name": "git-serious \u2014 jobs that check out a caller-supplied ref",
+            "name": "git-serious — jobs that check out a caller-supplied ref",
             "dimensions": {}
           },
           "node": {
-            "name": "git-serious \u2014 jobs that check out a caller-supplied ref",
-            "description": "Declared jobs that pass an explicit `ref:` to actions/checkout. Read together with the job's trigger: a `pull_request_target` workflow checking out the pull request's head runs a contributor's code with the base repository's secrets \u2014 the most-cited shape in the incident corpus.",
+            "name": "git-serious — jobs that check out a caller-supplied ref",
+            "description": "Declared jobs that pass an explicit `ref:` to actions/checkout. Read together with the job's trigger: a `pull_request_target` workflow checking out the pull request's head runs a contributor's code with the base repository's secrets — the most-cited shape in the incident corpus.",
             "search_type": "gryphon",
             "root": "node",
             "definition": {
@@ -78,11 +99,11 @@
           "entity": {
             "entity_id": "01a04571-e211-731b-8db7-6470ca703f39",
             "entity_type": "search",
-            "name": "git-serious \u2014 cache entries from outside an observed ref",
+            "name": "git-serious — cache entries from outside an observed ref",
             "dimensions": {}
           },
           "node": {
-            "name": "git-serious \u2014 cache entries from outside an observed ref",
+            "name": "git-serious — cache entries from outside an observed ref",
             "description": "Stored cache entries with no SCOPED_TO edge, which in practice means the entry was written from a pull-request ref. A cache written outside a branch and restored inside it is the shape five documented compromises share. The NOT EXISTS anti-join needs an edge in the main pattern, hence the HAS_CACHE hop.",
             "search_type": "gryphon",
             "root": "node",
@@ -157,14 +178,14 @@
           "entity": {
             "entity_id": "01a04571-e211-731b-8db7-6472e3407768",
             "entity_type": "panel",
-            "name": "Who can bypass \u2014 and what we cannot see",
+            "name": "Who can bypass — and what we cannot see",
             "dimensions": {
               "tap.graph": "web"
             }
           },
           "node": {
             "slug": "git-serious-gate-bypass-unknown",
-            "name": "Who can bypass \u2014 and what we cannot see",
+            "name": "Who can bypass — and what we cannot see",
             "description": "A blank bypass column means one of two very different things. These are the rulesets where it means WE COULD NOT LOOK, not that nobody can bypass.",
             "view": "tap_web/panels/table_panel.html",
             "config": {
@@ -259,7 +280,7 @@
           "node": {
             "slug": "git-serious-gate-foreign-caches",
             "name": "Caches written from outside the branch",
-            "description": "Cache entries whose ref is not one of the repository's branches or tags \u2014 in practice, written by a pull request. Present because the absence of a ref edge is the signal.",
+            "description": "Cache entries whose ref is not one of the repository's branches or tags — in practice, written by a pull request. Present because the absence of a ref edge is the signal.",
             "view": "tap_web/panels/table_panel.html",
             "config": {
               "default_page_size": 100,
@@ -310,18 +331,22 @@
                   "width": "1fr",
                   "rows": {
                     "row-1": {
-                      "panel-id": "gate",
+                      "panel-id": "gates",
                       "height": "auto"
                     },
                     "row-2": {
-                      "panel-id": "bypass",
+                      "panel-id": "gate",
                       "height": "auto"
                     },
                     "row-3": {
-                      "panel-id": "checkout",
+                      "panel-id": "bypass",
                       "height": "auto"
                     },
                     "row-4": {
+                      "panel-id": "checkout",
+                      "height": "auto"
+                    },
+                    "row-5": {
                       "panel-id": "caches",
                       "height": "auto"
                     }
@@ -465,6 +490,26 @@
                 "model": "page",
                 "spec": "page-panels",
                 "value": "caches"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a067e1-8266-71e1-bb86-fba81dfbe5ed",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL (gates)",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a04571-e211-731b-8db7-6475129961b7",
+            "to_entity_id": "01a067e1-8266-71e1-bb86-fba70412f6ec",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "gates"
               }
             }
           }
