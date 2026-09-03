@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Are they all configured the same
 ----
 RID: `req-git-serious-configured-the-same`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `friends`

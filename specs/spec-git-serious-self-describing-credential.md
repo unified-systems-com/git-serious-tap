@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### A credential that shows its own permissions
 ----
 RID: `req-git-serious-self-describing-credential`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `friends`

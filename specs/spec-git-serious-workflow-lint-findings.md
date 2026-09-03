@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Per-workflow lint findings
 ----
 RID: `req-git-serious-workflow-lint-findings`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `self`

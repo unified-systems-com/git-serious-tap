@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Pin drift
 ----
 RID: `req-git-serious-pin-drift`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `friends`

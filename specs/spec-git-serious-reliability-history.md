@@ -32,6 +32,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Reliability history
 ----
 RID: `req-git-serious-reliability-history`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `friends`
@@ -48,6 +49,7 @@ For any job, the instance shows the outcome strip of its recent runs and a pass/
 ### When it became flaky, not that it is
 ----
 RID: `req-git-serious-reliability-history-became-flaky`
+
 Status: `Proposed`
 Feature: `improvement`
 Milestone: `friends`

@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Principles as predicate — executable operational principles
 ----
 RID: `req-git-serious-principles-as-predicate`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `self`

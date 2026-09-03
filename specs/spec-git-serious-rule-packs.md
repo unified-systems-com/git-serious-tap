@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Rule packs — shareable, publishable checks
 ----
 RID: `req-git-serious-rule-packs`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `everyone`

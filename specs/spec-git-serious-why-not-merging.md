@@ -32,6 +32,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Why isn't this merging
 ----
 RID: `req-git-serious-why-not-merging`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `self`
@@ -48,6 +49,7 @@ For a pull request, the instance lists every condition between it and merge — 
 ### The ruleset → check → workflow chain
 ----
 RID: `req-git-serious-why-not-merging-gate-chain`
+
 Status: `Proposed`
 Feature: `improvement`
 Milestone: `self`

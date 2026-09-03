@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### What changed — the shape of the system over time
 ----
 RID: `req-git-serious-what-changed`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `self`

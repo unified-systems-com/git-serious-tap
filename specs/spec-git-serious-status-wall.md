@@ -32,6 +32,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### The status wall
 ----
 RID: `req-git-serious-status-wall`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `self`
@@ -48,6 +49,7 @@ One page lists the latest run of every workflow across every repository of the o
 ### Criticality sort and the not-observable state
 ----
 RID: `req-git-serious-status-wall-criticality`
+
 Status: `Proposed`
 Feature: `improvement`
 Milestone: `self`

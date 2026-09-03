@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Conjunction findings across object types
 ----
 RID: `req-git-serious-conjunction-findings`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `self`

@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Tell me when it breaks
 ----
 RID: `req-git-serious-tell-me-when-it-breaks`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `friends`
