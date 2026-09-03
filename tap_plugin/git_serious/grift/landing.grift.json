@@ -6,15 +6,15 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a06406-c3bb-7345-8a7e-0f67a0ba2624",
+        "entity_id": "01a067e1-8266-71e1-bb86-fba6855baddc",
         "entity_type": "batch",
-        "name": "git-serious landing v0.5.2",
+        "name": "git-serious landing v0.5.3",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.landing",
-        "name": "git-serious landing v0.5.2",
-        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. Re-publish of v0.2.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved. v0.4.0 (2026-09-02): the landing graph IS the machinery view of the primary repository (github_core's machinery projection module; git-serious-tap#35) — the account-wide picture lives on /git-serious/org. Node upserts only: the layout's js_file, the projection's `machinery` key, and the node search's scoped query; edges are untouched because the importer keys an edge on its endpoints. The status-wall tables beneath are unchanged. v0.4.1: the graph row takes 9fr of 12 (~75% of the page) while the machinery view is being dialed in. v0.5.0 (wall port onto the machinery landing): the page scrolls — the graph keeps 75vh, the tables take fixed heights (640 / 360 px, Tabulator-owned scroll, sticky header); the wall's columns are the trigger as a glyph (TAP's CI-universal trigger icons mapped from GitHub's event vocabulary), run number linking to the run, branch linking to the repository's branch page, conclusion, viewer-local started/completed, Elapsed with the ratio to the median of the other successful runs of the same workflow and trigger (outlier / within / not enough history), and a history link to the workflow page (/git-serious/workflow?workflow_id=…, git-serious-tap#41). Re-publish: every id stable; only the batch id moved. v0.5.1: Elapsed, its ratio to the workflow's baseline (vs usual) and the sample size (n) are three sortable columns ahead of the timestamps; in-flight runs (no conclusion yet) show a dash and stay out of every baseline; History is a per-workflow sparkline — one bar per collected run at its actual start time on the workflow's own first→last axis, failures in the critical hue, this run in the accent, the median as a hairline — linking to the workflow page. v0.5.2: Run sits right after the trigger glyph; the repository drops the account name (full name on hover); every heading carries a pop-over explaining what it means; the wall auto-refreshes every 60 s with a visible countdown that a click pauses; the first page is 200 rows with the true total in the footer (Gryphon paging in execute_search, tap#299)."
+        "name": "git-serious landing v0.5.3",
+        "description": "Second light (git-serious-tap#6): the observed account's CI/CD system as one legible picture. Structure is containment — account ⊃ repositories ⊃ workflows — drawn by the plugin's landing layout module (static/git_serious/js/projections/landing.js) over the same node seed as v0.1.0; the GitHub Apps and the Actions OIDC issuer sit in a row beneath the account with their ENABLED_ON edges kept. The status wall rides the graph as status badges on the workflow cards (req-git-serious-status-wall): red = failed runs in the collected window, grey = no run observed for this workflow at all. Three states, never two: a card with no badge means every collected run passed; a grey badge means we could not say. Runs and jobs stay off the canvas. GitHub nodes single-tap to their html_url. v0.3.0 adds the status wall AS TABLES beneath the graph (req-git-serious-status-wall-1, the first table-stakes table): every collected run across every repository, newest first, and beneath it the workflows with no run in the collected window. Both are envelope-mode Gryphon searches bound to standard table panels — a page and a query, no code — so any consumer can mount the same pair on its own page with one USES_PANEL edge. The wall is account-wide by definition; the graph above is this org's machinery. The collected window is github_core's initial_run_limit (10 runs per REPOSITORY), so 'no run observed' here means 'no run inside that window', never 'this workflow never ran' — the panel text says so. Re-publish of v0.2.0: page, panel, projection, elevation, layout and search ids are stable; only the batch id moved. v0.4.0 (2026-09-02): the landing graph IS the machinery view of the primary repository (github_core's machinery projection module; git-serious-tap#35) — the account-wide picture lives on /git-serious/org. Node upserts only: the layout's js_file, the projection's `machinery` key, and the node search's scoped query; edges are untouched because the importer keys an edge on its endpoints. The status-wall tables beneath are unchanged. v0.4.1: the graph row takes 9fr of 12 (~75% of the page) while the machinery view is being dialed in. v0.5.0 (wall port onto the machinery landing): the page scrolls — the graph keeps 75vh, the tables take fixed heights (640 / 360 px, Tabulator-owned scroll, sticky header); the wall's columns are the trigger as a glyph (TAP's CI-universal trigger icons mapped from GitHub's event vocabulary), run number linking to the run, branch linking to the repository's branch page, conclusion, viewer-local started/completed, Elapsed with the ratio to the median of the other successful runs of the same workflow and trigger (outlier / within / not enough history), and a history link to the workflow page (/git-serious/workflow?workflow_id=…, git-serious-tap#41). Re-publish: every id stable; only the batch id moved. v0.5.1: Elapsed, its ratio to the workflow's baseline (vs usual) and the sample size (n) are three sortable columns ahead of the timestamps; in-flight runs (no conclusion yet) show a dash and stay out of every baseline; History is a per-workflow sparkline — one bar per collected run at its actual start time on the workflow's own first→last axis, failures in the critical hue, this run in the accent, the median as a hairline — linking to the workflow page. v0.5.2: Run sits right after the trigger glyph; the repository drops the account name (full name on hover); every heading carries a pop-over explaining what it means; the wall auto-refreshes every 60 s with a visible countdown that a click pauses; the first page is 200 rows with the true total in the footer (Gryphon paging in execute_search, tap#299). v0.5.3 (git-serious-tap#47): the gates table beneath the status wall — one row per repository, what governs its default branch, what produces each required check, and what we cannot see (github_core's github-gates panel over the status_check bake)."
       },
       "nodes": [
         {
@@ -327,6 +327,10 @@
                       "height": "auto"
                     },
                     "row-3": {
+                      "panel-id": "gates",
+                      "height": "auto"
+                    },
+                    "row-4": {
                       "panel-id": "not-observed",
                       "height": "auto"
                     }
@@ -627,6 +631,27 @@
               "height": 360
             }
           }
+        },
+        {
+          "entity": {
+            "entity_id": "01a067e1-8266-71e1-bb86-fba4947ee6a2",
+            "entity_type": "panel",
+            "name": "The gates",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "The gates",
+            "slug": "git-serious-gates",
+            "description": "What gates each repository's default branch, and what we cannot see. One row per repository: the rulesets governing its default branch, whether a pull request is required, each required check and what produces it — a workflow in this repository, an installed App, or nothing observed (the branch cannot merge) — the bypass list in three states (not observable / counted / observed), and the checks its peers require that it does not. Derived by github_core's github-gates panel from the PROTECTS, REQUIRES_CHECK, PRODUCES_CHECK and DEFINES_WORKFLOW edges; worst gate first. Serves req-git-serious-branch-protection-tiers-1, req-git-serious-configured-the-same-1 and the gate chain of req-git-serious-why-not-merging (git-serious-tap#47).",
+            "view": "github_core/panels/gates.html",
+            "config": {
+              "quick_filter": true,
+              "height": 480,
+              "refresh_seconds": 300
+            }
+          }
         }
       ],
       "edges": [
@@ -830,6 +855,26 @@
                 "model": "page",
                 "spec": "page-panels",
                 "value": "not-observed"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a067e1-8266-71e1-bb86-fba556caae03",
+            "entity_type": "edge",
+            "name": "Page USES_PANEL gates",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a03f78-11fa-7029-823d-794a7b1f0350",
+            "to_entity_id": "01a067e1-8266-71e1-bb86-fba4947ee6a2",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "gates"
               }
             }
           }
