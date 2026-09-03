@@ -32,6 +32,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Who owns this
 ----
 RID: `req-git-serious-who-owns-this`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `friends`
@@ -48,6 +49,7 @@ For any repository, the instance answers "who owns this" from what the forge its
 ### Collected, not declared, so it cannot rot
 ----
 RID: `req-git-serious-who-owns-this-collected-ownership`
+
 Status: `Proposed`
 Feature: `improvement`
 Milestone: `friends`

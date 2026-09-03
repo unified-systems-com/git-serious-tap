@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### SHA-pinning status
 ----
 RID: `req-git-serious-sha-pinning-status`
+
 Status: `Proposed`
 Feature: `table-stakes`
 Milestone: `self`

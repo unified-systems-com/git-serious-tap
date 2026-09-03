@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### git-serious-incidents — historical compromises as grid representations
 ----
 RID: `req-git-serious-incidents-pack`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `everyone`

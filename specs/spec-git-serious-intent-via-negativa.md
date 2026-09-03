@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Intent and via negativa — drift against the intended shape
 ----
 RID: `req-git-serious-intent-via-negativa`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `friends`

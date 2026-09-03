@@ -31,6 +31,7 @@ marked *observed* or *inferred* (tap#206's provenance markers).
 ### Past the event horizon — collectors on the third parties themselves
 ----
 RID: `req-git-serious-past-the-event-horizon`
+
 Status: `Proposed`
 Feature: `innovation`
 Milestone: `everyone`
