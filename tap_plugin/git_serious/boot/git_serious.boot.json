@@ -80,5 +80,9 @@
         "note": "Pulls the configured scope onto the grid: the account's repositories, workflows, runs, jobs, runners, apps. Fires against whatever github_pat envelope is placed — until the account-scoped PAT lands this is the shared repos-only credential, which makes the first boot an end-to-end smoke test of the collector path rather than the org picture."
       }
     ]
+  },
+  "web": {
+    "landing_entity_id": "01a03f78-11fa-7029-823d-794a7b1f0350",
+    "landing_slug": "/git-serious"
   }
 }
