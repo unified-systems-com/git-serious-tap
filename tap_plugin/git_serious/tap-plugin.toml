@@ -27,4 +27,4 @@ workflow = "grift/workflow.grift.json"
 [[boot.records]]
 name = "git_serious"
 description = "git-serious standing against one GitHub account: github_core (account-scoped collector) + identity_core + administrivia + the git-serious landing page. required_secrets declares the read-only github_pat."
-sha256 = "c23925660ba2bbe9b91c5f7eef83b6379f188d800cf1374687f216f767bb2dc0"
+sha256 = "630cf233b88da8c3da9140bd02faf720483c631e5eec5f8353efcd37847fc897"

@@ -10,9 +10,9 @@
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/git-core-tap",
-          "rev": "10bb7631f6f42777247a33a9ff14a8af71170d6c"
+          "rev": "v0.1.0"
         },
-        "note": "Package-mode (tap_plugin.git_core). Neutral Git vocabulary; first because github_core depends on it. DEV-PHASE: immutable commit until v0.1.0 is tagged (PR# 80 review)."
+        "note": "Package-mode (tap_plugin.git_core). Neutral Git vocabulary; first because github_core depends on it. Pinned at the immutable tag v0.1.0 (released 2026-09-08).1.0 is tagged (PR# 80 review)."
       },
       {
         "slug": "administrivia",
