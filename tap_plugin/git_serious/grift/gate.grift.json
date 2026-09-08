@@ -6,15 +6,15 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a08322-fff4-74f2-a40a-d37bc13b26d1",
+        "entity_id": "01a08331-a1a0-705c-bec0-ed999d6729ce",
         "entity_type": "batch",
-        "name": "git-serious gate view v0.1.2",
+        "name": "git-serious gate view v0.1.3",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.gate",
-        "name": "git-serious gate view v0.1.2",
-        "description": "The gate (git-serious-tap#6): for a repository's default branch, what must be true for a commit to land — and what we cannot see. Four Gryphon-backed table panels over the self-tier vocabulary: the rulesets and what they enforce, the bypass lists a read-only credential cannot read, the declared jobs that check out a ref they were handed, and the cache entries written from outside an observed ref. Two of the four are ABSENCE panels by design — an empty bypass column and a missing ref edge each mean something specific, and rendering either as nothing would be the most reassuring possible lie. Tables rather than a graph at this altitude: the landing page carries the picture, this page carries the adjudication. v0.1.1 (git-serious-tap#47): the per-repository gates table at the top — the four per-ruleset panels below it are the parts; this is the posture. v0.1.2 (git-serious-tap#54): the cache anti-join names git_core__git_ref (refs moved to git_core, github-core#76); node upsert only."
+        "name": "git-serious gate view v0.1.3",
+        "description": "The gate (git-serious-tap#6): for a repository's default branch, what must be true for a commit to land — and what we cannot see. Four Gryphon-backed table panels over the self-tier vocabulary: the rulesets and what they enforce, the bypass lists a read-only credential cannot read, the declared jobs that check out a ref they were handed, and the cache entries written from outside an observed ref. Two of the four are ABSENCE panels by design — an empty bypass column and a missing ref edge each mean something specific, and rendering either as nothing would be the most reassuring possible lie. Tables rather than a graph at this altitude: the landing page carries the picture, this page carries the adjudication. v0.1.1 (git-serious-tap#47): the per-repository gates table at the top — the four per-ruleset panels below it are the parts; this is the posture. v0.1.2 (git-serious-tap#54): the cache anti-join names git_core__git_ref (refs moved to git_core, github-core#76); node upsert only. v0.1.3 (github-core#79 wave): STORES_CACHE / SCOPED_TO_REF replace HAS_CACHE / SCOPED_TO in the cache anti-join; node upsert only."
       },
       "nodes": [
         {
@@ -29,7 +29,7 @@
           "node": {
             "name": "Each repository's gate",
             "slug": "git-serious-gate-gates",
-            "description": "What gates each repository's default branch, and what we cannot see. One row per repository: the rulesets governing its default branch, whether a pull request is required, each required check and what produces it — a workflow in this repository, an installed App, or nothing observed (the branch cannot merge) — the bypass list in three states (not observable / counted / observed), and the checks its peers require that it does not. Derived by github_core's github-gates panel from the PROTECTS, REQUIRES_CHECK, PRODUCES_CHECK and DEFINES_WORKFLOW edges; worst gate first. Serves req-git-serious-branch-protection-tiers-1, req-git-serious-configured-the-same-1 and the gate chain of req-git-serious-why-not-merging (git-serious-tap#47).",
+            "description": "What gates each repository's default branch, and what we cannot see. One row per repository: the rulesets governing its default branch, whether a pull request is required, each required check and what produces it — a workflow in this repository, an installed App, or nothing observed (the branch cannot merge) — the bypass list in three states (not observable / counted / observed), and the checks its peers require that it does not. Derived by github_core's github-gates panel from the PROTECTS_REPOSITORY, REQUIRES_CHECK, PRODUCES_CHECK and DEFINES_WORKFLOW edges; worst gate first. Serves req-git-serious-branch-protection-tiers-1, req-git-serious-configured-the-same-1 and the gate chain of req-git-serious-why-not-merging (git-serious-tap#47).",
             "view": "github_core/panels/gates.html",
             "config": {
               "quick_filter": true,
@@ -47,7 +47,7 @@
           },
           "node": {
             "name": "git-serious — the gate on each ref",
-            "description": "Every ruleset on the account, with what it enforces and whether its bypass list could be read at all. One node per ruleset however many repositories it protects — an organization ruleset is a single object, and the repositories it covers are the PROTECTS edges.",
+            "description": "Every ruleset on the account, with what it enforces and whether its bypass list could be read at all. One node per ruleset however many repositories it protects — an organization ruleset is a single object, and the repositories it covers are the PROTECTS_REPOSITORY edges.",
             "search_type": "gryphon",
             "root": "node",
             "definition": {
@@ -104,13 +104,13 @@
           },
           "node": {
             "name": "git-serious — cache entries from outside an observed ref",
-            "description": "Stored cache entries with no SCOPED_TO edge, which in practice means the entry was written from a pull-request ref. A cache written outside a branch and restored inside it is the shape five documented compromises share. The NOT EXISTS anti-join needs an edge in the main pattern, hence the HAS_CACHE hop.",
+            "description": "Stored cache entries with no SCOPED_TO_REF edge, which in practice means the entry was written from a pull-request ref. A cache written outside a branch and restored inside it is the shape five documented compromises share. The NOT EXISTS anti-join needs an edge in the main pattern, hence the STORES_CACHE hop.",
             "search_type": "gryphon",
             "root": "node",
             "definition": {
               "query": [
-                "MATCH (repo:github_core__github_repository)-[e:HAS_CACHE__github_core]->(c:github_core__actions_cache)",
-                "NOT EXISTS { MATCH (c)-[:SCOPED_TO__github_core]->(r:git_core__git_ref) }"
+                "MATCH (repo:github_core__github_repository)-[e:STORES_CACHE__github_core]->(c:github_core__actions_cache)",
+                "NOT EXISTS { MATCH (c)-[:SCOPED_TO_REF__github_core]->(r:git_core__git_ref) }"
               ]
             }
           }
