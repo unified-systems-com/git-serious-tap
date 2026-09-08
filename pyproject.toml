@@ -24,7 +24,7 @@ dynamic = ["version"]
 # published under; the legacy tap-plugin-* names rename in the tap#147 wave.
 dependencies = [
     "git-core-tap>=0.1.0,<0.2",
-    "tap-plugin-github-core",
+    "tap-plugin-github-core>=0.6.0,<0.7",
     "tap-plugin-identity-core",
     "tap-plugin-administrivia",
 ]
