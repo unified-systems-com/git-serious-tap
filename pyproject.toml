@@ -23,6 +23,7 @@ dynamic = ["version"]
 # the samsite precedent). Dependencies are referenced by the name they are currently
 # published under; the legacy tap-plugin-* names rename in the tap#147 wave.
 dependencies = [
+    "git-core-tap",
     "tap-plugin-github-core",
     "tap-plugin-identity-core",
     "tap-plugin-administrivia",

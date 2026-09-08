@@ -13,6 +13,16 @@
   "install": {
     "plugins": [
       {
+        "slug": "git_core",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/git-core-tap",
+          "rev": "main"
+        },
+        "note": "Package-mode (tap_plugin.git_core). The neutral Git vocabulary github_core emits (github-core#76). DEV-PHASE: `main` until git-core-tap tags v0.1.0; then the tag. First in the list: github_core declares depends_on git_core and the pre-boot gate checks order."
+      },
+      {
         "slug": "administrivia",
         "enabled": true,
         "source": {
