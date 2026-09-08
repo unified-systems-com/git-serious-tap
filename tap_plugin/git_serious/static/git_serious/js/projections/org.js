@@ -5,7 +5,7 @@
  * Structure is drawn as containment, not as edges: the account is a box, each
  * repository is a box inside it, each workflow is a card inside its repository.
  * The GitHub Apps sit in a row beneath the
- * account; their ENABLED_ON edges into the repositories stay visible because
+ * account; their ENABLED_ON_REPOSITORY edges into the repositories stay visible because
  * "which apps touch which repos" is a real question. Runs are not on the
  * canvas — they arrive as status badges on the workflow cards, populated by
  * the projection's status_badges searches (a page and a query, per the
@@ -40,7 +40,7 @@ const BASE_SIZES = {
 };
 
 // github_core carries no platform → app edge (apps hang off repositories via
-// ENABLED_ON and off the account via installations), so the org view
+// ENABLED_ON_REPOSITORY and off the account via installations), so the org view
 // synthesizes one per app in the scene to nest the apps row inside the
 // github.com box. Scene-local: never written to the grid. The durable fix
 // is a HOSTS_APP edge minted by the collector (filed against github_core).
@@ -62,7 +62,7 @@ export async function execute(context) {
     }
 
     // Edge-type labels are noise at this altitude: containment carries the
-    // structure and the only free-standing edges are the apps' ENABLED_ON
+    // structure and the only free-standing edges are the apps' ENABLED_ON_REPOSITORY
     // lines, whose meaning is the line itself.
     // Label sizing and container chrome are the shared conventions
     // (tap_viz runtime/chrome.js, which took this view's numbers): edge

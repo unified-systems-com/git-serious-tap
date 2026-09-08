@@ -5,7 +5,7 @@
  * Structure is drawn as containment, not as edges: the account is a box, each
  * repository is a box inside it, each workflow is a card inside its repository.
  * The GitHub Apps (and the Actions OIDC issuer) sit in a row beneath the
- * account; their ENABLED_ON edges into the repositories stay visible because
+ * account; their ENABLED_ON_REPOSITORY edges into the repositories stay visible because
  * "which apps touch which repos" is a real question. Runs are not on the
  * canvas — they arrive as status badges on the workflow cards, populated by
  * the projection's status_badges searches (a page and a query, per the
@@ -44,7 +44,7 @@ export async function execute(context) {
     const {cy, trigger_reason} = context;
 
     // Edge-type labels are noise at this altitude: containment carries the
-    // structure and the only free-standing edges are the apps' ENABLED_ON
+    // structure and the only free-standing edges are the apps' ENABLED_ON_REPOSITORY
     // lines, whose meaning is the line itself.
     cy.style()
         .selector("edge")
