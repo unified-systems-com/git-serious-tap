@@ -34,8 +34,8 @@ keystone target 3 ("map unified-systems").
 ## Prior Art
 
 - The landing page (`grift/landing.grift.json`, git-serious-tap#35) — draws one repository's
-  machinery already; this page reuses its projection, elevation, layout and scene searches by
-  entity id rather than re-minting them.
+  machinery already; this page reuses its projection, elevation and layout by entity id rather
+  than re-minting them, and declares its own scene searches.
 - [The workflow page](spec-git-serious-workflow-page.md) (2026-09-02) — the per-entity page
   pattern: a search with a URL-bound parameter, envelope-mode rows, table panels.
 - github_core `spec-github-core-repo-landing-page-v0.md` — the plugin-level repository page
@@ -50,13 +50,13 @@ Provenance of every claim: **documented** unless marked *observed* or *inferred*
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-repository-page | [The repository page](#the-repository-page) | In Development | Four sections in reading order, parameterised by `?repo=owner/name`; no new code — searches, table panels, one graph panel |
+| req-git-serious-repository-page | [The repository page](#the-repository-page) | Implemented | Four sections in reading order, parameterised by `?repo=owner/name`; no new code — searches, table panels, one graph panel |
 | req-git-serious-repository-page-empties | [Empty answers say what they mean](#empty-answers-say-what-they-mean) | In Development | The three-state rule at page level: observed-empty, could-not-read, never-asked |
 
 ### The repository page
 ----
 RID: `req-git-serious-repository-page`
-Status: `In Development`
+Status: `Implemented`
 Feature: `table-stakes`
 Milestone: `self`
 
@@ -65,9 +65,12 @@ One page at `/git-serious/repository?repo=<owner/name>` shows one repository, to
 1. **This repository** — one row: the repository (a link to GitHub), its role, criticality,
    lifecycle and owner as the organization declares them (`github_repository.custom_properties`),
    the default branch, visibility, and the two "read?" states that qualify everything below.
-2. **Machinery** — github_core's machinery projection over this repository, the same scene the
-   landing page draws (its scene searches are already scoped by `$repo`), about sixty percent of
-   the viewport, header hidden so the picture reads first.
+2. **Machinery** — github_core's machinery projection over this repository: the landing page's
+   projection, elevation and layout (visualization configuration, referenced by id) over this
+   page's own scene searches, about sixty percent of the viewport, header hidden so the picture
+   reads first. The owning account enters the scene through `OWNS_REPO`, never by an unfiltered
+   account match — pull-request authors are accounts too since github-core#82 (git-serious-tap#57
+   carries that fix to the landing and org pages).
 3. **Open pull requests** — `pull_request` rows with `state = OPEN`, most recently updated first:
    number (to GitHub), title, author, head → base (the head linking to the branch on the
    repository it lives in, a fork's on the fork), the check verdict on the head as GitHub's
@@ -76,19 +79,21 @@ One page at `/git-serious/repository?repo=<owner/name>` shows one repository, to
    over runs filtered to this repository, newest first; then the repository's workflows with no
    run in the collected window.
 
-Every panel derives from the grid through a search declaring `repo` as a string input with the
-instance's primary repository as its default, so the page is a query with a parameter and never a
-special-cased view; `?repo=` reproduces the same page for any collected repository.
+Every panel derives from the grid through a search declaring `repo` as a REQUIRED string input with
+no default, so the page names no repository of its own and is a query with a parameter, never a
+special-cased view; `?repo=` reproduces the same page for any collected repository, and the page is
+reached by link rather than from the top navigation, because without its parameter it has nothing
+to show. *Observed 2026-09-09 on the 8010 dev stack for three repositories.*
 
 #### Acceptance Criteria
 
 | ACID | Title | Status | Description | Notes |
 | --- | --- | :---: | --- | --- |
-| req-git-serious-repository-page-1 | Reading Order | In Development | The page renders identity, machinery, open pull requests, status wall and not-observed in that order, one column, with the machinery slot sized in viewport units and every other row `auto`. | No pixels on the page grid. |
-| req-git-serious-repository-page-2 | One Repository Throughout | In Development | With `?repo=owner/name`, every section shows that repository alone: its row, its scene, its open pull requests, only its runs and only its workflows; another `?repo=` reproduces the page for that repository. | Defaults to the primary repository without the parameter. |
-| req-git-serious-repository-page-3 | Machinery Reused, Not Re-minted | In Development | The machinery panel references the landing page's projection, elevation, layout and scene searches by entity id; changing the landing's machinery changes this page's. | Derive once. |
-| req-git-serious-repository-page-4 | Build Status Per Proposal | In Development | Each open pull request shows GitHub's combined check verdict on its head commit and how many checks it counted, App-produced ones included; a head with nothing run shows a dash, never green. | Reads `checks_rollup_state` / `checks` (github-core#82). |
-| req-git-serious-repository-page-5 | Reachable | Proposed | The page is reachable from a repository on the org graph and from the double-tap cards without typing a URL. | Graph nav rules resolve to `html_url` only today; a same-origin page rule is the gap. |
+| req-git-serious-repository-page-1 | Reading Order | Implemented | The page renders identity, machinery, open pull requests, status wall and not-observed in that order, one column, with the machinery slot sized in viewport units and every other row `auto`. | No pixels on the page grid. |
+| req-git-serious-repository-page-2 | One Repository Throughout | Implemented | With `?repo=owner/name`, every section shows that repository alone: its row, its scene (exactly one account — the owner, reached through `OWNS_REPO`, never a pull-request author), its open pull requests, only its runs and only its workflows; another `?repo=` reproduces the page for that repository. | No default: without the parameter every panel states that `repo` is required. |
+| req-git-serious-repository-page-3 | Machinery Reused, Not Re-minted | Implemented | The machinery panel references the landing page's projection, elevation and layout by entity id (configuration, not data); changing the landing's machinery module changes this page's. Its scene searches are its own, so no default repository rides in from another page. | Derive once; embed nothing from the data nodes. |
+| req-git-serious-repository-page-4 | Build Status Per Proposal | Implemented | Each open pull request shows GitHub's combined check verdict on its head commit and how many checks it counted, App-produced ones included; a head with nothing run shows a dash, never green. | Reads `checks_rollup_state` / `checks` (github-core#82). |
+| req-git-serious-repository-page-5 | Reachable | Proposed | The page is reachable from a repository on the org graph and from the double-tap cards without typing a URL. | Graph nav rules resolve to `html_url` only today; the same-origin page rule is tap#355. The double-tap cards can link today (`/git-serious/repository?repo=<full_name>`). |
 
 ### Empty answers say what they mean
 ----
@@ -107,9 +112,9 @@ in its own description that absence of a run is not evidence the workflow never 
 
 | ACID | Title | Status | Description | Notes |
 | --- | --- | :---: | --- | --- |
-| req-git-serious-repository-page-empties-1 | Three States On The Row | In Development | The identity row shows `observed`, `unobservable` or blank (never asked) for pull requests and for custom properties, beside the values they qualify. | From the repository node's own fields. |
-| req-git-serious-repository-page-empties-2 | Unset Is Not Missing | In Development | A custom property the organization declares and this repository has not set renders as a dash in its own column, distinguishable from a repository whose properties could not be read. | null on the wire (github-core#77). |
-| req-git-serious-repository-page-empties-3 | Zero Proposals Is A Fact Only When Observed | Proposed | An empty open-pull-requests table under `pull_requests_observability = observed` reads as "no open pull requests"; under `unobservable` the page says the list could not be read. | Needs a table-panel empty message keyed to a sibling field — a tap_web gap to file. |
+| req-git-serious-repository-page-empties-1 | Three States On The Row | Implemented | The identity row shows `observed`, `unobservable` or blank (never asked) for pull requests and for custom properties, beside the values they qualify. | From the repository node's own fields. |
+| req-git-serious-repository-page-empties-2 | Unset Is Not Missing | Implemented | A custom property the organization declares and this repository has not set renders as a dash in its own column, distinguishable from a repository whose properties could not be read. | null on the wire (github-core#77). |
+| req-git-serious-repository-page-empties-3 | Zero Proposals Is A Fact Only When Observed | Proposed | An empty open-pull-requests table under `pull_requests_observability = observed` reads as "no open pull requests"; under `unobservable` the page says the list could not be read. | Needs a table-panel empty message keyed to a sibling field — tap#354. Until then the identity row's "PRs read?" column carries the state. |
 
 ## Non-goals (v0)
 

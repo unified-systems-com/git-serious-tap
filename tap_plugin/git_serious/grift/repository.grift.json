@@ -29,8 +29,7 @@
           "node": {
             "name": "Repository",
             "slug": "/git-serious/repository",
-            "description": "One repository: identity, machinery, open pull requests, its own status wall. Parameterised by ?repo=owner/name; the page names no repository of its own.",
-            "nav_weight": 95,
+            "description": "One repository: identity, machinery, open pull requests, its own status wall. Parameterised by ?repo=owner/name and reached by link (the org graph, the double-tap cards); not in the top navigation, because without its parameter it has nothing to show.",
             "layout": {
               "full_bleed": true,
               "columns": {
