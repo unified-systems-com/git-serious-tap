@@ -7,7 +7,10 @@ description = "Visualize, track, and secure your CI/CD system — for humans and
 # No code-import dependencies: git-serious references other plugins' ENTITY TYPES by string
 # (Gryphon in its pages) and fires github_core's collector from its boot record — both are
 # INSTALL deps (pyproject `dependencies`), not import-time edges. See pyproject.toml.
-depends_on = []
+depends_on = [
+    { slug = "administrivia", note = "The product record seeds administrivia's admin pages beside the landing; the landing links to them." },
+    { slug = "github_core", note = "The landing, org and repository pages are GRIFT over github_core's vocabulary (searches name github_core__* types; the machinery projection is github_core's)." },
+]
 
 # Pure composition — no crypto, no native deps (spec-fips.md, req-tap-plugin-manifest-v0-fips).
 [fips]
@@ -29,3 +32,8 @@ repository = "grift/repository.grift.json"
 name = "git_serious"
 description = "git-serious standing against one GitHub account: github_core (account-scoped collector) + identity_core + administrivia + the git-serious landing page. required_secrets declares the read-only github_pat."
 sha256 = "593e7aeb4daa962c37ffb590c373e1944b079cff77a27f3d45c2335beba2d0f1"
+
+[[boot.records]]
+name = "ci"
+description = "RESERVED NAME (req-boot-bootstrap-ci-record): the stack this plugin's own tests run in — depends_on closure + self, offline, credential-free. The consumer flips self to editable."
+sha256 = "7301fb75dca5d5ac0bf469747005025338ab2923ff649542ae5a8ce4c9236a6f"
