@@ -44,6 +44,7 @@ One page lists the latest run of every workflow across every repository of the o
 | ACID | Title | Status | Description | Notes |
 | --- | --- | :---: | --- | --- |
 | req-git-serious-status-wall-1 | Every Repository, One Glance | Proposed | On an instance observing an account with N repositories, the wall shows the latest run of every workflow in all N without a per-repository action, and a repository with no runs collected renders as *not observed*, never as absent or green. | The done-test: the feature's Status flips only when this is OBSERVED on a running instance. |
+| req-git-serious-status-wall-2 | One Panel, Optional Repository | Implemented | The wall and its not-observed table are one panel node each. Their searches take `repo` (a full_name) as an optional input from the mounting page's URL: present, the rows are that repository's alone; absent (default `""`), every repository's. The landing mounts them whole; the repository page and any page that pins a repository mount the same nodes. | Predicate `STARTS_WITH $repo AND ENDS_WITH $repo` — exact for a GitHub full name (one slash) and true of every name for `""`; verified on the 8010 grid 2026-09-09 (451/23 → 133/1). Gryphon's own optional-parameter form is tap#360. Moving the panel into github_core is #36. |
 
 ---
 ### Criticality sort and the not-observable state

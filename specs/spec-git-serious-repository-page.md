@@ -62,9 +62,13 @@ Milestone: `self`
 
 One page at `/git-serious/repository?repo=<owner/name>` shows one repository, top to bottom:
 
-1. **This repository** — one row: the repository (a link to GitHub), its role, criticality,
-   lifecycle and owner as the organization declares them (`github_repository.custom_properties`),
-   the default branch, visibility, and the two "read?" states that qualify everything below.
+1. **This repository** — one row under three grouped headers: *Repository* (the name as a link
+   to GitHub, default branch, visibility), *Declared by the organization* (role, criticality,
+   lifecycle, owner — `github_repository.custom_properties`) and *Collected* (the two "read?"
+   states that qualify everything below). The state words are tone badges (green *observed*, red
+   *unobservable*; red *critical*, amber *high*); the table has minimal chrome — no filter, no
+   paging, no sort — because there is one row, ever (git-serious-tap#61; tap#356 for the panel
+   features).
 2. **Machinery** — github_core's machinery projection over this repository: the landing page's
    projection, elevation and layout (visualization configuration, referenced by id) over this
    page's own scene searches, about sixty percent of the viewport, header hidden so the picture
@@ -75,12 +79,14 @@ One page at `/git-serious/repository?repo=<owner/name>` shows one repository, to
    number (to GitHub), title, author, head → base (the head linking to the branch on the
    repository it lives in, a fork's on the fork), the check verdict on the head as GitHub's
    combined rollup with the count it counted, review decision, mergeability, updated.
-4. **Status wall, this repository** — the landing wall's columns minus the repository column,
-   over runs filtered to this repository, newest first; then the repository's workflows with no
-   run in the collected window.
+4. **Status wall** — the landing page's status wall panel and its not-observed table, the SAME
+   panel nodes mounted here (referenced by id), narrowed to this repository by the page's
+   `?repo=`: the wall's searches take `repo` as an optional input whose absence means every
+   repository (git-serious-tap#62, `spec-git-serious-status-wall.md`).
 
-Every panel derives from the grid through a search declaring `repo` as a REQUIRED string input with
-no default, so the page names no repository of its own and is a query with a parameter, never a
+Every panel derives from the grid through a search that takes `repo` from the page URL — the page's
+own searches declare it REQUIRED with no default, the shared wall's declare it optional with the
+empty string meaning every repository — so the page names no repository of its own and is a query with a parameter, never a
 special-cased view; `?repo=` reproduces the same page for any collected repository, and the page is
 reached by link rather than from the top navigation, because without its parameter it has nothing
 to show. *Observed 2026-09-09 on the 8010 dev stack for three repositories.*
@@ -91,9 +97,11 @@ to show. *Observed 2026-09-09 on the 8010 dev stack for three repositories.*
 | --- | --- | :---: | --- | --- |
 | req-git-serious-repository-page-1 | Reading Order | Implemented | The page renders identity, machinery, open pull requests, status wall and not-observed in that order, one column, with the machinery slot sized in viewport units and every other row `auto`. | No pixels on the page grid. |
 | req-git-serious-repository-page-2 | One Repository Throughout | Implemented | With `?repo=owner/name`, every section shows that repository alone: its row, its scene (exactly one account — the owner, reached through `OWNS_REPO`, never a pull-request author), its open pull requests, only its runs and only its workflows; another `?repo=` reproduces the page for that repository. | No default: without the parameter every panel states that `repo` is required. |
-| req-git-serious-repository-page-3 | Machinery Reused, Not Re-minted | Implemented | The machinery panel references the landing page's projection, elevation and layout by entity id (configuration, not data); changing the landing's machinery module changes this page's. Its scene searches are its own, so no default repository rides in from another page. | Derive once; embed nothing from the data nodes. |
+| req-git-serious-repository-page-3 | Reused, Not Re-minted | Implemented | The status wall and not-observed slots mount the landing page's panel nodes by id, and the machinery panel references the landing page's projection, elevation and layout by entity id (configuration, not data); changing the landing's machinery module changes this page's. Its scene searches are its own, so no default repository rides in from another page. | Derive once; embed nothing from the data nodes. |
 | req-git-serious-repository-page-4 | Build Status Per Proposal | Implemented | Each open pull request shows GitHub's combined check verdict on its head commit and how many checks it counted, App-produced ones included; a head with nothing run shows a dash, never green. | Reads `checks_rollup_state` / `checks` (github-core#82). |
 | req-git-serious-repository-page-5 | Reachable | Proposed | The page is reachable from a repository on the org graph and from the double-tap cards without typing a URL. | Graph nav rules resolve to `html_url` only today; the same-origin page rule is tap#355. The double-tap cards can link today (`/git-serious/repository?repo=<full_name>`). |
+| req-git-serious-repository-page-6 | Identity Reads As Groups And States | Implemented | The identity table renders three grouped headers (Repository · Declared by the organization · Collected), minimal chrome, and tone badges on the observability words and criticality. | Observed 2026-09-09 on the 8010 dev stack after PR# 357 - tap reached the core. |
+| req-git-serious-repository-page-7 | One Wall, Narrowed | Implemented | With `?repo=owner/name` the wall and not-observed slots show that repository alone through the landing's panel nodes; the fragment URLs carry the landing panels' entity ids. | Observed 2026-09-09 on the 8010 dev stack. |
 
 ### Empty answers say what they mean
 ----
