@@ -99,13 +99,13 @@
           "entity": {
             "entity_id": "01a08766-f51c-72d0-a9f1-ae8199509ee3",
             "entity_type": "panel",
-            "name": "This repository",
+            "name": "This Repository",
             "dimensions": {
               "tap.graph": "web"
             }
           },
           "node": {
-            "name": "This repository",
+            "name": "This Repository",
             "slug": "git-serious-repository-identity",
             "description": "Who this repository is, as the organization declares it: its role, criticality, lifecycle and owner are GitHub custom properties (github-core#77), read against the organization's own definitions — a dash is a declared property this repository has not set. The two 'read?' columns say whether the collector could read pull requests and properties at all: 'unobservable' means a blank below is a refusal, not an absence.",
             "view": "tap_web/panels/table_panel.html",
@@ -120,55 +120,64 @@
                   "formatter_params": {
                     "href_field": "data.html_url"
                   },
-                  "header_tooltip": "owner/name. Opens the repository on GitHub."
+                  "header_tooltip": "owner/name. Opens the repository on GitHub.",
+                  "headerSort": false
                 },
                 {
                   "field": "data.custom_properties.repository-role",
                   "title": "Role",
                   "width": 110,
-                  "header_tooltip": "The repository's one primary purpose, as the organization declares it: platform, plugin, product, support or fixtures."
+                  "header_tooltip": "The repository's one primary purpose, as the organization declares it: platform, plugin, product, support or fixtures.",
+                  "headerSort": false
                 },
                 {
                   "field": "data.custom_properties.criticality",
                   "title": "Criticality",
                   "width": 125,
-                  "header_tooltip": "Consequence of this repository failing or being compromised, for the organization as a whole — not current attention."
+                  "header_tooltip": "Consequence of this repository failing or being compromised, for the organization as a whole — not current attention.",
+                  "headerSort": false
                 },
                 {
                   "field": "data.custom_properties.lifecycle",
                   "title": "Lifecycle",
                   "width": 120,
-                  "header_tooltip": "experimental, stand-up, active, maintenance, deprecated, draw-down or retired."
+                  "header_tooltip": "experimental, stand-up, active, maintenance, deprecated, draw-down or retired.",
+                  "headerSort": false
                 },
                 {
                   "field": "data.custom_properties.ownership-name",
                   "title": "Owner",
                   "width": 140,
-                  "header_tooltip": "The accountable owner: a team slug or a GitHub login (ownership-type says which)."
+                  "header_tooltip": "The accountable owner: a team slug or a GitHub login (ownership-type says which).",
+                  "headerSort": false
                 },
                 {
                   "field": "data.default_branch",
                   "title": "Default branch",
                   "width": 140,
-                  "header_tooltip": "The branch most controls default to targeting."
+                  "header_tooltip": "The branch most controls default to targeting.",
+                  "headerSort": false
                 },
                 {
                   "field": "data.visibility",
                   "title": "Visibility",
                   "width": 110,
-                  "header_tooltip": "public, private or internal."
+                  "header_tooltip": "public, private or internal.",
+                  "headerSort": false
                 },
                 {
                   "field": "data.pull_requests_observability",
                   "title": "PRs read?",
                   "width": 120,
-                  "header_tooltip": "observed = the collector read this repository's pull requests (zero below is then a fact); unobservable = it could not, so an empty list below means nothing; blank = never asked."
+                  "header_tooltip": "observed = the collector read this repository's pull requests (zero below is then a fact); unobservable = it could not, so an empty list below means nothing; blank = never asked.",
+                  "headerSort": false
                 },
                 {
                   "field": "data.custom_properties_observability",
                   "title": "Properties read?",
                   "width": 155,
-                  "header_tooltip": "observed = the organization's custom-property values were read (a dash is a declared property this repository has not set); unobservable = they could not be read; blank = never asked."
+                  "header_tooltip": "observed = the organization's custom-property values were read (a dash is a declared property this repository has not set); unobservable = they could not be read; blank = never asked.",
+                  "headerSort": false
                 }
               ]
             }
@@ -359,15 +368,15 @@
           "entity": {
             "entity_id": "01a08766-f51c-72d0-a9f1-ae84a69ffbdd",
             "entity_type": "panel",
-            "name": "Open pull requests",
+            "name": "Open Pull Requests",
             "dimensions": {
               "tap.graph": "web"
             }
           },
           "node": {
-            "name": "Open pull requests",
+            "name": "Open Pull Requests",
             "slug": "git-serious-repository-pulls",
-            "description": "What is proposed against this repository right now, and where each proposal stands. Checks is GitHub's combined verdict on the pull request's head commit — every check run and commit status counted, App-produced ones included — and the count beside it is how many the verdict counted; a dash means nothing has run on that head, which is not green. Review and Mergeable are GitHub's own words: a first read of mergeability is often UNKNOWN, and that is what it says. The number opens the pull request on GitHub; the head branch opens it on the branch's own repository, which for a fork is not this one. Click anywhere else on a row for the pull request on the grid.",
+            "description": "What is proposed against this repository right now, and where each proposal stands. Checks is GitHub's combined verdict on the pull request's head commit — every check run and commit status counted, App-produced ones included — and the count beside it is how many the verdict counted; a dash means nothing has run on that head, which is not green. Review and Mergeable are GitHub's own words: a first read of mergeability is often UNKNOWN, and that is what it says. The number and the title open the pull request on GitHub; the head branch opens it on the branch's own repository, which for a fork is not this one. Click anywhere else on a row for the pull request on the grid.",
             "view": "tap_web/panels/table_panel.html",
             "config": {
               "default_page_size": 50,
@@ -389,7 +398,11 @@
                   "title": "Title",
                   "widthGrow": 3,
                   "tooltip": "full_value",
-                  "header_tooltip": "The title as written."
+                  "header_tooltip": "The title as written. Opens the pull request on GitHub.",
+                  "formatter": "link",
+                  "formatter_params": {
+                    "href_field": "data.html_url"
+                  }
                 },
                 {
                   "field": "data.author_login",
@@ -489,15 +502,15 @@
           "entity": {
             "entity_id": "01a08766-f51c-72d0-a9f1-ae86b5fcd595",
             "entity_type": "panel",
-            "name": "Status wall — this repository",
+            "name": "Status Wall",
             "dimensions": {
               "tap.graph": "web"
             }
           },
           "node": {
-            "name": "Status wall — this repository",
+            "name": "Status Wall",
             "slug": "git-serious-repository-status-wall",
-            "description": "Is anything broken here right now? The landing page's status wall, filtered to this repository: every collected run, newest first. The glyph is the trigger; the run number opens the run on GitHub; the branch opens the branch on GitHub. Elapsed, its ratio to the workflow's own baseline (▲ slower, ▼ faster, – not enough history) and the sample size (n) sort independently; a run still in flight shows a dash. History is the workflow's runs as a strip and opens the workflow page. Click anywhere else on a row for the run on the grid.",
+            "description": "Is anything broken here right now? This repository's runs alone — every collected run, newest first. The glyph is the trigger; the run number opens the run on GitHub; the branch opens the branch on GitHub. Elapsed, its ratio to the workflow's own baseline (▲ slower, ▼ faster, – not enough history) and the sample size (n) sort independently; a run still in flight shows a dash. History is the workflow's runs as a strip and opens the workflow page. Click anywhere else on a row for the run on the grid.",
             "view": "tap_web/panels/table_panel.html",
             "config": {
               "default_page_size": 200,
@@ -699,13 +712,13 @@
           "entity": {
             "entity_id": "01a08766-f51c-72d0-a9f1-ae88f027942f",
             "entity_type": "panel",
-            "name": "Not observed in the collected window",
+            "name": "Not Observed in the Collected Window",
             "dimensions": {
               "tap.graph": "web"
             }
           },
           "node": {
-            "name": "Not observed in the collected window",
+            "name": "Not Observed in the Collected Window",
             "slug": "git-serious-repository-not-observed",
             "description": "Workflows this repository declares for which no run has been collected. Not evidence they never run: the collector gathers a window of runs per repository, and these fell outside it — or they only run on a trigger that has not fired.",
             "view": "tap_web/panels/table_panel.html",
