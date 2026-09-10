@@ -107,116 +107,116 @@
           "node": {
             "name": "This Repository",
             "slug": "git-serious-repository-identity",
-            "description": "Who this repository is, as the organization declares it: its role, criticality, lifecycle and owner are GitHub custom properties (github-core#77), read against the organization's own definitions — a dash is a declared property this repository has not set. The two 'read?' columns say whether the collector could read pull requests and properties at all: 'unobservable' means a blank below is a refusal, not an absence. Grouped as Repository · Declared by the organization · Collected; the state words are tone badges (green observed, red unobservable; red critical, amber high); minimal chrome because there is one row, ever (git-serious-tap#61).",
+            "description": "Who this repository is, as the organization declares it: its role, criticality, lifecycle and owner are GitHub custom properties (github-core#77), read against the organization's own definitions — a dash is a declared property this repository has not set. The two 'read?' columns say whether the collector could read pull requests and properties at all: 'unobservable' means a blank below is a refusal, not an absence. One row of headings over one row of values, each value centred under its heading with its first letter upper-cased (identifiers as written); the state words are tone badges (green observed, red unobservable; red critical, amber high); minimal chrome because there is one row, ever (git-serious-tap#61).",
             "view": "tap_web/panels/table_panel.html",
             "config": {
               "default_page_size": 5,
               "chrome": "minimal",
               "columns": [
                 {
+                  "field": "data.full_name",
                   "title": "Repository",
-                  "columns": [
-                    {
-                      "field": "data.full_name",
-                      "title": "Repository",
-                      "widthGrow": 2,
-                      "formatter": "link",
-                      "formatter_params": {
-                        "href_field": "data.html_url"
-                      },
-                      "header_tooltip": "owner/name. Opens the repository on GitHub.",
-                      "headerSort": false
-                    },
-                    {
-                      "field": "data.default_branch",
-                      "title": "Default branch",
-                      "width": 140,
-                      "header_tooltip": "The branch most controls default to targeting.",
-                      "headerSort": false
-                    },
-                    {
-                      "field": "data.visibility",
-                      "title": "Visibility",
-                      "width": 110,
-                      "header_tooltip": "public, private or internal.",
-                      "headerSort": false
-                    }
-                  ]
+                  "widthGrow": 2,
+                  "formatter": "link",
+                  "formatter_params": {
+                    "href_field": "data.html_url"
+                  },
+                  "header_tooltip": "owner/name. Opens the repository on GitHub.",
+                  "headerSort": false,
+                  "align": "center"
                 },
                 {
-                  "title": "Declared by the organization",
-                  "columns": [
-                    {
-                      "field": "data.custom_properties.repository-role",
-                      "title": "Role",
-                      "width": 110,
-                      "header_tooltip": "The repository's one primary purpose, as the organization declares it: platform, plugin, product, support or fixtures.",
-                      "headerSort": false
-                    },
-                    {
-                      "field": "data.custom_properties.criticality",
-                      "title": "Criticality",
-                      "width": 125,
-                      "header_tooltip": "Consequence of this repository failing or being compromised, for the organization as a whole — not current attention.",
-                      "headerSort": false,
-                      "formatter": "toneBadge",
-                      "formatter_params": {
-                        "tones": {
-                          "critical": "bad",
-                          "high": "warn",
-                          "medium": "muted",
-                          "low": "muted"
-                        }
-                      }
-                    },
-                    {
-                      "field": "data.custom_properties.lifecycle",
-                      "title": "Lifecycle",
-                      "width": 120,
-                      "header_tooltip": "experimental, stand-up, active, maintenance, deprecated, draw-down or retired.",
-                      "headerSort": false
-                    },
-                    {
-                      "field": "data.custom_properties.ownership-name",
-                      "title": "Owner",
-                      "width": 140,
-                      "header_tooltip": "The accountable owner: a team slug or a GitHub login (ownership-type says which).",
-                      "headerSort": false
-                    }
-                  ]
+                  "field": "data.default_branch",
+                  "title": "Default branch",
+                  "width": 140,
+                  "header_tooltip": "The branch most controls default to targeting.",
+                  "headerSort": false,
+                  "align": "center"
                 },
                 {
-                  "title": "Collected",
-                  "columns": [
-                    {
-                      "field": "data.pull_requests_observability",
-                      "title": "PRs read?",
-                      "width": 120,
-                      "header_tooltip": "observed = the collector read this repository's pull requests (zero below is then a fact); unobservable = it could not, so an empty list below means nothing; blank = never asked.",
-                      "headerSort": false,
-                      "formatter": "toneBadge",
-                      "formatter_params": {
-                        "tones": {
-                          "observed": "good",
-                          "unobservable": "bad"
-                        }
-                      }
+                  "field": "data.visibility",
+                  "title": "Visibility",
+                  "width": 110,
+                  "header_tooltip": "public, private or internal.",
+                  "headerSort": false,
+                  "align": "center",
+                  "formatter": "capitalized"
+                },
+                {
+                  "field": "data.custom_properties.repository-role",
+                  "title": "Role",
+                  "width": 110,
+                  "header_tooltip": "The repository's one primary purpose, as the organization declares it: platform, plugin, product, support or fixtures.",
+                  "headerSort": false,
+                  "align": "center",
+                  "formatter": "capitalized"
+                },
+                {
+                  "field": "data.custom_properties.criticality",
+                  "title": "Criticality",
+                  "width": 125,
+                  "header_tooltip": "Consequence of this repository failing or being compromised, for the organization as a whole — not current attention.",
+                  "headerSort": false,
+                  "formatter": "toneBadge",
+                  "formatter_params": {
+                    "tones": {
+                      "critical": "bad",
+                      "high": "warn",
+                      "medium": "muted",
+                      "low": "muted"
                     },
-                    {
-                      "field": "data.custom_properties_observability",
-                      "title": "Properties read?",
-                      "width": 155,
-                      "header_tooltip": "observed = the organization's custom-property values were read (a dash is a declared property this repository has not set); unobservable = they could not be read; blank = never asked.",
-                      "headerSort": false,
-                      "formatter": "toneBadge",
-                      "formatter_params": {
-                        "tones": {
-                          "observed": "good",
-                          "unobservable": "bad"
-                        }
-                      }
-                    }
-                  ]
+                    "capitalize": true
+                  },
+                  "align": "center"
+                },
+                {
+                  "field": "data.custom_properties.lifecycle",
+                  "title": "Lifecycle",
+                  "width": 120,
+                  "header_tooltip": "experimental, stand-up, active, maintenance, deprecated, draw-down or retired.",
+                  "headerSort": false,
+                  "align": "center",
+                  "formatter": "capitalized"
+                },
+                {
+                  "field": "data.custom_properties.ownership-name",
+                  "title": "Owner",
+                  "width": 140,
+                  "header_tooltip": "The accountable owner: a team slug or a GitHub login (ownership-type says which).",
+                  "headerSort": false,
+                  "align": "center"
+                },
+                {
+                  "field": "data.pull_requests_observability",
+                  "title": "PRs read?",
+                  "width": 120,
+                  "header_tooltip": "observed = the collector read this repository's pull requests (zero below is then a fact); unobservable = it could not, so an empty list below means nothing; blank = never asked.",
+                  "headerSort": false,
+                  "formatter": "toneBadge",
+                  "formatter_params": {
+                    "tones": {
+                      "observed": "good",
+                      "unobservable": "bad"
+                    },
+                    "capitalize": true
+                  },
+                  "align": "center"
+                },
+                {
+                  "field": "data.custom_properties_observability",
+                  "title": "Properties read?",
+                  "width": 155,
+                  "header_tooltip": "observed = the organization's custom-property values were read (a dash is a declared property this repository has not set); unobservable = they could not be read; blank = never asked.",
+                  "headerSort": false,
+                  "formatter": "toneBadge",
+                  "formatter_params": {
+                    "tones": {
+                      "observed": "good",
+                      "unobservable": "bad"
+                    },
+                    "capitalize": true
+                  },
+                  "align": "center"
                 }
               ]
             }
