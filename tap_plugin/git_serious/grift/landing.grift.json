@@ -90,16 +90,32 @@
           "entity": {
             "entity_id": "01a03f78-11fa-7029-823d-7945c7a844ab",
             "entity_type": "search",
-            "name": "git-serious — all edges (graph_panel filters by node-set)",
+            "name": "git-serious — machinery scene edges (shared by every machinery view)",
             "dimensions": {}
           },
           "node": {
-            "name": "git-serious — all edges (graph_panel filters by node-set)",
-            "description": "All edges; the graph panel keeps only those whose endpoints are in the matched node-set (tap_viz panel-graph.js).",
+            "name": "git-serious — machinery scene edges (shared by every machinery view)",
+            "description": "The structural edges every machinery picture draws: who hosts and owns what, what a workflow and its jobs declare, what a ruleset protects, what an app is enabled on. ONE search node, pointed at by the landing graph, the org graph, the repository page's machinery and git-serious-double-tap's tap lanes — the three copies of this search were consolidated here (tap#402).\n\nNARROWED BY EDGE TYPE, and the reason is not taste. Unfiltered, this returned every edge on the grid — 19,349 of them on 2026-09-10, of which the panel could draw 214. The other 98.9% are run history (caches, job runs, artifacts, ref scopes) that grows with every collection tick, and each one still costs a full search envelope: 4.0–5.4s to build them all versus 0.45s for this list, against 0.11s to read the same rows raw. The client-side node-set filter in panel-graph.js STAYS — it is the guard that made the unfiltered version look free.\n\nTHE LIST IS OBSERVED, NOT DERIVED, so it can drift. It is the union of what actually drew on the landing, org, repository and tap pages on 2026-09-10, cross-checked against every one of the 49 edge types on the grid: each of the 36 excluded has at least one endpoint that is not a scene node (a run, a commit, a pull request, a release, a cache, an installation). Two of the types kept — PROTECTS_REF and TRIGGERS_WORKFLOW — appear NOWHERE in either machinery projection's source, so a list derived from the code would have dropped them silently. WHEN THE SCENE GAINS A NODE TYPE, ADD ITS EDGES HERE: git-serious-tap#64 (releases and artifacts on the machinery scene) is the next one that will need TARGETS_REF, BUILDS_RELEASE and PUBLISHES_RELEASE.",
             "search_type": "orm",
             "root": "edge",
             "definition": {
-              "filters": {},
+              "filters": {
+                "edge_type__in": [
+                  "CALLS_WORKFLOW__github_core",
+                  "DECLARES_ENVIRONMENT__github_core",
+                  "DECLARES_REF__git_core",
+                  "DEFINES_JOB__github_core",
+                  "DEFINES_WORKFLOW__github_core",
+                  "DEPENDS_ON_JOB__github_core",
+                  "ENABLED_ON_REPOSITORY__github_core",
+                  "HOSTS_ACCOUNT__github_core",
+                  "HOSTS_REPOSITORY__github_core",
+                  "OWNS_REPO__github_core",
+                  "PROTECTS_REF__github_core",
+                  "PROTECTS_REPOSITORY__github_core",
+                  "TRIGGERS_WORKFLOW__github_core"
+                ]
+              },
               "order_by": [
                 "edge_type"
               ]

@@ -43,26 +43,6 @@
         },
         {
           "entity": {
-            "entity_id": "01a06316-280e-7762-8a41-3f724177e48b",
-            "entity_type": "search",
-            "name": "git-serious org — all edges (graph_panel filters by node-set)",
-            "dimensions": {}
-          },
-          "node": {
-            "name": "git-serious org — all edges (graph_panel filters by node-set)",
-            "description": "All edges; the graph panel keeps only those whose endpoints are in the matched node-set (tap_viz panel-graph.js).",
-            "search_type": "orm",
-            "root": "edge",
-            "definition": {
-              "filters": {},
-              "order_by": [
-                "edge_type"
-              ]
-            }
-          }
-        },
-        {
-          "entity": {
             "entity_id": "01a06316-280e-7762-8a41-3f7308146e59",
             "entity_type": "search",
             "name": "git-serious org — failed runs per workflow (count)",
@@ -338,7 +318,7 @@
           },
           "edge": {
             "from_entity_id": "01a06316-280e-7762-8a41-3f7a7f660243",
-            "to_entity_id": "01a06316-280e-7762-8a41-3f724177e48b",
+            "to_entity_id": "01a03f78-11fa-7029-823d-7945c7a844ab",
             "edge_type": "USES_SEARCH",
             "properties": {}
           }
