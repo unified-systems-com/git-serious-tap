@@ -13,7 +13,7 @@
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.repository",
-        "name": "git-serious repository page v0.1.0",
+        "name": "git-serious repository page v0.2.0",
         "description": "First light (git-serious-tap#56): ONE repository, read top to bottom — who it is, its CI/CD machinery (github_core's machinery projection over this page's own scene searches, scoped by ?repo=owner/name), the open pull requests with the check verdict on each head, and the status wall filtered to this repository alone. Current state only: failure overlays and the dig into the machinery are named non-goals. No new code: searches, table panels and one graph panel over entities the collectors already land."
       },
       "nodes": [
@@ -107,10 +107,11 @@
           "node": {
             "name": "This Repository",
             "slug": "git-serious-repository-identity",
-            "description": "Who this repository is, as the organization declares it: its role, criticality, lifecycle and owner are GitHub custom properties (github-core#77), read against the organization's own definitions — a dash is a declared property this repository has not set. The two 'read?' columns say whether the collector could read pull requests and properties at all: 'unobservable' means a blank below is a refusal, not an absence.",
+            "description": "Who this repository is, as the organization declares it: its role, criticality, lifecycle and owner are GitHub custom properties (github-core#77), read against the organization's own definitions — a dash is a declared property this repository has not set. The two 'read?' columns say whether the collector could read pull requests and properties at all: 'unobservable' means a blank below is a refusal, not an absence. One row of headings over one row of values, the repository name left-aligned and every other value centred under its heading with its first letter upper-cased (identifiers as written); the state words are tone badges (green observed, red unobservable; red critical, amber high); minimal chrome because there is one row, ever (git-serious-tap#61).",
             "view": "tap_web/panels/table_panel.html",
             "config": {
               "default_page_size": 5,
+              "chrome": "minimal",
               "columns": [
                 {
                   "field": "data.full_name",
@@ -124,60 +125,97 @@
                   "headerSort": false
                 },
                 {
-                  "field": "data.custom_properties.repository-role",
-                  "title": "Role",
-                  "width": 110,
-                  "header_tooltip": "The repository's one primary purpose, as the organization declares it: platform, plugin, product, support or fixtures.",
-                  "headerSort": false
-                },
-                {
-                  "field": "data.custom_properties.criticality",
-                  "title": "Criticality",
-                  "width": 125,
-                  "header_tooltip": "Consequence of this repository failing or being compromised, for the organization as a whole — not current attention.",
-                  "headerSort": false
-                },
-                {
-                  "field": "data.custom_properties.lifecycle",
-                  "title": "Lifecycle",
-                  "width": 120,
-                  "header_tooltip": "experimental, stand-up, active, maintenance, deprecated, draw-down or retired.",
-                  "headerSort": false
-                },
-                {
-                  "field": "data.custom_properties.ownership-name",
-                  "title": "Owner",
-                  "width": 140,
-                  "header_tooltip": "The accountable owner: a team slug or a GitHub login (ownership-type says which).",
-                  "headerSort": false
-                },
-                {
                   "field": "data.default_branch",
                   "title": "Default branch",
                   "width": 140,
                   "header_tooltip": "The branch most controls default to targeting.",
-                  "headerSort": false
+                  "headerSort": false,
+                  "align": "center"
                 },
                 {
                   "field": "data.visibility",
                   "title": "Visibility",
                   "width": 110,
                   "header_tooltip": "public, private or internal.",
-                  "headerSort": false
+                  "headerSort": false,
+                  "align": "center",
+                  "formatter": "capitalized"
+                },
+                {
+                  "field": "data.custom_properties.repository-role",
+                  "title": "Role",
+                  "width": 110,
+                  "header_tooltip": "The repository's one primary purpose, as the organization declares it: platform, plugin, product, support or fixtures.",
+                  "headerSort": false,
+                  "align": "center",
+                  "formatter": "capitalized"
+                },
+                {
+                  "field": "data.custom_properties.criticality",
+                  "title": "Criticality",
+                  "width": 125,
+                  "header_tooltip": "Consequence of this repository failing or being compromised, for the organization as a whole — not current attention.",
+                  "headerSort": false,
+                  "formatter": "toneBadge",
+                  "formatter_params": {
+                    "tones": {
+                      "critical": "bad",
+                      "high": "warn",
+                      "medium": "muted",
+                      "low": "muted"
+                    },
+                    "capitalize": true
+                  },
+                  "align": "center"
+                },
+                {
+                  "field": "data.custom_properties.lifecycle",
+                  "title": "Lifecycle",
+                  "width": 120,
+                  "header_tooltip": "experimental, stand-up, active, maintenance, deprecated, draw-down or retired.",
+                  "headerSort": false,
+                  "align": "center",
+                  "formatter": "capitalized"
+                },
+                {
+                  "field": "data.custom_properties.ownership-name",
+                  "title": "Owner",
+                  "width": 140,
+                  "header_tooltip": "The accountable owner: a team slug or a GitHub login (ownership-type says which).",
+                  "headerSort": false,
+                  "align": "center"
                 },
                 {
                   "field": "data.pull_requests_observability",
                   "title": "PRs read?",
                   "width": 120,
                   "header_tooltip": "observed = the collector read this repository's pull requests (zero below is then a fact); unobservable = it could not, so an empty list below means nothing; blank = never asked.",
-                  "headerSort": false
+                  "headerSort": false,
+                  "formatter": "toneBadge",
+                  "formatter_params": {
+                    "tones": {
+                      "observed": "good",
+                      "unobservable": "bad"
+                    },
+                    "capitalize": true
+                  },
+                  "align": "center"
                 },
                 {
                   "field": "data.custom_properties_observability",
                   "title": "Properties read?",
                   "width": 155,
                   "header_tooltip": "observed = the organization's custom-property values were read (a dash is a declared property this repository has not set); unobservable = they could not be read; blank = never asked.",
-                  "headerSort": false
+                  "headerSort": false,
+                  "formatter": "toneBadge",
+                  "formatter_params": {
+                    "tones": {
+                      "observed": "good",
+                      "unobservable": "bad"
+                    },
+                    "capitalize": true
+                  },
+                  "align": "center"
                 }
               ]
             }
@@ -463,298 +501,6 @@
               ]
             }
           }
-        },
-        {
-          "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae85d1f644c7",
-            "entity_type": "search",
-            "name": "git-serious — status wall for one repository: runs, newest first",
-            "dimensions": {}
-          },
-          "node": {
-            "name": "git-serious — status wall for one repository: runs, newest first",
-            "description": "The landing page's status wall rows (req-git-serious-status-wall-1), filtered to the page's repository: every workflow run github_core collected for it, newest first by run_started_at. Envelope mode for the table panel. Covers the collected window only.",
-            "search_type": "gryphon",
-            "root": "node",
-            "definition": {
-              "query": [
-                "MATCH (r:github_core__github_actions_run)",
-                "WHERE r.data.full_name = $repo",
-                "RETURN r",
-                "ORDER BY r.data.run_started_at DESC"
-              ]
-            },
-            "input_schema": {
-              "type": "object",
-              "properties": {
-                "repo": {
-                  "type": "string",
-                  "description": "The repository's full_name (owner/name), from the page URL ?repo=… — required: the page names no repository of its own."
-                }
-              },
-              "required": [
-                "repo"
-              ]
-            }
-          }
-        },
-        {
-          "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae86b5fcd595",
-            "entity_type": "panel",
-            "name": "Status Wall",
-            "dimensions": {
-              "tap.graph": "web"
-            }
-          },
-          "node": {
-            "name": "Status Wall",
-            "slug": "git-serious-repository-status-wall",
-            "description": "Is anything broken here right now? This repository's runs alone — every collected run, newest first. The glyph is the trigger; the run number opens the run on GitHub; the branch opens the branch on GitHub. Elapsed, its ratio to the workflow's own baseline (▲ slower, ▼ faster, – not enough history) and the sample size (n) sort independently; a run still in flight shows a dash. History is the workflow's runs as a strip and opens the workflow page. Click anywhere else on a row for the run on the grid.",
-            "view": "tap_web/panels/table_panel.html",
-            "config": {
-              "default_page_size": 200,
-              "quick_filter": true,
-              "columns": [
-                {
-                  "field": "data.event",
-                  "title": "",
-                  "width": 40,
-                  "headerSort": false,
-                  "formatter": "iconMap",
-                  "formatter_params": {
-                    "icons": {
-                      "push": "/static/tap_web/icons/trigger-push.svg",
-                      "pull_request": "/static/tap_web/icons/trigger-pull-request.svg",
-                      "pull_request_target": "/static/tap_web/icons/trigger-pull-request.svg",
-                      "schedule": "/static/tap_web/icons/trigger-schedule.svg",
-                      "workflow_dispatch": "/static/tap_web/icons/trigger-manual.svg",
-                      "workflow_run": "/static/tap_web/icons/trigger-chained.svg",
-                      "workflow_call": "/static/tap_web/icons/trigger-chained.svg",
-                      "dynamic": "/static/tap_web/icons/trigger-platform.svg",
-                      "repository_dispatch": "/static/tap_web/icons/trigger-manual.svg"
-                    },
-                    "labels": {
-                      "push": "push",
-                      "pull_request": "pull request",
-                      "pull_request_target": "pull request (target)",
-                      "schedule": "schedule",
-                      "workflow_dispatch": "manual dispatch",
-                      "workflow_run": "chained off another run",
-                      "workflow_call": "called by another workflow",
-                      "dynamic": "platform-originated (CodeQL, Copilot, Dependabot…)",
-                      "repository_dispatch": "repository dispatch"
-                    }
-                  },
-                  "header_tooltip": "Trigger — what started the run: push, pull request, schedule, manual dispatch, a run chained off another run, or platform-originated (CodeQL, Copilot, Dependabot). Hover a glyph for its name."
-                },
-                {
-                  "field": "data.run_number",
-                  "title": "Run",
-                  "width": 80,
-                  "formatter": "link",
-                  "formatter_params": {
-                    "href_field": "data.html_url"
-                  },
-                  "header_tooltip": "GitHub's run number within the repository. Opens the run on GitHub."
-                },
-                {
-                  "field": "data.head_branch",
-                  "title": "Branch",
-                  "widthGrow": 2,
-                  "tooltip": "full_value",
-                  "formatter": "link",
-                  "formatter_params": {
-                    "href_template": "https://github.com/{data.full_name}/tree/{data.head_branch}"
-                  },
-                  "header_tooltip": "The branch or ref the run built. Opens the branch on GitHub."
-                },
-                {
-                  "field": "data.conclusion",
-                  "title": "Conclusion",
-                  "formatter": "conclusionBadge",
-                  "width": 120,
-                  "header_tooltip": "GitHub's terminal conclusion: success, failure, cancelled, skipped… A dash means the run has not concluded (queued or still running)."
-                },
-                {
-                  "field": "data.completed_at",
-                  "title": "Elapsed",
-                  "formatter": "elapsed",
-                  "width": 100,
-                  "formatter_params": {
-                    "start": "data.run_started_at",
-                    "end": "data.completed_at",
-                    "require_field": "data.conclusion"
-                  },
-                  "header_tooltip": "Wall-clock time from run start to completion. A dash means the run has not concluded."
-                },
-                {
-                  "field": "data.completed_at",
-                  "title": "vs usual",
-                  "formatter": "baselineRatio",
-                  "width": 90,
-                  "formatter_params": {
-                    "start": "data.run_started_at",
-                    "end": "data.completed_at",
-                    "require_field": "data.conclusion",
-                    "baseline": {
-                      "group_by": [
-                        "data.configuration.workflow_id",
-                        "data.event"
-                      ],
-                      "where": {
-                        "data.conclusion": "success"
-                      },
-                      "min_n": 3,
-                      "flag_ratio": 1.5,
-                      "mad_k": 3
-                    }
-                  },
-                  "header_tooltip": "This run's elapsed over the median of the other successful runs of the same workflow and trigger loaded on this page. ▲ slower than usual, ▼ faster than usual, plain = within the usual range, – = not enough history (see n)."
-                },
-                {
-                  "field": "data.completed_at",
-                  "title": "n",
-                  "formatter": "baselineN",
-                  "width": 55,
-                  "formatter_params": {
-                    "start": "data.run_started_at",
-                    "end": "data.completed_at",
-                    "require_field": "data.conclusion",
-                    "baseline": {
-                      "group_by": [
-                        "data.configuration.workflow_id",
-                        "data.event"
-                      ],
-                      "where": {
-                        "data.conclusion": "success"
-                      },
-                      "min_n": 3,
-                      "flag_ratio": 1.5,
-                      "mad_k": 3
-                    }
-                  },
-                  "header_tooltip": "How many comparable runs — same workflow and trigger, successful — are loaded on this page to form the baseline. Grey below 3: too few to call anything unusual."
-                },
-                {
-                  "field": "data.run_started_at",
-                  "title": "Started",
-                  "formatter": "datetime",
-                  "widthGrow": 1,
-                  "header_tooltip": "When the run started, in your local time. Hover for UTC."
-                },
-                {
-                  "field": "data.completed_at",
-                  "title": "Completed",
-                  "formatter": "datetime",
-                  "widthGrow": 1,
-                  "header_tooltip": "When the run completed, in your local time. Hover for UTC."
-                },
-                {
-                  "field": "data.configuration.workflow_id",
-                  "title": "History",
-                  "width": 140,
-                  "headerSort": false,
-                  "formatter": "sparkline",
-                  "formatter_params": {
-                    "group_by": [
-                      "data.configuration.workflow_id"
-                    ],
-                    "x": "data.run_started_at",
-                    "start": "data.run_started_at",
-                    "end": "data.completed_at",
-                    "require_field": "data.conclusion",
-                    "href_template": "/git-serious/workflow?workflow_id={data.configuration.workflow_id}"
-                  },
-                  "header_tooltip": "This workflow's runs on this page as a strip: one bar per run at its actual start time; bar height is elapsed relative to the workflow's longest; red = failed, dark = this run, dashed line = the median. Opens the workflow page."
-                }
-              ],
-              "height": 560,
-              "refresh_seconds": 60
-            }
-          }
-        },
-        {
-          "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae8751d8bac1",
-            "entity_type": "search",
-            "name": "git-serious — one repository's workflows with no run in the collected window",
-            "dimensions": {}
-          },
-          "node": {
-            "name": "git-serious — one repository's workflows with no run in the collected window",
-            "description": "The landing page's not-observed rows, filtered to the page's repository: workflows this repository declares for which no run was collected. Absence of a run in the window is not evidence the workflow never runs — it is what the collector has not gathered.",
-            "search_type": "gryphon",
-            "root": "node",
-            "definition": {
-              "query": [
-                "MATCH (repo:github_core__github_repository)-[e:DEFINES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
-                "WHERE repo.data.full_name = $repo",
-                "NOT EXISTS { MATCH (r:github_core__github_actions_run)-[:EXECUTES_WORKFLOW__github_core]->(w) }",
-                "RETURN w"
-              ]
-            },
-            "input_schema": {
-              "type": "object",
-              "properties": {
-                "repo": {
-                  "type": "string",
-                  "description": "The repository's full_name (owner/name), from the page URL ?repo=… — required: the page names no repository of its own."
-                }
-              },
-              "required": [
-                "repo"
-              ]
-            }
-          }
-        },
-        {
-          "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae88f027942f",
-            "entity_type": "panel",
-            "name": "Not Observed in the Collected Window",
-            "dimensions": {
-              "tap.graph": "web"
-            }
-          },
-          "node": {
-            "name": "Not Observed in the Collected Window",
-            "slug": "git-serious-repository-not-observed",
-            "description": "Workflows this repository declares for which no run has been collected. Not evidence they never run: the collector gathers a window of runs per repository, and these fell outside it — or they only run on a trigger that has not fired.",
-            "view": "tap_web/panels/table_panel.html",
-            "config": {
-              "default_page_size": 200,
-              "quick_filter": true,
-              "columns": [
-                {
-                  "field": "data.name",
-                  "title": "Workflow",
-                  "widthGrow": 2,
-                  "header_tooltip": "The workflow as declared in the repository."
-                },
-                {
-                  "field": "data.path",
-                  "title": "Path",
-                  "widthGrow": 2,
-                  "tooltip": "full_value",
-                  "header_tooltip": "The workflow file's path in the repository."
-                },
-                {
-                  "field": "data.state",
-                  "title": "State",
-                  "width": 110,
-                  "header_tooltip": "GitHub's workflow state: active, disabled_manually, disabled_inactivity…"
-                },
-                {
-                  "field": "data.html_url",
-                  "title": "GitHub",
-                  "formatter": "externalLink",
-                  "widthGrow": 1,
-                  "header_tooltip": "Opens the workflow on GitHub."
-                }
-              ]
-            }
-          }
         }
       ],
       "edges": [
@@ -814,46 +560,6 @@
                 "model": "page",
                 "spec": "page-panels",
                 "value": "pulls"
-              }
-            }
-          }
-        },
-        {
-          "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae8cd14c84dc",
-            "entity_type": "edge",
-            "name": "Page USES_PANEL status-wall",
-            "dimensions": {}
-          },
-          "edge": {
-            "from_entity_id": "01a08766-f51c-72d0-a9f1-ae7f889232de",
-            "to_entity_id": "01a08766-f51c-72d0-a9f1-ae86b5fcd595",
-            "edge_type": "USES_PANEL",
-            "properties": {
-              "hotlink": {
-                "model": "page",
-                "spec": "page-panels",
-                "value": "status-wall"
-              }
-            }
-          }
-        },
-        {
-          "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae8dfd3a9464",
-            "entity_type": "edge",
-            "name": "Page USES_PANEL not-observed",
-            "dimensions": {}
-          },
-          "edge": {
-            "from_entity_id": "01a08766-f51c-72d0-a9f1-ae7f889232de",
-            "to_entity_id": "01a08766-f51c-72d0-a9f1-ae88f027942f",
-            "edge_type": "USES_PANEL",
-            "properties": {
-              "hotlink": {
-                "model": "page",
-                "spec": "page-panels",
-                "value": "not-observed"
               }
             }
           }
@@ -944,30 +650,42 @@
         },
         {
           "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae94dae3a86d",
+            "entity_id": "01a087f9-4e57-7154-9a3c-b15a4b54854d",
             "entity_type": "edge",
-            "name": "Status wall USES_SEARCH runs of one repository",
+            "name": "Page USES_PANEL status-wall (the landing's status wall, shared)",
             "dimensions": {}
           },
           "edge": {
-            "from_entity_id": "01a08766-f51c-72d0-a9f1-ae86b5fcd595",
-            "to_entity_id": "01a08766-f51c-72d0-a9f1-ae85d1f644c7",
-            "edge_type": "USES_SEARCH",
-            "properties": {}
+            "from_entity_id": "01a08766-f51c-72d0-a9f1-ae7f889232de",
+            "to_entity_id": "01a0632f-38b6-7440-9de9-3d5a3dadeb2a",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "status-wall"
+              }
+            }
           }
         },
         {
           "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae95df338906",
+            "entity_id": "01a087f9-4e57-7154-9a3c-b15b92deed07",
             "entity_type": "edge",
-            "name": "Not-observed USES_SEARCH one repository's workflows with no run",
+            "name": "Page USES_PANEL not-observed (the landing's not-observed table, shared)",
             "dimensions": {}
           },
           "edge": {
-            "from_entity_id": "01a08766-f51c-72d0-a9f1-ae88f027942f",
-            "to_entity_id": "01a08766-f51c-72d0-a9f1-ae8751d8bac1",
-            "edge_type": "USES_SEARCH",
-            "properties": {}
+            "from_entity_id": "01a08766-f51c-72d0-a9f1-ae7f889232de",
+            "to_entity_id": "01a0632f-38b6-7440-9de9-3d5ba8eadfc4",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "not-observed"
+              }
+            }
           }
         }
       ]
