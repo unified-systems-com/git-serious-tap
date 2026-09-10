@@ -24,7 +24,18 @@ dynamic = ["version"]
 # published under; the legacy tap-plugin-* names rename in the tap#147 wave.
 dependencies = [
     "git-core-tap>=0.1.0,<0.2",
-    "tap-plugin-github-core>=0.6.0,<0.7",
+    # FLOOR 0.7.0, not 0.6.0: the repository page's GRIFT matches the entity type
+    # `github_core__pull_request` and reads `github_repository.pull_requests_total`,
+    # `.custom_properties`, `.custom_properties_observability` and
+    # `.pull_requests_observability` — none of which exist before github_core v0.7.0
+    # (`models/pull_request.py` is added there; the four fields land on
+    # `github_repository` in the same release). The old `>=0.6.0,<0.7` was wrong in
+    # both directions at once: it forbade the only version that satisfies the page
+    # and permitted three that cannot. Ceiling stays one minor wide — 0.6 -> 0.7 was
+    # purely additive for everything git-serious touches (18/18 referenced types and
+    # edges survive unchanged; the only edits to models read here were node colours),
+    # but that is a fact about 0.7, not a promise about 0.8.
+    "tap-plugin-github-core>=0.7.0,<0.8",
     "tap-plugin-identity-core",
     "tap-plugin-administrivia",
 ]
