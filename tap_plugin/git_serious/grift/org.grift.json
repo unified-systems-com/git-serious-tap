@@ -246,7 +246,7 @@
           "node": {
             "slug": "git-serious-org-graph",
             "name": "git-serious Org Graph",
-            "description": "The account's CI/CD system as a graph. GitHub nodes open their html_url in a new tab.",
+            "description": "The account's CI/CD system as a graph. GitHub nodes open their html_url in a new tab; a workflow box opens that workflow's page (github_core's generic workflow-and-job viewer) instead — the anatomy and its runs, with the link out to GitHub on the identity row.",
             "view": "tap_viz/panels/graph_panel.html",
             "config": {
               "height": "100%",
@@ -269,8 +269,11 @@
                 },
                 {
                   "entity_type": "github_core__github_workflow",
-                  "url_field": "html_url",
-                  "external": true
+                  "url_template": "/github_core/workflow?repo={data.full_name}&workflow={data.path}"
+                },
+                {
+                  "entity_type": "github_core__workflow_job",
+                  "url_template": "/github_core/workflow?repo={data.full_name}&workflow={data.workflow_path}"
                 },
                 {
                   "entity_type": "github_core__github_app",
