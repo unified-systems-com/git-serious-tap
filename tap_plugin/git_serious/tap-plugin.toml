@@ -1,6 +1,6 @@
 manifest_version = "0"
 plugin_version = "0.1.0"
-requires_tap = ">=0.1.5"
+requires_tap = ">=0.1.6"
 slug = "git_serious"
 name = "git-serious"
 description = "Visualize, track, and secure your CI/CD system — for humans and agents. A TAP product composed of github_core + identity_core + administrivia via the in-package boot record."
