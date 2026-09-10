@@ -107,7 +107,7 @@
           "node": {
             "name": "This Repository",
             "slug": "git-serious-repository-identity",
-            "description": "Who this repository is, as the organization declares it: its role, criticality, lifecycle and owner are GitHub custom properties (github-core#77), read against the organization's own definitions — a dash is a declared property this repository has not set. The two 'read?' columns say whether the collector could read pull requests and properties at all: 'unobservable' means a blank below is a refusal, not an absence. One row of headings over one row of values, each value centred under its heading with its first letter upper-cased (identifiers as written); the state words are tone badges (green observed, red unobservable; red critical, amber high); minimal chrome because there is one row, ever (git-serious-tap#61).",
+            "description": "Who this repository is, as the organization declares it: its role, criticality, lifecycle and owner are GitHub custom properties (github-core#77), read against the organization's own definitions — a dash is a declared property this repository has not set. The two 'read?' columns say whether the collector could read pull requests and properties at all: 'unobservable' means a blank below is a refusal, not an absence. One row of headings over one row of values, the repository name left-aligned and every other value centred under its heading with its first letter upper-cased (identifiers as written); the state words are tone badges (green observed, red unobservable; red critical, amber high); minimal chrome because there is one row, ever (git-serious-tap#61).",
             "view": "tap_web/panels/table_panel.html",
             "config": {
               "default_page_size": 5,
@@ -122,8 +122,7 @@
                     "href_field": "data.html_url"
                   },
                   "header_tooltip": "owner/name. Opens the repository on GitHub.",
-                  "headerSort": false,
-                  "align": "center"
+                  "headerSort": false
                 },
                 {
                   "field": "data.default_branch",
