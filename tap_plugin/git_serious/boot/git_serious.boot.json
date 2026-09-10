@@ -75,6 +75,13 @@
       },
       {
         "type": "seed-plugin",
+        "plugin": "github_core",
+        "bundle": "workflow-page",
+        "enabled": true,
+        "note": "ONLY the workflow page: every workflow node on git-serious's graphs and the status wall's History column open /github_core/workflow, and installing github_core does not populate it (git-serious-tap#75). The repo-landing bundle stays out — it seeds /samsite/repo and git-serious owns the repository page. Before git_serious, so a later edge into this page finds it."
+      },
+      {
+        "type": "seed-plugin",
         "plugin": "git_serious",
         "enabled": true,
         "note": "git-serious landing page: the account's CI/CD system as a graph."

@@ -6,15 +6,15 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a06335-743a-7078-97c2-dbbd53a01950",
+        "entity_id": "01a08d7d-83b2-76a0-88be-d6ffb439334b",
         "entity_type": "batch",
-        "name": "git-serious org view v0.1.1",
+        "name": "git-serious org view v0.1.2",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.org",
-        "name": "git-serious org view v0.1.1",
-        "description": "The organization-level view, split out of the landing bundle 2026-09-02 so the landing can be refactored toward the TAP machinery while this picture keeps evolving on its own: the observed account's CI/CD system as containment — account ⊃ repositories ⊃ workflows — with the platform above and the GitHub Apps + Actions OIDC issuer below, and the status wall riding the workflow cards as badges (red = failed runs in the collected window, grey = no run observed). A full copy of landing v0.2.0 with fresh ids and its own layout module (static/git_serious/js/projections/org.js): no entity is shared with the landing bundle, so the two pages diverge without coupling."
+        "name": "git-serious org view v0.1.2",
+        "description": "The organization-level view, split out of the landing bundle 2026-09-02 so the landing can be refactored toward the TAP machinery while this picture keeps evolving on its own: the observed account's CI/CD system as containment — account ⊃ repositories ⊃ workflows — with the platform above and the GitHub Apps + Actions OIDC issuer below, and the status wall riding the workflow cards as badges (red = failed runs in the collected window, grey = no run observed). A full copy of landing v0.2.0 with fresh ids and its own layout module (static/git_serious/js/projections/org.js): no entity is shared with the landing bundle, so the two pages diverge without coupling. v0.1.2 (git-serious-tap#75): every workflow and job click opens github_core's workflow page by GitHub's numeric id — /github_core/workflow?workflow_id=… — the key that page takes since tap-plugin-github-core#101; Panel node upserts only; every id stable, batch id moved."
       },
       "nodes": [
         {
@@ -249,11 +249,11 @@
                 },
                 {
                   "entity_type": "github_core__github_workflow",
-                  "url_template": "/github_core/workflow?repo={data.full_name}&workflow={data.path}"
+                  "url_template": "/github_core/workflow?workflow_id={data.workflow_id}"
                 },
                 {
                   "entity_type": "github_core__workflow_job",
-                  "url_template": "/github_core/workflow?repo={data.full_name}&workflow={data.workflow_path}"
+                  "url_template": "/github_core/workflow?workflow_id={data.workflow_id}"
                 },
                 {
                   "entity_type": "github_core__github_app",

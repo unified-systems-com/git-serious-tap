@@ -22,7 +22,6 @@ landing = "grift/landing.grift.json"
 org = "grift/org.grift.json"
 gate = "grift/gate.grift.json"
 schedule = "grift/schedule.grift.json"
-workflow = "grift/workflow.grift.json"
 repository = "grift/repository.grift.json"
 
 # In-package boot record (req-boot-bootstrap-records-in-package): THE product composition.
@@ -32,7 +31,7 @@ repository = "grift/repository.grift.json"
 [[boot.records]]
 name = "git_serious"
 description = "git-serious standing against one GitHub account: github_core (account-scoped collector) + identity_core + administrivia + the git-serious landing page. required_secrets declares the read-only github_pat."
-sha256 = "b53179bdbdb372af9f95fff6ecf65e2cd91d6801d9307e827841f71d7135ee13"
+sha256 = "fde1ca171a7e608cebf4b569f9b1665e213d7af0a51246a08364dd25a92e6519"
 
 [[boot.records]]
 name = "ci"

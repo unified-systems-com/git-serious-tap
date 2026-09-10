@@ -1,5 +1,8 @@
 # git-serious — The workflow page
 
+> **RETIRED 2026-09-10 (git-serious-tap#75, George).** The page this spec described, `/git-serious/workflow`, is gone: its machinery slot was a text placeholder and github_core ships the real thing at `/github_core/workflow`, keyed on the same `workflow_id` (tap-plugin-github-core#101). Every workflow link in this plugin — the machinery graphs' nav rules and the status wall's History column — opens that page. The reliability columns this page carried (vs usual, n, Completed) were ported into github_core's runs table before the retirement. The element ranking below stays as the record of what the surface was for; new elements land on github_core's page spec.
+
+
 > **First light, 2026-09-02** (viz-git-serious session; git-serious-tap#6). The page is the SURFACE on
 > which two table-stakes capabilities land — [reliability history](spec-git-serious-reliability-history.md)
 > and [time and money](spec-git-serious-time-and-money.md) — and it carries a placeholder for the
@@ -39,13 +42,13 @@ Provenance: **documented** unless marked *observed* (a running instance on 2026-
 
 | RID | Name | Status | Notes |
 | --- | --- | :---: | --- |
-| req-git-serious-workflow-page | [The workflow page](#the-workflow-page) | In Development | Surface for reliability history + time and money; parameterised by workflow id |
-| req-git-serious-workflow-page-elements | [Element ranking](#element-ranking) | Proposed | The ranked list, each element naming the capability it serves and the data it needs |
+| req-git-serious-workflow-page | [The workflow page](#the-workflow-page) | Retired | Surface for reliability history + time and money; parameterised by workflow id |
+| req-git-serious-workflow-page-elements | [Element ranking](#element-ranking) | Retired | The ranked list, each element naming the capability it serves and the data it needs |
 
 ### The workflow page
 ----
 RID: `req-git-serious-workflow-page`
-Status: `In Development`
+Status: `Retired`
 Feature: `table-stakes`
 Milestone: `self`
 

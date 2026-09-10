@@ -36,7 +36,7 @@ keystone target 3 ("map unified-systems").
 - The landing page (`grift/landing.grift.json`, git-serious-tap#35) — draws one repository's
   machinery already; this page reuses its projection, elevation and layout by entity id rather
   than re-minting them, and declares its own scene searches.
-- [The workflow page](spec-git-serious-workflow-page.md) (2026-09-02) — the per-entity page
+- [The workflow page](spec-git-serious-workflow-page.md) (2026-09-02; RETIRED 2026-09-10, git-serious-tap#75 — the per-entity page is github_core's `/github_core/workflow`, keyed on `workflow_id`)
   pattern: a search with a URL-bound parameter, envelope-mode rows, table panels.
 - github_core `spec-github-core-repo-landing-page-v0.md` — the plugin-level repository page
   (hero, activity, health, catalog); this product page is not that page: it is the operator's
