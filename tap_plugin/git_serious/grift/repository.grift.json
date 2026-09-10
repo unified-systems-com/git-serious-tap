@@ -343,26 +343,6 @@
         },
         {
           "entity": {
-            "entity_id": "01a08766-f51c-72d0-a9f1-ae98a697b35c",
-            "entity_type": "search",
-            "name": "git-serious — repository page: all edges (graph_panel filters by node-set)",
-            "dimensions": {}
-          },
-          "node": {
-            "name": "git-serious — repository page: all edges (graph_panel filters by node-set)",
-            "description": "All edges; the graph panel keeps only those whose endpoints are in the matched node-set (tap_viz panel-graph.js).",
-            "search_type": "orm",
-            "root": "edge",
-            "definition": {
-              "filters": {},
-              "order_by": [
-                "edge_type"
-              ]
-            }
-          }
-        },
-        {
-          "entity": {
             "entity_id": "01a08766-f51c-72d0-a9f1-ae8384f67053",
             "entity_type": "search",
             "name": "git-serious — open pull requests of a repository, most recently updated first",
@@ -618,7 +598,7 @@
           },
           "edge": {
             "from_entity_id": "01a08766-f51c-72d0-a9f1-ae8227d07bbf",
-            "to_entity_id": "01a08766-f51c-72d0-a9f1-ae98a697b35c",
+            "to_entity_id": "01a03f78-11fa-7029-823d-7945c7a844ab",
             "edge_type": "USES_SEARCH",
             "properties": {}
           }
