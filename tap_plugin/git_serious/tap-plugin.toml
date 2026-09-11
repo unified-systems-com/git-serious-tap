@@ -25,6 +25,7 @@ gate = "grift/gate.grift.json"
 schedule = "grift/schedule.grift.json"
 repository = "grift/repository.grift.json"
 secrets = "grift/secrets.grift.json"
+queries = "grift/queries.grift.json"
 
 # In-package boot record (req-boot-bootstrap-records-in-package): THE product composition.
 # Digest is the canonical sha256 of the record (sorted keys, tight separators) — regenerate

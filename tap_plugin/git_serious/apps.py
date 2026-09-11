@@ -15,3 +15,9 @@ class GitSeriousConfig(TapPluginConfig):
 
         panel_type_registry.register(GitSeriousSecretsOverviewPanelType.slug, GitSeriousSecretsOverviewPanelType)
         panel_type_registry.register(GitSeriousSecretDetailPanelType.slug, GitSeriousSecretDetailPanelType)
+        # The BloodHound query pack (spec-git-serious-query-pack.md): the pack page and the page per query.
+        from tap_plugin.git_serious.panels.query_detail import GitSeriousQueryDetailPanelType
+        from tap_plugin.git_serious.panels.query_pack_overview import GitSeriousQueryPackPanelType
+
+        panel_type_registry.register(GitSeriousQueryPackPanelType.slug, GitSeriousQueryPackPanelType)
+        panel_type_registry.register(GitSeriousQueryDetailPanelType.slug, GitSeriousQueryDetailPanelType)

@@ -1,0 +1,1634 @@
+{
+  "metadata": {
+    "grift_version": "0"
+  },
+  "_reserved": {},
+  "batches": [
+    {
+      "batch_entity": {
+        "entity_id": "01a0918c-525b-7520-9151-4f01b4809e89",
+        "entity_type": "batch",
+        "name": "git-serious query pack v0.1.0",
+        "dimensions": {}
+      },
+      "batch_node": {
+        "source": "tap_plugin.git_serious",
+        "name": "git-serious query pack v0.1.0",
+        "description": "The BloodHound GitHub query pack: two pages, two panels, 35 seeded Searches (the translations that run on a github_core grid). GENERATED from data/bloodhound_queries.json — do not hand-edit."
+      },
+      "nodes": [
+        {
+          "entity": {
+            "entity_id": "01a0918c-525b-7520-9151-4f0202dfa306",
+            "entity_type": "page",
+            "name": "Query pack",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "/git-serious/queries",
+            "name": "Query pack",
+            "description": "The SpecterOps BloodHound GitHub saved-query corpus, translated to Gryphon: what each asks, whether it runs on this grid, and which build lands the rest.",
+            "nav_weight": 113,
+            "layout": {
+              "columns": {
+                "col-1": {
+                  "width": "1fr",
+                  "rows": {
+                    "row-1-pack": {
+                      "panel-id": "pack",
+                      "height": "auto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0918c-525b-7520-9151-4f03e6b51d79",
+            "entity_type": "page",
+            "name": "Query",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "/git-serious/query",
+            "name": "Query",
+            "description": "One query from the pack: the question, the Cypher, the Gryphon, what it needs, and its answer on this grid.",
+            "discoverable": false,
+            "layout": {
+              "columns": {
+                "col-1": {
+                  "width": "1fr",
+                  "rows": {
+                    "row-1-query": {
+                      "panel-id": "query",
+                      "height": "auto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0918c-525b-7520-9151-4f04e1ead2c8",
+            "entity_type": "panel",
+            "name": "The pack",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "git-serious-query-pack",
+            "name": "The pack",
+            "view": "git_serious/panels/query_pack.html",
+            "editor_view": "",
+            "description": "Every query in the pack, grouped by the stage that makes it answerable; row click opens the query page.",
+            "config": {
+              "hide_header": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "entity_type": "panel",
+            "name": "One query",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "slug": "git-serious-query-detail",
+            "name": "One query",
+            "view": "git_serious/panels/query_detail.html",
+            "editor_view": "",
+            "description": "The query page body: attribution, Cypher, Gryphon, needs, expected columns, live answer.",
+            "config": {
+              "hide_header": true,
+              "workflow_page_template": "/github_core/workflow?workflow_id={workflow_id}"
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "5217e943-5919-5b32-8ffb-2ce7111a9f04",
+            "entity_type": "search",
+            "name": "bloodhound — Actions SHA Pinning Not Required",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Actions SHA Pinning Not Required",
+            "description": "BloodHound `actions-sha-pinning-not-required` (High — Organization Security Posture), translated to Gryphon. Whether the organization forces every `uses:` to a full commit SHA. Without it a tag can be moved under a workflow — the tj-actions/changed-files shape. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/actions-sha-pinning-not-required.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.actions_policy.sha_pinning_required = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.actions_policy.sha_pinning_required AS sha_pinning_required"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "0551428f-b065-5dbb-b993-ab888443fda3",
+            "entity_type": "search",
+            "name": "bloodhound — Advanced Security Disabled for New Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Advanced Security Disabled for New Repositories",
+            "description": "BloodHound `advanced-security-disabled-new-repos` (High — Organization Security Posture), translated to Gryphon. Whether new repositories inherit GitHub Advanced Security. Off means each new repository starts without code scanning. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/advanced-security-disabled-new-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.advanced_security_enabled_for_new_repositories = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.advanced_security_enabled_for_new_repositories AS advanced_security_enabled_for_new_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "5b2acd50-d4a7-52b2-b03e-88f866f67390",
+            "entity_type": "search",
+            "name": "bloodhound — All GitHub Actions Allowed",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — All GitHub Actions Allowed",
+            "description": "BloodHound `all-actions-allowed` (High — Organization Security Posture), translated to Gryphon. Whether any marketplace action may run. `all` is the default and the widest supply-chain surface; `selected` names an allow-list. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/all-actions-allowed.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.actions_policy.allowed_actions = \"all\"",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.actions_policy.allowed_actions AS allowed_actions"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "a61fadfd-08fc-5837-8fba-4a8722cce37f",
+            "entity_type": "search",
+            "name": "bloodhound — App Installations with Access to All Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — App Installations with Access to All Repositories",
+            "description": "BloodHound `app-installations-all-repos` (Low — Hygiene & Governance), translated to Gryphon. App installations that follow the organization into every repository, present and future. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/app-installations-all-repos.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (i:github_core__app_installation)",
+                "WHERE i.data.repository_selection = \"all\"",
+                "RETURN i.data.app_slug AS app, i.data.account_login AS account, i.data.permissions AS permissions, i.data.suspended AS suspended"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "88d2c5c7-3f9c-5c28-856e-83f82367a850",
+            "entity_type": "search",
+            "name": "bloodhound — Users Who Can Bypass Pull Request Requirements",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Users Who Can Bypass Pull Request Requirements",
+            "description": "BloodHound `bypass-pr-requirements` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Who may bypass a ruleset. GitHub discloses bypass actors only to a writer of the ruleset; the grid draws an edge for each App it could name, counts the rest on the ruleset (`bypass_actor_count`), and keeps teams and roles in `bypass_actors_unmodelled` until the people graph gives them nodes. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/bypass-pr-requirements.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (rs:github_core__github_ruleset)-[e:EXEMPTS_ACTOR__github_core]->(actor)",
+                "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, actor.name AS actor, e.data.properties.actor_type AS actor_type, e.data.properties.bypass_mode AS bypass_mode, rs.data.bypass_observability AS bypass_observed, rs.data.bypass_actor_count AS bypass_actors"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "c4b1df5e-090b-5dd6-8c0f-b8887abbb77b",
+            "entity_type": "search",
+            "name": "bloodhound — Organizations with default repository permission",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Organizations with default repository permission",
+            "description": "BloodHound `default-repository-permissions` (High — Organization Security Posture), translated to Gryphon. The permission every member holds on every repository by default. Anything but `none` is a grant nobody wrote down per repository. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/default-repository-permissions.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.default_repository_permission != \"none\"",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.default_repository_permission AS default_repository_permission"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "bd7ce94c-4076-54b4-acc2-ee3f8a940417",
+            "entity_type": "search",
+            "name": "bloodhound — Dependabot Alerts Disabled for New Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Dependabot Alerts Disabled for New Repositories",
+            "description": "BloodHound `dependabot-alerts-disabled-new-repos` (High — Organization Security Posture), translated to Gryphon. Whether new repositories get Dependabot alerts. Off means vulnerable dependencies in a new repository go unreported. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/dependabot-alerts-disabled-new-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.dependabot_alerts_enabled_for_new_repositories = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.dependabot_alerts_enabled_for_new_repositories AS dependabot_alerts_enabled_for_new_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "139ef50f-d0ec-593b-b8de-9b74cab89564",
+            "entity_type": "search",
+            "name": "bloodhound — Dependabot Security Updates Disabled for New Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Dependabot Security Updates Disabled for New Repositories",
+            "description": "BloodHound `dependabot-updates-disabled-new-repos` (High — Organization Security Posture), translated to Gryphon. Whether Dependabot opens fix pull requests for new repositories. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/dependabot-updates-disabled-new-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.dependabot_security_updates_enabled_for_new_repositories = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.dependabot_security_updates_enabled_for_new_repositories AS dependabot_security_updates_enabled_for_new_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "1b5a4522-abeb-5905-a708-6e4746b2ba10",
+            "entity_type": "search",
+            "name": "bloodhound — Dependency Graph Disabled for New Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Dependency Graph Disabled for New Repositories",
+            "description": "BloodHound `dependency-graph-disabled-new-repos` (High — Organization Security Posture), translated to Gryphon. Whether the dependency graph is built for new repositories — the prerequisite for every dependency alert. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/dependency-graph-disabled-new-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.dependency_graph_enabled_for_new_repositories = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.dependency_graph_enabled_for_new_repositories AS dependency_graph_enabled_for_new_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "a4b74cf3-fa4f-5cd4-a2a1-79fff4405e14",
+            "entity_type": "search",
+            "name": "bloodhound — Environments Where Admins Can Bypass Protections",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Environments Where Admins Can Bypass Protections",
+            "description": "BloodHound `environments-admin-bypass` (Low — Hygiene & Governance), translated to Gryphon. Deployment environments an administrator may deploy to without satisfying the reviewers or wait timer. On GitHub this is the default for every environment, so the interesting rows are the ones with protection rules AND admin bypass. Upstream: GitHound @ bcd3da1, GitHound/saved-queries/environments-admin-bypass.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_repository)-[:DECLARES_ENVIRONMENT__github_core]->(e:github_core__github_environment)",
+                "WHERE e.data.can_admins_bypass = true",
+                "RETURN r.data.full_name AS repository, e.data.name AS environment, e.data.protection_rules AS protection_rules, e.data.configuration.required_reviewers AS required_reviewers"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "238715a6-44f1-5d99-85c2-04ab402c303d",
+            "entity_type": "search",
+            "name": "bloodhound — GitHub-to-Azure Identity Assumptions",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — GitHub-to-Azure Identity Assumptions",
+            "description": "BloodHound `github-to-azure-identity` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Repositories whose OIDC subject a cloud trusts. The grid keeps the evidence chain (repository → identity provider → issuer) where BloodHound draws one computed `CanAssumeIdentity` edge; the conclusion is a query over the chain. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/github-to-azure-identity.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_repository)-[f:FEDERATES_VIA_PROVIDER__github_core]->(p)",
+                "RETURN r.data.full_name AS repository, p.name AS provider, p.entity_type AS provider_type"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "9875e81e-f979-52b5-a58c-f6d387d17713",
+            "entity_type": "search",
+            "name": "bloodhound — Members Can Change Repository Visibility",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Members Can Change Repository Visibility",
+            "description": "BloodHound `members-can-change-repo-visibility` (High — Organization Security Posture), translated to Gryphon. Whether any member may flip a repository from private to public. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/members-can-change-repo-visibility.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_change_repo_visibility = true",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_change_repo_visibility AS members_can_change_repo_visibility"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "57b08fd8-75c3-5d89-89e2-bf5bc1ca2f90",
+            "entity_type": "search",
+            "name": "bloodhound — Members Can Create GitHub Pages",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Members Can Create GitHub Pages",
+            "description": "BloodHound `members-can-create-pages` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Whether members may publish GitHub Pages sites — a hosting surface under the organization's name. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/members-can-create-pages.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_create_pages = true",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_create_pages AS members_can_create_pages"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "f55fbc25-ae0b-58ab-bb97-c273657eec6c",
+            "entity_type": "search",
+            "name": "bloodhound — Members Can Create Public Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Members Can Create Public Repositories",
+            "description": "BloodHound `members-can-create-public-repos` (High — Organization Security Posture), translated to Gryphon. Whether members may create public repositories. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/members-can-create-public-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_create_public_repositories = true",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_create_public_repositories AS members_can_create_public_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "a49a1825-9b45-589e-8486-5a3b5a8261e2",
+            "entity_type": "search",
+            "name": "bloodhound — Members Can Delete Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Members Can Delete Repositories",
+            "description": "BloodHound `members-can-delete-repos` (High — Organization Security Posture), translated to Gryphon. Whether members may delete repositories. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/members-can-delete-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_delete_repositories = true",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_delete_repositories AS members_can_delete_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "665977e6-d74b-5a85-b878-71e724004519",
+            "entity_type": "search",
+            "name": "bloodhound — Members Can Fork Private Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Members Can Fork Private Repositories",
+            "description": "BloodHound `members-can-fork-private-repos` (High — Organization Security Posture), translated to Gryphon. Whether members may fork private repositories into their own accounts, outside the organization's controls. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/members-can-fork-private-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_fork_private_repositories = true",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_fork_private_repositories AS members_can_fork_private_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "f7641116-9b46-5615-9603-be3a174d4388",
+            "entity_type": "search",
+            "name": "bloodhound — Members Can Invite Outside Collaborators",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Members Can Invite Outside Collaborators",
+            "description": "BloodHound `members-can-invite-outside-collaborators` (High — Organization Security Posture), translated to Gryphon. Whether any member may invite an outside collaborator, bypassing owner review of who gets in. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/members-can-invite-outside-collaborators.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_invite_outside_collaborators = true",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_invite_outside_collaborators AS members_can_invite_outside_collaborators"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "0aa410e7-e83d-593d-ba14-89141f6aa641",
+            "entity_type": "search",
+            "name": "bloodhound — Organizations without 2FA",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Organizations without 2FA",
+            "description": "BloodHound `orgs-without-2fa` (High — Organization Security Posture), translated to Gryphon. Whether two-factor authentication is required of every member. The single most-cited organization control. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/orgs-without-2fa.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.two_factor_requirement_enabled = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.two_factor_requirement_enabled AS two_factor_requirement_enabled"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "69704325-0b03-5b32-ab97-6eca029f4888",
+            "entity_type": "search",
+            "name": "bloodhound — Private Repositories with Forking Allowed",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Private Repositories with Forking Allowed",
+            "description": "BloodHound `private-repos-forking-allowed` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Private repositories that may be forked. A fork carries the code outside the repository's controls and its audit trail. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/private-repos-forking-allowed.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_repository)",
+                "WHERE r.data.visibility = \"private\" AND r.data.configuration.allow_forking = true",
+                "RETURN r.data.full_name AS repository, r.data.configuration.settings_observability AS settings_observed"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "7b81aa56-fc63-5fa6-a361-903b154aa779",
+            "entity_type": "search",
+            "name": "bloodhound — Public Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Public Repositories",
+            "description": "BloodHound `public-repos` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Every public repository. Not a finding on its own; the set everything public-facing is measured against. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/public-repos.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_repository)",
+                "WHERE r.data.visibility = \"public\"",
+                "RETURN r.data.full_name AS repository, r.data.default_branch AS default_branch, r.data.configuration.archived AS archived"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "58cd6d5d-4085-542d-82a3-76d7cecab6b9",
+            "entity_type": "search",
+            "name": "bloodhound — Secret Scanning Push Protection Disabled for New Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Secret Scanning Push Protection Disabled for New Repositories",
+            "description": "BloodHound `push-protection-disabled-new-repos` (High — Organization Security Posture), translated to Gryphon. Whether pushes containing a detected secret are blocked in new repositories. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/push-protection-disabled-new-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.secret_scanning_push_protection_enabled_for_new_repositories = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.secret_scanning_push_protection_enabled_for_new_repositories AS secret_scanning_push_protection_enabled_for_new_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "d0ddc7c8-11e9-53f1-828b-34efd8ab0f5f",
+            "entity_type": "search",
+            "name": "bloodhound — Users Who Can Push to Protected Branches",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Users Who Can Push to Protected Branches",
+            "description": "BloodHound `push-to-protected-branches` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Actors who may push past a ruleset unconditionally (`bypass_mode: always`), as opposed to only through a pull request. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/push-to-protected-branches.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (rs:github_core__github_ruleset)-[e:EXEMPTS_ACTOR__github_core]->(actor)",
+                "WHERE e.data.properties.bypass_mode = \"always\"",
+                "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, actor.name AS actor, e.data.properties.actor_type AS actor_type"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "3e9a7ac3-bbfe-57f1-a931-d93ce2e03d4b",
+            "entity_type": "search",
+            "name": "bloodhound — Repositories with Secret Scanning Disabled",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Repositories with Secret Scanning Disabled",
+            "description": "BloodHound `repos-secret-scanning-disabled` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Repositories where secret scanning is off. GitHub omits the whole security block for a non-admin caller, so a repository whose `security_settings_observability` is `unobservable` is missing from this list without being clean. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/repos-secret-scanning-disabled.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_repository)",
+                "WHERE r.data.configuration.security_and_analysis.secret_scanning.status = \"disabled\"",
+                "RETURN r.data.full_name AS repository, r.data.visibility AS visibility, r.data.configuration.archived AS archived"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "fed5e8f3-4561-5459-90c4-028d80dcc793",
+            "entity_type": "search",
+            "name": "bloodhound — Repository Workflows",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Repository Workflows",
+            "description": "BloodHound `repository-workflows` (Low — Hygiene & Governance), translated to Gryphon. Every workflow file, by repository. The inventory the Actions half of the corpus is measured against. Upstream: GitHound @ bcd3da1, GitHound/saved-queries/repository-workflows.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (r:github_core__github_repository)-[:DEFINES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+                "RETURN r.data.full_name AS repository, w.data.path AS workflow, w.data.state AS state, w.data.workflow_id AS workflow_id"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "8cddca0a-c7de-5382-8490-92bb5bf55385",
+            "entity_type": "search",
+            "name": "bloodhound — Secret Scanning Disabled for New Repositories",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Secret Scanning Disabled for New Repositories",
+            "description": "BloodHound `secret-scanning-disabled-new-repos` (High — Organization Security Posture), translated to Gryphon. Whether secret scanning is on for new repositories. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/secret-scanning-disabled-new-repos.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.secret_scanning_enabled_for_new_repositories = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.secret_scanning_enabled_for_new_repositories AS secret_scanning_enabled_for_new_repositories"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "2f4c69ae-41eb-5085-b22e-bf4cff5c7424",
+            "entity_type": "search",
+            "name": "bloodhound — Tier Zero App Installations (All Repositories)",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Tier Zero App Installations (All Repositories)",
+            "description": "BloodHound `t0-app-installations-all-repos` (Privilege Zone rule (Tier Zero)), translated to Gryphon. All-repository installations holding a write permission that matters — contents, administration, workflows or Actions. A leaked installation credential is a write to every repository. Upstream: GitHound @ bcd3da1, GitHound/pz-rules/t0-app-installations-all-repos.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (i:github_core__app_installation)",
+                "WHERE i.data.repository_selection = \"all\" AND (i.data.permissions.contents = \"write\" OR i.data.permissions.administration = \"write\" OR i.data.permissions.workflows = \"write\" OR i.data.permissions.actions = \"write\")",
+                "RETURN i.data.app_slug AS app, i.data.account_login AS account, i.data.permissions AS permissions"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "edc4b644-5a40-5b1f-8790-501a90f63071",
+            "entity_type": "search",
+            "name": "bloodhound — Tier Zero Apps (All-Repository Installations)",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Tier Zero Apps (All-Repository Installations)",
+            "description": "BloodHound `t0-apps-all-repos` (Privilege Zone rule (Tier Zero)), translated to Gryphon. The Apps behind those installations — whoever holds the App's private key can mint a token for every installation. Upstream: GitHound @ bcd3da1, GitHound/pz-rules/t0-apps-all-repos.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (app:github_core__github_app)-[:REGISTERS_INSTALLATION__github_core]->(i:github_core__app_installation)",
+                "WHERE i.data.repository_selection = \"all\" AND (i.data.permissions.contents = \"write\" OR i.data.permissions.administration = \"write\" OR i.data.permissions.workflows = \"write\" OR i.data.permissions.actions = \"write\")",
+                "RETURN app.data.slug AS app, app.data.name AS name, i.data.account_login AS account"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "075b288e-6530-59c3-b808-aeadecd52379",
+            "entity_type": "search",
+            "name": "bloodhound — Tier Zero Organizations",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Tier Zero Organizations",
+            "description": "BloodHound `t0-organizations` (Privilege Zone rule (Tier Zero)), translated to Gryphon. The organizations on the grid — BloodHound's Tier Zero root. Everything else hangs off these. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/pz-rules/t0-organizations.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\"",
+                "RETURN a.data.login AS organization, a.data.configuration.plan.name AS plan, a.data.configuration.two_factor_requirement_enabled AS two_factor_required, a.data.configuration.settings_observability AS settings_observed"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "a2f51f34-f918-5b4d-9e91-3a2901c5b769",
+            "entity_type": "search",
+            "name": "bloodhound — Unprotected Branches",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Unprotected Branches",
+            "description": "BloodHound `unprotected-branches` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Branches no ruleset protects. Feature branches are expected here; a default or release branch is not. Upstream: GitHound @ bcd3da1, GitHound/saved-queries/unprotected-branches.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (g:github_core__github_repository)-[:HOSTS_REPOSITORY__github_core]->(r:git_core__git_repository)-[:DECLARES_REF__git_core]->(b:git_core__git_ref)",
+                "WHERE b.data.ref_type = \"branch\"",
+                "NOT EXISTS { MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b) }",
+                "RETURN g.data.full_name AS repository, b.data.name AS branch, b.data.is_default AS is_default"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "e1cbe598-cc40-5e88-90ad-2a1a2579c0c8",
+            "entity_type": "search",
+            "name": "bloodhound — Repositories with Workflows and Unprotected Default Branch",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Repositories with Workflows and Unprotected Default Branch",
+            "description": "BloodHound `unprotected-default-branch-with-workflow` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Repositories that both run workflows and leave their default branch unprotected — so a write can also rewrite the automation. BloodHound writes this as two correlated clauses; one chain through the repository says the same thing. Upstream: GitHound @ bcd3da1, GitHound/saved-queries/unprotected-default-branch-with-workflow.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (w:github_core__github_workflow)<-[:DEFINES_WORKFLOW__github_core]-(g:github_core__github_repository)-[:HOSTS_REPOSITORY__github_core]->(r:git_core__git_repository)-[:DECLARES_REF__git_core]->(b:git_core__git_ref)",
+                "WHERE b.data.is_default = true",
+                "NOT EXISTS { MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b) }",
+                "RETURN g.data.full_name AS repository, b.data.name AS branch, w.data.path AS workflow"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "e02d19d8-13f3-5219-83e2-87c21a27fe65",
+            "entity_type": "search",
+            "name": "bloodhound — Unprotected Default Branches",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Unprotected Default Branches",
+            "description": "BloodHound `unprotected-default-branches` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Default branches with no ruleset in front of them: anyone with write can push straight to what everyone builds from. BloodHound needs a property-to-property comparison here; `git_ref.is_default` makes it a filter. Upstream: GitHound @ bcd3da1, GitHound/saved-queries/unprotected-default-branches.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (g:github_core__github_repository)-[:HOSTS_REPOSITORY__github_core]->(r:git_core__git_repository)-[:DECLARES_REF__git_core]->(b:git_core__git_ref)",
+                "WHERE b.data.is_default = true",
+                "NOT EXISTS { MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b) }",
+                "RETURN g.data.full_name AS repository, b.data.name AS branch"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "4e833979-1125-5bb3-a847-97296696f390",
+            "entity_type": "search",
+            "name": "bloodhound — Web Commit Signoff Not Required",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Web Commit Signoff Not Required",
+            "description": "BloodHound `web-commit-signoff-not-required` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Whether commits made in the web editor must carry a sign-off. Upstream: GitHound, openhound-github @ bcd3da1, 056c0f8, GitHound/saved-queries/web-commit-signoff-not-required.json — Apache-2.0. Stage: A. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (a:github_core__github_account)",
+                "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.web_commit_signoff_required = false",
+                "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.web_commit_signoff_required AS web_commit_signoff_required"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "1f28b9c6-9ecd-501d-ac7b-1b942aedade9",
+            "entity_type": "search",
+            "name": "bloodhound — Workflow Jobs with Broad GITHUB_TOKEN Write Permissions",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Workflow Jobs with Broad GITHUB_TOKEN Write Permissions",
+            "description": "BloodHound `workflow-jobs-with-broad-token-write-permissions` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Jobs whose GITHUB_TOKEN is declared with write on contents, Actions or pull requests — the permissions that let a compromised step change code or approve itself. Upstream: openhound-github @ 056c0f8, openhound-github/extension/saved_searches/workflow-jobs-with-broad-token-write-permissions.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (w:github_core__github_workflow)-[:DEFINES_JOB__github_core]->(j:github_core__workflow_job)",
+                "WHERE j.data.permissions.contents = \"write\" OR j.data.permissions.actions = \"write\" OR j.data.permissions[\"pull-requests\"] = \"write\" OR j.data.configuration.workflow_permissions.contents = \"write\" OR j.data.configuration.workflow_permissions.actions = \"write\" OR j.data.configuration.workflow_permissions[\"pull-requests\"] = \"write\"",
+                "RETURN w.data.full_name AS repository, w.data.path AS workflow, j.data.job_key AS job, j.data.permissions AS job_permissions, j.data.configuration.workflow_permissions AS workflow_permissions"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "f2a8630e-9ac0-5678-b893-8d303c8a7eec",
+            "entity_type": "search",
+            "name": "bloodhound — Workflow Jobs with OIDC Token Permission",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Workflow Jobs with OIDC Token Permission",
+            "description": "BloodHound `workflow-jobs-with-id-token-write` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. Jobs that may request an OIDC token — the jobs that can become a cloud identity. Whether they do is the next query. Upstream: openhound-github @ 056c0f8, openhound-github/extension/saved_searches/workflow-jobs-with-id-token-write.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (w:github_core__github_workflow)-[:DEFINES_JOB__github_core]->(j:github_core__workflow_job)",
+                "WHERE j.data.permissions[\"id-token\"] = \"write\" OR j.data.configuration.workflow_permissions[\"id-token\"] = \"write\"",
+                "RETURN w.data.full_name AS repository, w.data.path AS workflow, j.data.job_key AS job, j.data.environment AS environment"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "b8e68e2d-7aaa-5a5d-a7ec-c28da0924139",
+            "entity_type": "search",
+            "name": "bloodhound — Workflow Jobs with Observed OIDC Authentication Steps",
+            "dimensions": {
+              "tap.graph": "web"
+            }
+          },
+          "node": {
+            "name": "bloodhound — Workflow Jobs with Observed OIDC Authentication Steps",
+            "description": "BloodHound `workflow-jobs-with-observed-oidc-auth-steps` (Medium — Branch Protection & Privilege Escalation), translated to Gryphon. OIDC-capable jobs that visibly exchange the token for a cloud credential — the AWS, Azure and Pages login actions. The `getIDToken` / `ACTIONS_ID_TOKEN_REQUEST_URL` half of BloodHound's filter reads step bodies, which the grid keeps as text in `configuration.steps` and Gryphon cannot search inside arrays. Upstream: openhound-github @ 056c0f8, openhound-github/extension/saved_searches/workflow-jobs-with-observed-oidc-auth-steps.json — Apache-2.0. Stage: today. Seeded from data/bloodhound_queries.json by scripts/build_query_pack_grift.py; edit the pack, not this node.",
+            "search_type": "gryphon",
+            "root": "node",
+            "definition": {
+              "query": [
+                "MATCH (j:github_core__workflow_job)-[u:USES_ACTION__github_core]->(act:github_core__github_action)",
+                "WHERE (j.data.permissions[\"id-token\"] = \"write\" OR j.data.configuration.workflow_permissions[\"id-token\"] = \"write\") AND act.data.action_path IN [\"aws-actions/configure-aws-credentials\", \"azure/login\", \"Azure/login\", \"actions/deploy-pages\"]",
+                "RETURN j.data.full_name AS repository, j.data.workflow_path AS workflow, j.data.job_key AS job, act.data.action_path AS action, u.data.properties.declared_ref AS declared_ref, u.data.properties.pin_kind AS pin"
+              ]
+            },
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "max_limit": 1000
+          }
+        }
+      ],
+      "edges": [
+        {
+          "entity": {
+            "entity_id": "01a0918c-525b-7520-9151-4f06138f4c6d",
+            "entity_type": "edge",
+            "name": "Queries page USES_PANEL pack",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0202dfa306",
+            "to_entity_id": "01a0918c-525b-7520-9151-4f04e1ead2c8",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "pack"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "01a0918c-525b-7520-9151-4f076f01e148",
+            "entity_type": "edge",
+            "name": "Query page USES_PANEL query",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f03e6b51d79",
+            "to_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "edge_type": "USES_PANEL",
+            "properties": {
+              "hotlink": {
+                "model": "page",
+                "spec": "page-panels",
+                "value": "query"
+              }
+            }
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "644934c0-91ab-5ad9-8be2-2a42971ad03d",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH actions-sha-pinning-not-required",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "5217e943-5919-5b32-8ffb-2ce7111a9f04",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "539429e6-a20d-5852-989f-1c32eda27ea9",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH advanced-security-disabled-new-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "0551428f-b065-5dbb-b993-ab888443fda3",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "f1629be9-6081-5a3a-be73-34ccb5096ddb",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH all-actions-allowed",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "5b2acd50-d4a7-52b2-b03e-88f866f67390",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "fe97dd77-e967-5faa-bb4c-d9395dbb91e4",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH app-installations-all-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "a61fadfd-08fc-5837-8fba-4a8722cce37f",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "3a00958c-0a9d-5ddb-a8dd-c2eb03924505",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH bypass-pr-requirements",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "88d2c5c7-3f9c-5c28-856e-83f82367a850",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "70c7ef96-c670-58a2-95f3-d4ea57fa0c40",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH default-repository-permissions",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "c4b1df5e-090b-5dd6-8c0f-b8887abbb77b",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "a9a2d395-c149-5347-8413-ed1c0f3ac234",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH dependabot-alerts-disabled-new-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "bd7ce94c-4076-54b4-acc2-ee3f8a940417",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "957684e3-ebfe-554b-a6b0-8d6d5491f933",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH dependabot-updates-disabled-new-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "139ef50f-d0ec-593b-b8de-9b74cab89564",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "c5bcc5f4-2c0b-5fa7-89cd-c319d557136d",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH dependency-graph-disabled-new-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "1b5a4522-abeb-5905-a708-6e4746b2ba10",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "cb2535c1-0eba-5ee9-acbe-22e2ff88ab88",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH environments-admin-bypass",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "a4b74cf3-fa4f-5cd4-a2a1-79fff4405e14",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "7b1139d3-c9c8-55df-b320-6d23713c179e",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH github-to-azure-identity",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "238715a6-44f1-5d99-85c2-04ab402c303d",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "d359e891-0e9c-51b3-a29e-08a51c09151f",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH members-can-change-repo-visibility",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "9875e81e-f979-52b5-a58c-f6d387d17713",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "a73876ef-1358-559d-8e8c-4c24291c52de",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH members-can-create-pages",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "57b08fd8-75c3-5d89-89e2-bf5bc1ca2f90",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "0b26bd89-a6e3-5333-9b73-a7eee0d33356",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH members-can-create-public-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "f55fbc25-ae0b-58ab-bb97-c273657eec6c",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "daf82ad6-5127-5636-a526-da04329bc50a",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH members-can-delete-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "a49a1825-9b45-589e-8486-5a3b5a8261e2",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "772418da-f253-5169-85aa-ef629389cf6d",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH members-can-fork-private-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "665977e6-d74b-5a85-b878-71e724004519",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "53207b00-00ec-5318-9d58-5ccdb859d9e5",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH members-can-invite-outside-collaborators",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "f7641116-9b46-5615-9603-be3a174d4388",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "087badf8-11a9-58a2-b46c-c19861ea46fa",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH orgs-without-2fa",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "0aa410e7-e83d-593d-ba14-89141f6aa641",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "6f4f1ddd-289e-5ff8-9ce2-d824005c6ed8",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH private-repos-forking-allowed",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "69704325-0b03-5b32-ab97-6eca029f4888",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "85827f5a-59af-5197-8541-ea7f372655ae",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH public-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "7b81aa56-fc63-5fa6-a361-903b154aa779",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "499526df-c159-5314-86cc-aadd87fa36ea",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH push-protection-disabled-new-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "58cd6d5d-4085-542d-82a3-76d7cecab6b9",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "07f24b1c-970c-5f36-951b-04b5ff2ad116",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH push-to-protected-branches",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "d0ddc7c8-11e9-53f1-828b-34efd8ab0f5f",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "ac5f1e72-3767-51f4-85f7-43b5925317dc",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH repos-secret-scanning-disabled",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "3e9a7ac3-bbfe-57f1-a931-d93ce2e03d4b",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "f2df0a6a-1f71-56fb-a30d-51758180852e",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH repository-workflows",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "fed5e8f3-4561-5459-90c4-028d80dcc793",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "f512045b-13c7-558c-9681-f2bd29b12004",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH secret-scanning-disabled-new-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "8cddca0a-c7de-5382-8490-92bb5bf55385",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "71030beb-0b99-5307-a5e9-69fed244b0dc",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH t0-app-installations-all-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "2f4c69ae-41eb-5085-b22e-bf4cff5c7424",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "564b6ec1-849b-5132-a9cb-d96e7090c868",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH t0-apps-all-repos",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "edc4b644-5a40-5b1f-8790-501a90f63071",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "34979794-5298-50b0-9a0b-4ce171f64173",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH t0-organizations",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "075b288e-6530-59c3-b808-aeadecd52379",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "f69c373d-4315-5a07-8bfd-a078abf4da2b",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH unprotected-branches",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "a2f51f34-f918-5b4d-9e91-3a2901c5b769",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "2c6733bf-8f42-560d-8a2b-af5c147b55ef",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH unprotected-default-branch-with-workflow",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "e1cbe598-cc40-5e88-90ad-2a1a2579c0c8",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "ec7fa094-ac4c-5348-ba32-baabf2efa141",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH unprotected-default-branches",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "e02d19d8-13f3-5219-83e2-87c21a27fe65",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "6081ad96-92ff-5fdc-9347-7d3d2838cb15",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH web-commit-signoff-not-required",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "4e833979-1125-5bb3-a847-97296696f390",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "2fe566ec-cdb0-5131-856f-a183ed5f82f0",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH workflow-jobs-with-broad-token-write-permissions",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "1f28b9c6-9ecd-501d-ac7b-1b942aedade9",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "7cdf7ca8-ff60-539a-94a1-47bb521634a1",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH workflow-jobs-with-id-token-write",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "f2a8630e-9ac0-5678-b893-8d303c8a7eec",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        },
+        {
+          "entity": {
+            "entity_id": "9a3975a1-7bed-55ce-8ee4-af8b20d260e7",
+            "entity_type": "edge",
+            "name": "Query panel USES_SEARCH workflow-jobs-with-observed-oidc-auth-steps",
+            "dimensions": {}
+          },
+          "edge": {
+            "from_entity_id": "01a0918c-525b-7520-9151-4f0571292e95",
+            "to_entity_id": "b8e68e2d-7aaa-5a5d-a7ec-c28da0924139",
+            "edge_type": "USES_SEARCH",
+            "properties": {}
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+<div class="tap-panel tap-panel--git-serious-query-pack tap-gs">
+    <article>
+        <header class="tap-gs__head">
+            <p class="tap-gs__kind">git-serious · query pack · BloodHound GitHub</p>
+            <h3>{{ o.total }} questions a GitHub attack-path graph asks — and how many this grid can answer</h3>
+            <p class="tap-gs__sub">SpecterOps ships {{ o.total }} saved queries with its BloodHound GitHub extension. Each is here with its original Cypher, our Gryphon, and an honest state: <strong>{{ o.by_status.runs|default:0 }}</strong> run on this grid, <strong>{{ o.by_status.expressible|default:0 }}</strong> are written and waiting on a collector build, <strong>{{ o.by_status.blocked|default:0 }}</strong> wait on a Gryphon construct, <strong>{{ o.by_status.not_observable|default:0 }}</strong> ask about things this organisation does not have.</p>
+        </header>
+
+        <dl class="tap-gs-subject">
+            <div><dt>Upstream</dt><dd>{% for repo, pin in o.pack.upstream.items %}<code>{{ repo }}</code> @ <code>{{ pin }}</code>{% if not forloop.last %} · {% endif %}{% endfor %}</dd></div>
+            <div><dt>Licence</dt><dd>{{ o.pack.license }}</dd></div>
+            <div><dt>Seeded searches</dt><dd>{{ o.seeded }}<span class="tap-gs__muted"> — the translations that run; the rest are shown, not executed</span></dd></div>
+            <div><dt>Blocked, with a hatch</dt><dd>{{ o.blocked_hatch }}<span class="tap-gs__muted"> — a module runner could answer these today; tap#259 and tap#433 are the language builds</span></dd></div>
+        </dl>
+
+        <section class="tap-gs-section tap-gs-section--lead">
+            <h4>The ladder</h4>
+            <p class="tap-gs__meaning">Cumulative: how many of the {{ o.total }} are answerable once each collector build lands. The data is the bottleneck, not the language — every stage below is a github_core change, and each is a filed issue.</p>
+            <div class="tap-gs-ladder" role="img" aria-label="Queries answerable by stage">
+                {% for step in o.ladder %}
+                <div class="tap-gs-ladder__label">{{ step.label }}</div>
+                <div class="tap-gs-ladder__track"><div class="tap-gs-ladder__fill tap-gs-ladder__fill--{{ step.stage }}" style="width: {% widthratio step.cumulative o.total 100 %}%"></div><span class="tap-gs-ladder__num">{{ step.cumulative }}</span></div>
+                {% if step.issue %}<div class="tap-gs-ladder__note">{{ step.issue }}</div>{% endif %}
+                {% endfor %}
+                <div class="tap-gs-ladder__label">ceiling</div>
+                <div class="tap-gs-ladder__note" style="grid-column: 2">{{ o.total|add:"-0" }} minus {{ o.by_stage.na|default:0 }} not observable minus {{ o.by_stage.later|default:0 }} awaiting a type — the rest is Gryphon's to close.</div>
+            </div>
+        </section>
+
+        <section class="tap-gs-section">
+            <h4>Every query, by the stage that answers it</h4>
+            <p class="tap-gs__meaning">Click a row for the question, both texts, what it needs and — where it runs — the answer on this grid. Severity and category are BloodHound's; the stage and state are ours.</p>
+            <table class="tap-gs-pack">
+                <thead><tr><th>Query</th><th>Severity</th><th>State</th><th>Stage</th><th>Returns</th></tr></thead>
+                <tbody>
+                {% regroup o.rows by stage as groups %}
+                {% for g in groups %}
+                <tr class="tap-gs-pack__group"><td colspan="5"><span class="tap-gs-stage tap-gs-stage--{{ g.grouper }}">{{ g.list.0.stage_label }}</span><small>{{ g.list|length }} quer{{ g.list|length|pluralize:"y,ies" }}{% if g.list.0.stage_issue %} · {{ g.list.0.stage_issue }}{% endif %}</small></td></tr>
+                {% for r in g.list %}
+                <tr class="tap-gs-pack__row" onclick="window.location='{{ r.url }}'">
+                    <td class="tap-gs-pack__name"><a href="{{ r.url }}">{{ r.name }}</a><small><code>{{ r.id }}</code> · {{ r.category }}</small></td>
+                    <td><span class="tap-gs-sev tap-gs-sev--{{ r.severity }}">{{ r.severity }}</span></td>
+                    <td><span class="tap-gs-status tap-gs-status--{{ r.status }}">{{ r.status_label }}</span></td>
+                    <td><span class="tap-gs-stage tap-gs-stage--{{ r.stage }}">{{ r.stage }}</span></td>
+                    <td class="tap-gs__muted">{% if r.returns %}{{ r.returns|join:", " }}{% elif r.status == "not_observable" %}—{% else %}graph{% endif %}</td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <p class="tap-gs-prov">Pack built {{ o.pack.built }} from <code>data/bloodhound_queries.json</code>; the Searches on this grid were generated from the same file. Query names, categories and descriptions are SpecterOps' (Apache-2.0); translations, stages and states are git-serious's.</p>
+    </article>
+</div>
