@@ -1691,7 +1691,7 @@
       ],
       "blocked_on": [],
       "hatch": "",
-      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+      "caveat": "Two settings, one field: GitHub also has \"only allow secure two-factor methods\" (blocks SMS), and it has NO API field at any tier — an organization can require 2FA, permit SMS, and pass this query. The node carries `two_factor_methods_observability: unobservable` beside the boolean for exactly that reason; a clean answer here is a fact about the requirement, never about the methods. Per-member factor type is not published either (tap#157)."
     },
     {
       "id": "pats-all-repo-access",
