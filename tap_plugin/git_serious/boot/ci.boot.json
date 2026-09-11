@@ -49,7 +49,7 @@
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/tap-plugin-github-core",
-          "rev": "v0.9.0"
+          "rev": "v0.10.0"
         },
         "note": "Declared in depends_on. Pinned at v0.7.0 — the FLOOR this plugin declares, not merely the latest: the repository page matches github_core__pull_request and reads four github_repository fields that do not exist before v0.7.0. Public repo, no credential (req-tap-plugin-arch-source-secret-5)."
       },
