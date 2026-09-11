@@ -11,6 +11,7 @@ description = "Visualize, track, and secure your CI/CD system — for humans and
 depends_on = [
     { slug = "administrivia", note = "The product record seeds administrivia's admin pages beside the landing; the landing links to them." },
     { slug = "github_core", note = "The landing, org and repository pages are GRIFT over github_core's vocabulary (searches name github_core__* types; the machinery projection is github_core's)." },
+    { slug = "zizmor", optional = true, note = "The secrets pages read zizmor's FLAGS_WORKFLOW findings onto each consuming workflow WHEN the scanner is installed (panels/secrets.py, guarded import); without it the findings column is absent, not empty. Soft: git-serious does not require the scanner." },
 ]
 
 # Pure composition — no crypto, no native deps (spec-fips.md, req-tap-plugin-manifest-v0-fips).
