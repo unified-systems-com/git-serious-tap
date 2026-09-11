@@ -54,6 +54,16 @@
         "note": "Declared in depends_on. Pinned at v0.7.0 — the FLOOR this plugin declares, not merely the latest: the repository page matches github_core__pull_request and reads four github_repository fields that do not exist before v0.7.0. Public repo, no credential (req-tap-plugin-arch-source-secret-5)."
       },
       {
+        "slug": "zizmor",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/zizmor-tap",
+          "rev": "6f6e1406a1c2965c56fe075e761da6bc8939e65c"
+        },
+        "note": "Optional dependency of git_serious (the secrets panels read FLAGS_WORKFLOW findings when the scanner is installed); the CI stack installs it so that code path runs under test (req-boot-bootstrap-ci-record-3). Pinned to zizmor-tap main @ 6f6e140 (2026-09-11) — the plugin has no release tag yet."
+      },
+      {
         "slug": "git_serious",
         "enabled": true,
         "source": {
