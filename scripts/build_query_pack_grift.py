@@ -15,6 +15,7 @@ scripts/uuid7 whenever the bundle changes). Everything else is derived from the 
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import uuid
@@ -202,18 +203,32 @@ def build() -> dict:
     }
 
 
-def main(argv: list[str]) -> int:
-    text = json.dumps(build(), indent=2, ensure_ascii=False) + "\n"
-    if "--check" in argv:
-        if OUT.exists() and OUT.read_text() == text:
-            print("queries.grift.json is current")
-            return 0
-        print("queries.grift.json is STALE — re-run without --check (and bump BATCH if content changed)")
-        return 1
-    OUT.write_text(text)
+def render() -> str:
+    return json.dumps(build(), indent=2, ensure_ascii=False) + "\n"
+
+
+def check() -> int:
+    """Exit 1 when the committed bundle differs from what the pack would generate now."""
+    if OUT.exists() and OUT.read_text() == render():
+        print("queries.grift.json is current")
+        return 0
+    print("queries.grift.json is STALE — re-run without --check (and bump BATCH if content changed)")
+    return 1
+
+
+def write() -> int:
+    """Rewrite the committed bundle. The output path is the module constant OUT — never an argument."""
+    OUT.write_text(render())
     print(f"wrote {OUT.relative_to(ROOT)}")
     return 0
 
 
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--check", action="store_true", help="exit 1 if the committed bundle is stale")
+    args = parser.parse_args()
+    return check() if args.check else write()
+
+
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv[1:]))
+    raise SystemExit(main())

@@ -121,7 +121,7 @@ def test_every_seeded_translation_parses() -> None:
 def test_search_ids_are_deterministic_and_distinct() -> None:
     ids = {query_pack.search_entity_id(q["id"]) for q in query_pack.queries()}
     assert len(ids) == len(query_pack.queries())
-    assert query_pack.search_entity_id("public-repos") == query_pack.search_entity_id("public-repos")
+    assert all(i.version == 5 for i in ids), "uuid5 of the BloodHound id — reproducible in the generator and the page"
 
 
 # ---------------------------------------------------------------------------------------------
