@@ -1,0 +1,3463 @@
+{
+  "description": "The SpecterOps BloodHound GitHub saved-query corpus, translated to Gryphon for the TAP grid. One record per BloodHound query id; `sources` carries every upstream variant verbatim with its pinned commit. `status`/`stage` say whether and when the translation runs on a grid collected by github_core. Content, not fixture data: no nodes, no expected rows.",
+  "license": "Apache-2.0 — SpecterOps; names, descriptions and Cypher reproduced with attribution",
+  "upstream": {
+    "SpecterOps/GitHound": "bcd3da1",
+    "SpecterOps/openhound-github": "056c0f8"
+  },
+  "built": "2026-09-11",
+  "stages": {
+    "today": "runs on a grid github_core has collected",
+    "A": "after github-core#110 — organization, repository and environment settings in configuration",
+    "A2": "after github-core#114 — ruleset rules flattened to configuration.rule_types",
+    "B": "after github-core#111 — members, teams, membership and repository grants",
+    "C": "after github-core#112 — custom organization roles and fine-grained PAT grants",
+    "later": "a type not yet scheduled",
+    "na": "not observable for a Team-plan organization (Enterprise, SAML/SCIM, another cloud's identity graph)"
+  },
+  "queries": [
+    {
+      "id": "actions-sha-pinning-not-required",
+      "name": "Actions SHA Pinning Not Required",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations that do not require SHA pinning for GitHub Actions. Without pinning, actions referenced by tag can be silently replaced with malicious versions.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/actions-sha-pinning-not-required.json",
+            "openhound-github/extension/saved_searches/actions-sha-pinning-not-required.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {actions_sha_pinning_required: false})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether the organization forces every `uses:` to a full commit SHA. Without it a tag can be moved under a workflow — the tj-actions/changed-files shape.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.actions_policy.sha_pinning_required = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.actions_policy.sha_pinning_required AS sha_pinning_required"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "sha_pinning_required"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "active-leaked-secrets",
+      "name": "Active Leaked Secrets",
+      "category": "Critical — Active Threats",
+      "severity": "critical",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds secret scanning alerts that are both unresolved and confirmed active. These are valid, usable credentials committed to source code and represent an immediate compromise risk.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/active-leaked-secrets.json",
+            "openhound-github/extension/saved_searches/active-leaked-secrets.json"
+          ],
+          "cypher": "MATCH p=(:GH_Repository)-[:GH_Contains]->(alert:GH_SecretScanningAlert {state: 'open', validity: 'active'})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Open alerts GitHub has confirmed as live credentials. BloodHound's collector proves liveness by *using* the leaked token; TAP will read GitHub's `validity` field and never touch the credential.",
+      "gryphon": null,
+      "status": "blocked",
+      "stage": "later",
+      "needs": [
+        "secret_scanning_alert with `validity`"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "type not built"
+      ],
+      "hatch": "none — same collector build as secret-scanning-alerts; `validity` is a field on the alert GitHub returns",
+      "caveat": ""
+    },
+    {
+      "id": "advanced-security-disabled-new-repos",
+      "name": "Advanced Security Disabled for New Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where GitHub Advanced Security is not automatically enabled for new repositories. New repositories will lack code scanning, secret scanning, and other GHAS features.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/advanced-security-disabled-new-repos.json",
+            "openhound-github/extension/saved_searches/advanced-security-disabled-new-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {advanced_security_enabled_for_new_repositories: false})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether new repositories inherit GitHub Advanced Security. Off means each new repository starts without code scanning.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.advanced_security_enabled_for_new_repositories = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.advanced_security_enabled_for_new_repositories AS advanced_security_enabled_for_new_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "advanced_security_enabled_for_new_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "all-actions-allowed",
+      "name": "All GitHub Actions Allowed",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations that allow all GitHub Actions to run, including third-party actions from the marketplace. This creates supply chain risk if a malicious or compromised action is used.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/all-actions-allowed.json",
+            "openhound-github/extension/saved_searches/all-actions-allowed.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {actions_allowed_actions: 'all'})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether any marketplace action may run. `all` is the default and the widest supply-chain surface; `selected` names an allow-list.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.actions_policy.allowed_actions = \"all\"",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.actions_policy.allowed_actions AS allowed_actions"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "allowed_actions"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "app-installations-all-repos",
+      "name": "App Installations with Access to All Repositories",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds GitHub App installations that have access to every repository in the organization. A compromised app credential would affect all repositories.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/app-installations-all-repos.json",
+            "openhound-github/extension/saved_searches/app-installations-all-repos.json"
+          ],
+          "cypher": "MATCH (app:GH_AppInstallation {repository_selection: 'all'})\nRETURN app\nLIMIT 1000"
+        }
+      ],
+      "about": "App installations that follow the organization into every repository, present and future.",
+      "gryphon": [
+        "MATCH (i:github_core__app_installation)",
+        "WHERE i.data.repository_selection = \"all\"",
+        "RETURN i.data.app_slug AS app, i.data.account_login AS account, i.data.permissions AS permissions, i.data.suspended AS suspended"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__app_installation"
+      ],
+      "returns": [
+        "app",
+        "account",
+        "permissions",
+        "suspended"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "branch-protection-admins-not-enforced",
+      "name": "Branch Protection Rules - Admins Not Enforced",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds branch protection rules where administrators can bypass all protections. Admins can push directly, skip reviews, and override status checks on these branches.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/branch-protection-admins-not-enforced.json",
+            "openhound-github/extension/saved_searches/branch-protection-admins-not-enforced.json"
+          ],
+          "cypher": "MATCH p=(:GH_BranchProtectionRule {enforce_admins: false})-[:GH_ProtectedBy]->(:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Rulesets an organization administrator may bypass outright.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b:git_core__git_ref)",
+        "WHERE rs.data.configuration.bypass_organization_admin = true",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, rs.data.enforcement AS enforcement, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "expressible",
+      "stage": "A2",
+      "needs": [
+        "github_core__github_ruleset",
+        "git_core__git_ref"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "enforcement",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "GitHub rulesets replaced classic branch protection; the rule set is a LIST on the ruleset node, and Gryphon has no array-membership predicate, so github-core#114 flattens it into `configuration.rule_types` first. A branch under no ruleset at all is a different query (unprotected-branches)."
+    },
+    {
+      "id": "branch-protection-deletions-allowed",
+      "name": "Branch Protection Rules - Deletions Allowed",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds protected branches that can be deleted. Branch deletion can result in loss of code and removal of audit history.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/branch-protection-deletions-allowed.json",
+            "openhound-github/extension/saved_searches/branch-protection-deletions-allowed.json"
+          ],
+          "cypher": "MATCH p=(:GH_BranchProtectionRule {allows_deletions: true})-[:GH_ProtectedBy]->(:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Protected branches whose ruleset does not forbid deletion.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b:git_core__git_ref)",
+        "WHERE rs.data.configuration.rule_types.deletion IS NULL",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, rs.data.enforcement AS enforcement, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "expressible",
+      "stage": "A2",
+      "needs": [
+        "github_core__github_ruleset",
+        "git_core__git_ref"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "enforcement",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "GitHub rulesets replaced classic branch protection; the rule set is a LIST on the ruleset node, and Gryphon has no array-membership predicate, so github-core#114 flattens it into `configuration.rule_types` first. A branch under no ruleset at all is a different query (unprotected-branches)."
+    },
+    {
+      "id": "branch-protection-force-pushes",
+      "name": "Branch Protection Rules - Force Pushes Allowed",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds branches where force pushes are allowed. Force pushes can rewrite commit history, potentially hiding malicious changes or destroying audit trails.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/branch-protection-force-pushes.json",
+            "openhound-github/extension/saved_searches/branch-protection-force-pushes.json"
+          ],
+          "cypher": "MATCH p=(:GH_BranchProtectionRule {allows_force_pushes: true})-[:GH_ProtectedBy]->(:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Protected branches whose ruleset does not forbid force pushes (history rewrite).",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b:git_core__git_ref)",
+        "WHERE rs.data.configuration.rule_types.non_fast_forward IS NULL",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, rs.data.enforcement AS enforcement, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "expressible",
+      "stage": "A2",
+      "needs": [
+        "github_core__github_ruleset",
+        "git_core__git_ref"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "enforcement",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "GitHub rulesets replaced classic branch protection; the rule set is a LIST on the ruleset node, and Gryphon has no array-membership predicate, so github-core#114 flattens it into `configuration.rule_types` first. A branch under no ruleset at all is a different query (unprotected-branches)."
+    },
+    {
+      "id": "branch-protection-no-code-owner-reviews",
+      "name": "Branch Protection Rules - No Code Owner Reviews",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds branches where code owner reviews are not required. Changes to security-critical paths can be merged without authorization from the designated code owners.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/branch-protection-no-code-owner-reviews.json",
+            "openhound-github/extension/saved_searches/branch-protection-no-code-owner-reviews.json"
+          ],
+          "cypher": "MATCH p=(:GH_BranchProtectionRule {require_code_owner_reviews: false})-[:GH_ProtectedBy]->(:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Pull-request rules that do not require a CODEOWNERS review.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b:git_core__git_ref)",
+        "WHERE rs.data.configuration.rule_types.pull_request.require_code_owner_review = false",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, rs.data.enforcement AS enforcement, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "expressible",
+      "stage": "A2",
+      "needs": [
+        "github_core__github_ruleset",
+        "git_core__git_ref"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "enforcement",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "GitHub rulesets replaced classic branch protection; the rule set is a LIST on the ruleset node, and Gryphon has no array-membership predicate, so github-core#114 flattens it into `configuration.rule_types` first. A branch under no ruleset at all is a different query (unprotected-branches)."
+    },
+    {
+      "id": "branch-protection-no-pr-reviews",
+      "name": "Branch Protection Rules - No Pull Request Reviews Required",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds branches where pull request reviews are not required. Code can be merged directly without peer review, increasing the risk of undetected vulnerabilities or malicious changes.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/branch-protection-no-pr-reviews.json",
+            "openhound-github/extension/saved_searches/branch-protection-no-pr-reviews.json"
+          ],
+          "cypher": "MATCH p=(:GH_BranchProtectionRule {required_pull_request_reviews: false})-[:GH_ProtectedBy]->(:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Protected branches whose ruleset requires no pull request — direct pushes allowed.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b:git_core__git_ref)",
+        "WHERE rs.data.configuration.rule_types.pull_request IS NULL",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, rs.data.enforcement AS enforcement, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "expressible",
+      "stage": "A2",
+      "needs": [
+        "github_core__github_ruleset",
+        "git_core__git_ref"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "enforcement",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "GitHub rulesets replaced classic branch protection; the rule set is a LIST on the ruleset node, and Gryphon has no array-membership predicate, so github-core#114 flattens it into `configuration.rule_types` first. A branch under no ruleset at all is a different query (unprotected-branches)."
+    },
+    {
+      "id": "branch-protection-no-status-checks",
+      "name": "Branch Protection Rules - No Status Checks Required",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds branches where CI/CD status checks are not required before merging. Code with failing tests or security scans can be merged into protected branches.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/branch-protection-no-status-checks.json",
+            "openhound-github/extension/saved_searches/branch-protection-no-status-checks.json"
+          ],
+          "cypher": "MATCH p=(:GH_BranchProtectionRule {requires_status_checks: false})-[:GH_ProtectedBy]->(:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Protected branches whose ruleset requires no status check before merge.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b:git_core__git_ref)",
+        "WHERE rs.data.configuration.rule_types.required_status_checks IS NULL",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, rs.data.enforcement AS enforcement, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "expressible",
+      "stage": "A2",
+      "needs": [
+        "github_core__github_ruleset",
+        "git_core__git_ref"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "enforcement",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "GitHub rulesets replaced classic branch protection; the rule set is a LIST on the ruleset node, and Gryphon has no array-membership predicate, so github-core#114 flattens it into `configuration.rule_types` first. A branch under no ruleset at all is a different query (unprotected-branches)."
+    },
+    {
+      "id": "branch-protection-self-approval",
+      "name": "Branch Protection Rules - Self-Approval Allowed",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds branches where the author of the last push can approve their own pull request. This allows a single person to both write and approve code changes.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/branch-protection-self-approval.json",
+            "openhound-github/extension/saved_searches/branch-protection-self-approval.json"
+          ],
+          "cypher": "MATCH p=(:GH_BranchProtectionRule {require_last_push_approval: false})-[:GH_ProtectedBy]->(:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Pull-request rules that let the author of the last push approve it.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b:git_core__git_ref)",
+        "WHERE rs.data.configuration.rule_types.pull_request.require_last_push_approval = false",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, rs.data.enforcement AS enforcement, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "expressible",
+      "stage": "A2",
+      "needs": [
+        "github_core__github_ruleset",
+        "git_core__git_ref"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "enforcement",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "GitHub rulesets replaced classic branch protection; the rule set is a LIST on the ruleset node, and Gryphon has no array-membership predicate, so github-core#114 flattens it into `configuration.rule_types` first. A branch under no ruleset at all is a different query (unprotected-branches)."
+    },
+    {
+      "id": "branch-protection-stale-reviews",
+      "name": "Branch Protection Rules - Stale Reviews Not Dismissed",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds branches where stale reviews are not dismissed when new commits are pushed. An attacker could get a review approved, then push additional malicious commits that inherit the stale approval.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/branch-protection-stale-reviews.json",
+            "openhound-github/extension/saved_searches/branch-protection-stale-reviews.json"
+          ],
+          "cypher": "MATCH p=(:GH_BranchProtectionRule {dismisses_stale_reviews: false})-[:GH_ProtectedBy]->(:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Pull-request rules that keep an approval alive after new commits land on top of it.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b:git_core__git_ref)",
+        "WHERE rs.data.configuration.rule_types.pull_request.dismiss_stale_reviews_on_push = false",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, rs.data.enforcement AS enforcement, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "expressible",
+      "stage": "A2",
+      "needs": [
+        "github_core__github_ruleset",
+        "git_core__git_ref"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "enforcement",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "GitHub rulesets replaced classic branch protection; the rule set is a LIST on the ruleset node, and Gryphon has no array-membership predicate, so github-core#114 flattens it into `configuration.rule_types` first. A branch under no ruleset at all is a different query (unprotected-branches)."
+    },
+    {
+      "id": "bypass-pr-requirements",
+      "name": "Users Who Can Bypass Pull Request Requirements",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds users and teams that can bypass pull request review requirements on protected branches. These actors can merge code without any reviews.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/bypass-pr-requirements.json",
+            "openhound-github/extension/saved_searches/bypass-pr-requirements.json"
+          ],
+          "cypher": "MATCH p=(actor)-[:GH_BypassPullRequestAllowances]->(rule:GH_BranchProtectionRule)-[:GH_ProtectedBy]->(branch:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Who may bypass a ruleset. GitHub discloses bypass actors only to a writer of the ruleset; the grid draws an edge for each App it could name, counts the rest on the ruleset (`bypass_actor_count`), and keeps teams and roles in `bypass_actors_unmodelled` until the people graph gives them nodes.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[e:EXEMPTS_ACTOR__github_core]->(actor)",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, actor.name AS actor, e.data.properties.actor_type AS actor_type, e.data.properties.bypass_mode AS bypass_mode, rs.data.bypass_observability AS bypass_observed, rs.data.bypass_actor_count AS bypass_actors"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_ruleset"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "actor",
+        "actor_type",
+        "bypass_mode",
+        "bypass_observed",
+        "bypass_actors"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "Zero rows with a non-zero `bypass_actors` means the actors exist and were not nameable, not that nobody may bypass."
+    },
+    {
+      "id": "dangerous-branch-perms",
+      "name": "Dangerous Branch Permissions",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Identifies users with dangerous branch permissions in a GitHub organization, including bypass allowances on protection rules.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/dangerous-branch-perms.json",
+            "openhound-github/extension/saved_searches/dangerous-branch-perms.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasRole|GH_HasBaseRole|GH_MemberOf*1..]->(:GH_RepoRole)-[:GH_PushProtectedBranch|GH_BypassBranchProtection]-(r:GH_Repository)\nMATCH p1=(:GH_User)-[:GH_BypassPullRequestAllowances|GH_RestrictionsCanPush]->(rule:GH_BranchProtectionRule)-[:GH_ProtectedBy]->(b:GH_Branch)\nRETURN p,p1\nLIMIT 1000"
+        }
+      ],
+      "about": "Users whose team chain reaches admin or maintain on a repository, plus explicit bypass allowances. The recursive walk is the whole question.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[:MEMBER_OF_TEAM__github_core|NESTED_IN_TEAM__github_core*1..]->(t:github_core__github_team)-[p:HAS_REPO_PERMISSION__github_core]->(r:github_core__github_repository)",
+        "WHERE p.data.properties.permission IN [\"admin\", \"maintain\"]",
+        "RETURN u.data.login AS user, r.data.full_name AS repository, p.data.properties.permission AS permission"
+      ],
+      "status": "blocked",
+      "stage": "B",
+      "needs": [
+        "github_core__github_account",
+        "github_core__github_team",
+        "github_core__github_repository",
+        "MEMBER_OF_TEAM",
+        "NESTED_IN_TEAM",
+        "HAS_REPO_PERMISSION"
+      ],
+      "returns": [
+        "user",
+        "repository",
+        "permission"
+      ],
+      "blocked_on": [
+        "variable-length path + edge alternation (tap#259)"
+      ],
+      "hatch": "module runner: WITH RECURSIVE over MEMBER_OF_TEAM / NESTED_IN_TEAM / HAS_REPO_PERMISSION on the read-only alias, depth cap, cycle guard; direct HAS_REPO_PERMISSION rows unioned in",
+      "caveat": ""
+    },
+    {
+      "id": "default-repository-permissions",
+      "name": "Organizations with default repository permission",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns organizations that have a default repository permission other than 'none'.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/default-repository-permissions.json",
+            "openhound-github/extension/saved_searches/default-repository-permissions.json"
+          ],
+          "cypher": "MATCH (o:GH_Organization)\nWHERE o.default_repository_permission <> 'none'\nRETURN o\nLIMIT 1000"
+        }
+      ],
+      "about": "The permission every member holds on every repository by default. Anything but `none` is a grant nobody wrote down per repository.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.default_repository_permission != \"none\"",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.default_repository_permission AS default_repository_permission"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "default_repository_permission"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "demo-sso-to-cloud-round-trip",
+      "name": "[Demo] SSO Round-Trip: Azure/Okta → GitHub → Cloud Identity",
+      "category": "Demo — Attack Path Scenarios",
+      "severity": "demo",
+      "kind": "saved_query",
+      "bloodhound_description": "The cloud-to-cloud pivot through GitHub: a compromised Azure or Okta identity syncs to a GitHub user via SSO. That GitHub user has write access to repositories configured with OIDC federation to Azure workload identities. The attacker pivots from one cloud identity through GitHub into a completely different Azure identity — crossing cloud boundaries twice in a single attack chain.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/demo-sso-to-cloud-round-trip.json",
+            "openhound-github/extension/saved_searches/demo-sso-to-cloud-round-trip.json"
+          ],
+          "cypher": "MATCH p1=(extUser)-[:SyncedToGHUser]->(ghUser:GH_User)\nMATCH p2=(ghUser)-[:GH_HasRole|GH_HasBaseRole|GH_MemberOf*1..]->(:GH_RepoRole)-[:GH_WriteRepoContents]->(:GH_Repository)-[:GH_CanAssumeIdentity]->(cred:AZFederatedIdentityCredential)\nRETURN p1, p2\nLIMIT 1000"
+        }
+      ],
+      "about": "The cloud-to-cloud pivot through GitHub. Its GitHub half (write access → OIDC federation) is `secrets-reachable-by-user` plus `github-to-azure-identity`; the identity-provider half needs SSO.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "SAML sync + Azure federated credentials"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "variable-length path (tap#259)",
+        "correlated multi-MATCH (tap#433)"
+      ],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "dependabot-alerts-disabled-new-repos",
+      "name": "Dependabot Alerts Disabled for New Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where Dependabot alerts are not enabled for new repositories. Vulnerable dependencies in new repositories will go undetected.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/dependabot-alerts-disabled-new-repos.json",
+            "openhound-github/extension/saved_searches/dependabot-alerts-disabled-new-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {dependabot_alerts_enabled_for_new_repositories: false})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether new repositories get Dependabot alerts. Off means vulnerable dependencies in a new repository go unreported.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.dependabot_alerts_enabled_for_new_repositories = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.dependabot_alerts_enabled_for_new_repositories AS dependabot_alerts_enabled_for_new_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "dependabot_alerts_enabled_for_new_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "dependabot-updates-disabled-new-repos",
+      "name": "Dependabot Security Updates Disabled for New Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where Dependabot security update PRs are not enabled for new repositories. Known vulnerable dependencies will not receive automated fix PRs.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/dependabot-updates-disabled-new-repos.json",
+            "openhound-github/extension/saved_searches/dependabot-updates-disabled-new-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {dependabot_security_updates_enabled_for_new_repositories: false})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether Dependabot opens fix pull requests for new repositories.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.dependabot_security_updates_enabled_for_new_repositories = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.dependabot_security_updates_enabled_for_new_repositories AS dependabot_security_updates_enabled_for_new_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "dependabot_security_updates_enabled_for_new_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "dependency-graph-disabled-new-repos",
+      "name": "Dependency Graph Disabled for New Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where the dependency graph is not enabled for new repositories. Without the dependency graph, transitive dependency vulnerabilities cannot be tracked.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/dependency-graph-disabled-new-repos.json",
+            "openhound-github/extension/saved_searches/dependency-graph-disabled-new-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {dependency_graph_enabled_for_new_repositories: false})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether the dependency graph is built for new repositories — the prerequisite for every dependency alert.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.dependency_graph_enabled_for_new_repositories = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.dependency_graph_enabled_for_new_repositories AS dependency_graph_enabled_for_new_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "dependency_graph_enabled_for_new_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "enterprise-admins",
+      "name": "Enterprise Admins",
+      "category": "Enterprise (Documentation/Queries.md only — no JSON file in saved-queries/)",
+      "severity": "enterprise",
+      "kind": "doc_query",
+      "bloodhound_description": "Returns enterprise admins through the default `owners` enterprise role.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/Documentation/Queries.md"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasRole]->(:GH_EnterpriseRole {short_name:'owners'})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Enterprise owners. No enterprise on this plan.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "GitHub Enterprise"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "enterprise-members",
+      "name": "Enterprise Members",
+      "category": "Enterprise (Documentation/Queries.md only — no JSON file in saved-queries/)",
+      "severity": "enterprise",
+      "kind": "doc_query",
+      "bloodhound_description": "Returns enterprises and the users that are direct members of those enterprises.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/Documentation/Queries.md"
+          ],
+          "cypher": "MATCH p=(enterprise:GH_Enterprise)-[:GH_HasMember]->(user:GH_User)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Enterprise members.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "GitHub Enterprise"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "enterprise-role-assignments",
+      "name": "Enterprise Role Assignments",
+      "category": "Enterprise (Documentation/Queries.md only — no JSON file in saved-queries/)",
+      "severity": "enterprise",
+      "kind": "doc_query",
+      "bloodhound_description": "Returns enterprise roles and the users or enterprise teams assigned to them.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/Documentation/Queries.md"
+          ],
+          "cypher": "MATCH p=(principal)-[:GH_HasRole]->(role:GH_EnterpriseRole)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Enterprise role assignments.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "GitHub Enterprise"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "enterprise-team-assignments-and-projections",
+      "name": "Enterprise Team Assignments and Projections",
+      "category": "Enterprise (Documentation/Queries.md only — no JSON file in saved-queries/)",
+      "severity": "enterprise",
+      "kind": "doc_query",
+      "bloodhound_description": "Returns enterprise teams, the organizations they are assigned to, and any projected `ent:` organization teams linked back to them.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/Documentation/Queries.md"
+          ],
+          "cypher": "MATCH p=(entTeam:GH_EnterpriseTeam)-[:GH_AssignedTo]->(org:GH_Organization)\nOPTIONAL MATCH p2=(entTeam)-[:GH_MemberOf]->(team:GH_Team)\nRETURN p, p2"
+        }
+      ],
+      "about": "Enterprise teams and their projected organization teams.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "GitHub Enterprise"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "enterprise-to-organization-hierarchy",
+      "name": "Enterprise to Organization Hierarchy",
+      "category": "Enterprise (Documentation/Queries.md only — no JSON file in saved-queries/)",
+      "severity": "enterprise",
+      "kind": "doc_query",
+      "bloodhound_description": "Returns enterprises and the organizations they structurally contain.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/Documentation/Queries.md"
+          ],
+          "cypher": "MATCH p=(enterprise:GH_Enterprise)-[:GH_Contains]->(org:GH_Organization)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Enterprise → organization containment. `github_platform` is our root instead.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "GitHub Enterprise"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "environments-admin-bypass",
+      "name": "Environments Where Admins Can Bypass Protections",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds deployment environments where administrators can bypass protection rules such as required reviewers and wait timers. Admins can deploy to these environments without any approval.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/saved-queries/environments-admin-bypass.json"
+          ],
+          "cypher": "MATCH p=(:GH_Repository)-[:GH_HasEnvironment]->(env:GH_Environment {can_admins_bypass: true})\nRETURN p\nLIMIT 1000"
+        },
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/environments-admin-bypass.json"
+          ],
+          "cypher": "MATCH p=(:GH_Repository)-[:GH_Contains]->(env:GH_Environment {can_admins_bypass: true})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Deployment environments an administrator may deploy to without satisfying the reviewers or wait timer. On GitHub this is the default for every environment, so the interesting rows are the ones with protection rules AND admin bypass.",
+      "gryphon": [
+        "MATCH (r:github_core__github_repository)-[:DECLARES_ENVIRONMENT__github_core]->(e:github_core__github_environment)",
+        "WHERE e.data.can_admins_bypass = true",
+        "RETURN r.data.full_name AS repository, e.data.name AS environment, e.data.protection_rules AS protection_rules, e.data.configuration.required_reviewers AS required_reviewers"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_repository",
+        "github_core__github_environment"
+      ],
+      "returns": [
+        "repository",
+        "environment",
+        "protection_rules",
+        "required_reviewers"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "expired-pats",
+      "name": "Expired Personal Access Tokens",
+      "category": "Critical — Active Threats",
+      "severity": "critical",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds expired personal access tokens that still exist. Expired tokens should be cleaned up to reduce credential inventory and audit noise.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/expired-pats.json",
+            "openhound-github/extension/saved_searches/expired-pats.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasPersonalAccessToken]->(token:GH_PersonalAccessToken {token_expired: true})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Fine-grained tokens past their expiry that the organization still lists. Hygiene, but each is a row in someone's credential inventory.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[:HOLDS_CREDENTIAL__identity_core]->(g:identity_core__credential_grant)",
+        "WHERE g.data.kind = \"pat\" AND g.data.expired = true",
+        "RETURN u.data.login AS owner, g.data.name AS token, g.data.expires_at AS expired_at"
+      ],
+      "status": "expressible",
+      "stage": "C",
+      "needs": [
+        "credential_grant (identity_core — or github_pat_grant; github-core#112 question 1)",
+        "HOLDS_CREDENTIAL"
+      ],
+      "returns": [
+        "owner",
+        "token",
+        "expired_at"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "external-identities-without-scim",
+      "name": "External Identities Without SCIM Provisioning",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds external identities that lack SCIM synchronization. Without SCIM, user deprovisioning in the identity provider will not automatically revoke GitHub access.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/external-identities-without-scim.json",
+            "openhound-github/extension/saved_searches/external-identities-without-scim.json"
+          ],
+          "cypher": "MATCH (ei:GH_ExternalIdentity)\nWHERE ei.scim_identity_username = ''\nRETURN ei\nLIMIT 1000"
+        }
+      ],
+      "about": "SAML identities with no SCIM provisioning — deprovisioning upstream does not revoke GitHub.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "SAML / SCIM"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "github-to-azure-identity",
+      "name": "GitHub-to-Azure Identity Assumptions",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds GitHub entities (repositories, branches, environments) that can assume Azure identities via OIDC federation. Verify that each trust relationship is intentional and scoped appropriately.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/github-to-azure-identity.json",
+            "openhound-github/extension/saved_searches/github-to-azure-identity.json"
+          ],
+          "cypher": "MATCH p=(src)-[:GH_CanAssumeIdentity]->(cred:AZFederatedIdentityCredential)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Repositories whose OIDC subject a cloud trusts. The grid keeps the evidence chain (repository → identity provider → issuer) where BloodHound draws one computed `CanAssumeIdentity` edge; the conclusion is a query over the chain.",
+      "gryphon": [
+        "MATCH (r:github_core__github_repository)-[f:FEDERATES_VIA_PROVIDER__github_core]->(p)",
+        "RETURN r.data.full_name AS repository, p.name AS provider, p.entity_type AS provider_type"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_repository"
+      ],
+      "returns": [
+        "repository",
+        "provider",
+        "provider_type"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "AWS only today (aws_core's IAM OIDC providers); Azure federated credentials have no plugin. Zero rows on a grid without aws_core is `not observable`, not `no federation`."
+    },
+    {
+      "id": "global-repo-perms",
+      "name": "Global Repo Permissions",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all users who hold a global repository permission role (i.e., roles that are not default).",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/global-repo-perms.json",
+            "openhound-github/extension/saved_searches/global-repo-perms.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasBaseRole|GH_HasRole|GH_MemberOf*1..3]->(role:GH_OrgRole)\nWHERE role.short_name CONTAINS 'all_repo_'\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Users holding an all-repository role (`all_repo_admin`, `all_repo_write`, …) — GitHub's synthetic roles behind custom organization roles.",
+      "gryphon": null,
+      "status": "blocked",
+      "stage": "C",
+      "needs": [
+        "github_org_role (custom roles, github-core#112)",
+        "HOLDS_ORG_ROLE"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "custom org roles not modelled (github-core#112)",
+        "variable-length path (tap#259)"
+      ],
+      "hatch": "once roles land: a one-hop filter on HOLDS_ORG_ROLE suffices for direct holders; the `*1..3` in the corpus covers base-role inheritance, which a module runner walks",
+      "caveat": ""
+    },
+    {
+      "id": "hybrid-identities",
+      "name": "External Identities",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all external identities (e.g., Azure or Okta users) that are associated with GitHub users.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/hybrid-identities.json",
+            "openhound-github/extension/saved_searches/hybrid-identities.json"
+          ],
+          "cypher": "MATCH p=(s)-[]->(d:GH_User)\nWHERE s:AZUser\nOR s:Okta_User\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Azure or Okta users linked to GitHub users.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "an Azure / Okta identity graph and SAML sync edges"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "members-can-change-repo-visibility",
+      "name": "Members Can Change Repository Visibility",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where members can change repository visibility. This allows any member to make a private repository public, potentially exposing source code and secrets.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/members-can-change-repo-visibility.json",
+            "openhound-github/extension/saved_searches/members-can-change-repo-visibility.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {members_can_change_repo_visibility: true})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether any member may flip a repository from private to public.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_change_repo_visibility = true",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_change_repo_visibility AS members_can_change_repo_visibility"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "members_can_change_repo_visibility"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "members-can-create-pages",
+      "name": "Members Can Create GitHub Pages",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where members can create GitHub Pages sites. Pages can be used to host phishing content, data exfiltration endpoints, or other malicious resources.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/members-can-create-pages.json",
+            "openhound-github/extension/saved_searches/members-can-create-pages.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {members_can_create_pages: true})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether members may publish GitHub Pages sites — a hosting surface under the organization's name.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_create_pages = true",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_create_pages AS members_can_create_pages"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "members_can_create_pages"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "members-can-create-public-repos",
+      "name": "Members Can Create Public Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where members can create internet-facing public repositories. This increases the risk of accidental exposure of proprietary code or secrets.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/members-can-create-public-repos.json",
+            "openhound-github/extension/saved_searches/members-can-create-public-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {members_can_create_public_repositories: true})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether members may create public repositories.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_create_public_repositories = true",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_create_public_repositories AS members_can_create_public_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "members_can_create_public_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "members-can-delete-repos",
+      "name": "Members Can Delete Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where members can delete repositories. This poses a risk of accidental or malicious destruction of code and audit history.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/members-can-delete-repos.json",
+            "openhound-github/extension/saved_searches/members-can-delete-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {members_can_delete_repositories: true})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether members may delete repositories.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_delete_repositories = true",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_delete_repositories AS members_can_delete_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "members_can_delete_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "members-can-fork-private-repos",
+      "name": "Members Can Fork Private Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where members can fork private repositories to personal accounts. Forked copies leave organizational control and oversight.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/members-can-fork-private-repos.json",
+            "openhound-github/extension/saved_searches/members-can-fork-private-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {members_can_fork_private_repositories: true})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether members may fork private repositories into their own accounts, outside the organization's controls.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_fork_private_repositories = true",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_fork_private_repositories AS members_can_fork_private_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "members_can_fork_private_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "members-can-invite-outside-collaborators",
+      "name": "Members Can Invite Outside Collaborators",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where any member can invite external users. This can lead to unauthorized third-party access to repositories without centralized oversight.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/members-can-invite-outside-collaborators.json",
+            "openhound-github/extension/saved_searches/members-can-invite-outside-collaborators.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {members_can_invite_outside_collaborators: true})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether any member may invite an outside collaborator, bypassing owner review of who gets in.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.members_can_invite_outside_collaborators = true",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.members_can_invite_outside_collaborators AS members_can_invite_outside_collaborators"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "members_can_invite_outside_collaborators"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "org-owners",
+      "name": "Organization Owners",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all users hold the organization owners role.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/org-owners.json",
+            "openhound-github/extension/saved_searches/org-owners.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasRole]->(:GH_OrgRole {short_name:'owners'})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Organization owners. BloodHound reifies the `owners` role as a node; here the role is a property of the membership edge.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[m:MEMBER_OF_ORG__github_core]->(o:github_core__github_account)",
+        "WHERE m.data.properties.role = \"admin\"",
+        "RETURN o.data.login AS organization, u.data.login AS owner, m.data.properties.two_factor_disabled AS two_factor_disabled"
+      ],
+      "status": "expressible",
+      "stage": "B",
+      "needs": [
+        "github_core__github_account",
+        "MEMBER_OF_ORG {role}"
+      ],
+      "returns": [
+        "organization",
+        "owner",
+        "two_factor_disabled"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "orgs-without-2fa",
+      "name": "Organizations without 2FA",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns organizations that do not require two-factor authentication.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/orgs-without-2fa.json",
+            "openhound-github/extension/saved_searches/orgs-without-2fa.json"
+          ],
+          "cypher": "MATCH (o:GH_Organization)\nWHERE o.two_factor_requirement_enabled = false\nRETURN o\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether two-factor authentication is required of every member. The single most-cited organization control.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.two_factor_requirement_enabled = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.two_factor_requirement_enabled AS two_factor_requirement_enabled"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "two_factor_requirement_enabled"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "Two settings, one field: GitHub also has \"only allow secure two-factor methods\" (blocks SMS), and it has NO API field at any tier — an organization can require 2FA, permit SMS, and pass this query. The node carries `two_factor_methods_observability: unobservable` beside the boolean for exactly that reason; a clean answer here is a fact about the requirement, never about the methods. Per-member factor type is not published either (tap#157)."
+    },
+    {
+      "id": "pats-all-repo-access",
+      "name": "PATs with Access to All Repositories",
+      "category": "Critical — Active Threats",
+      "severity": "critical",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds fine-grained personal access tokens scoped to all repositories. A single compromised token grants access to every repository in the organization.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/pats-all-repo-access.json",
+            "openhound-github/extension/saved_searches/pats-all-repo-access.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasPersonalAccessToken]->(token:GH_PersonalAccessToken {repository_selection: 'all'})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Personal tokens reaching every repository. `GET /orgs/{org}/personal-access-tokens` is App-only; the App already holds that permission, unused.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[:HOLDS_CREDENTIAL__identity_core]->(g:identity_core__credential_grant)",
+        "WHERE g.data.kind = \"pat\" AND g.data.repository_selection = \"all\"",
+        "RETURN u.data.login AS owner, g.data.name AS token, g.data.permissions AS permissions"
+      ],
+      "status": "expressible",
+      "stage": "C",
+      "needs": [
+        "credential_grant",
+        "HOLDS_CREDENTIAL"
+      ],
+      "returns": [
+        "owner",
+        "token",
+        "permissions"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "pending-pat-requests",
+      "name": "Pending PAT Requests",
+      "category": "Critical — Active Threats",
+      "severity": "critical",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds pending fine-grained personal access token requests awaiting approval. Review these to ensure requested permissions are appropriate before granting access.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/pending-pat-requests.json",
+            "openhound-github/extension/saved_searches/pending-pat-requests.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasPersonalAccessTokenRequest]->(req:GH_PersonalAccessTokenRequest)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Token requests awaiting an owner's approval.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[:REQUESTS_CREDENTIAL__identity_core]->(g:identity_core__credential_grant)",
+        "WHERE g.data.kind = \"pat_request\"",
+        "RETURN u.data.login AS requester, g.data.name AS token, g.data.permissions AS permissions"
+      ],
+      "status": "expressible",
+      "stage": "C",
+      "needs": [
+        "credential_grant request shape (github-core#112)"
+      ],
+      "returns": [
+        "requester",
+        "token",
+        "permissions"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "private-repos-forking-allowed",
+      "name": "Private Repositories with Forking Allowed",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds private repositories that allow forking. Forked copies of private repositories can leave organizational governance and visibility.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/private-repos-forking-allowed.json",
+            "openhound-github/extension/saved_searches/private-repos-forking-allowed.json"
+          ],
+          "cypher": "MATCH (repo:GH_Repository {visibility: 'private', allow_forking: true})\nRETURN repo\nLIMIT 1000"
+        }
+      ],
+      "about": "Private repositories that may be forked. A fork carries the code outside the repository's controls and its audit trail.",
+      "gryphon": [
+        "MATCH (r:github_core__github_repository)",
+        "WHERE r.data.visibility = \"private\" AND r.data.configuration.allow_forking = true",
+        "RETURN r.data.full_name AS repository, r.data.configuration.settings_observability AS settings_observed"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_repository"
+      ],
+      "returns": [
+        "repository",
+        "settings_observed"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "privileged-custom-org-roles",
+      "name": "Privileged Custom Org Roles",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all custom organization roles that are privileged (i.e., have permissions that are not default)",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/privileged-custom-org-roles.json",
+            "openhound-github/extension/saved_searches/privileged-custom-org-roles.json"
+          ],
+          "cypher": "MATCH p=(role:GH_OrgRole {type:'custom'})-[r]->(dest)\nWHERE dest:GH_Organization\nOR dest:GH_OrgRole\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Custom organization roles and the permissions they grant. Our org has none; the App already holds the permission to list them.",
+      "gryphon": [
+        "MATCH (role:github_core__github_org_role)",
+        "WHERE role.data.source = \"Organization\"",
+        "RETURN role.data.name AS role, role.data.base_role AS base_role, role.data.permissions AS permissions"
+      ],
+      "status": "expressible",
+      "stage": "C",
+      "needs": [
+        "github_org_role (github-core#112)"
+      ],
+      "returns": [
+        "role",
+        "base_role",
+        "permissions"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "privileged-hybrid-identities",
+      "name": "Privileged Hybrid Identities",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all hybrid identities (e.g., Azure or Okta users) that are associated with GitHub users who hold the organization owners role.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/privileged-hybrid-identities.json",
+            "openhound-github/extension/saved_searches/privileged-hybrid-identities.json"
+          ],
+          "cypher": "MATCH p=()-[:GH_SyncedTo]->(:GH_User)-[:GH_HasRole]->(:GH_OrgRole {short_name:'owners'})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Identity-provider identities mapped to owners. Needs SAML SSO, which a Team-plan organization does not have.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "SAML / SCIM external identities — Enterprise or SSO-enabled organizations only"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "public-repos",
+      "name": "Public Repositories",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all public repositories.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/public-repos.json",
+            "openhound-github/extension/saved_searches/public-repos.json"
+          ],
+          "cypher": "MATCH (repo:GH_Repository {private: false})\nRETURN repo\nLIMIT 1000"
+        }
+      ],
+      "about": "Every public repository. Not a finding on its own; the set everything public-facing is measured against.",
+      "gryphon": [
+        "MATCH (r:github_core__github_repository)",
+        "WHERE r.data.visibility = \"public\"",
+        "RETURN r.data.full_name AS repository, r.data.default_branch AS default_branch, r.data.configuration.archived AS archived"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_repository"
+      ],
+      "returns": [
+        "repository",
+        "default_branch",
+        "archived"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "push-protection-disabled-new-repos",
+      "name": "Secret Scanning Push Protection Disabled for New Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where push protection is not enabled for new repositories. Without push protection, secrets can be committed without being blocked before they reach the repository.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/push-protection-disabled-new-repos.json",
+            "openhound-github/extension/saved_searches/push-protection-disabled-new-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {secret_scanning_push_protection_enabled_for_new_repositories: false})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether pushes containing a detected secret are blocked in new repositories.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.secret_scanning_push_protection_enabled_for_new_repositories = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.secret_scanning_push_protection_enabled_for_new_repositories AS secret_scanning_push_protection_enabled_for_new_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "secret_scanning_push_protection_enabled_for_new_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "push-to-protected-branches",
+      "name": "Users Who Can Push to Protected Branches",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds users and teams that are allowed to push directly to protected branches when push restrictions are enabled. These actors bypass the normal pull request workflow.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/push-to-protected-branches.json",
+            "openhound-github/extension/saved_searches/push-to-protected-branches.json"
+          ],
+          "cypher": "MATCH p=(actor)-[:GH_RestrictionsCanPush]->(rule:GH_BranchProtectionRule)-[:GH_ProtectedBy]->(branch:GH_Branch)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Actors who may push past a ruleset unconditionally (`bypass_mode: always`), as opposed to only through a pull request.",
+      "gryphon": [
+        "MATCH (rs:github_core__github_ruleset)-[e:EXEMPTS_ACTOR__github_core]->(actor)",
+        "WHERE e.data.properties.bypass_mode = \"always\"",
+        "RETURN rs.data.owner_login AS owner, rs.data.name AS ruleset, actor.name AS actor, e.data.properties.actor_type AS actor_type"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_ruleset"
+      ],
+      "returns": [
+        "owner",
+        "ruleset",
+        "actor",
+        "actor_type"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "Same disclosure ceiling as bypass-pr-requirements."
+    },
+    {
+      "id": "repos-secret-scanning-disabled",
+      "name": "Repositories with Secret Scanning Disabled",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds repositories where secret scanning is disabled. Committed credentials in these repositories will not be detected by GitHub.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/repos-secret-scanning-disabled.json",
+            "openhound-github/extension/saved_searches/repos-secret-scanning-disabled.json"
+          ],
+          "cypher": "MATCH (repo:GH_Repository {secret_scanning: 'disabled'})\nRETURN repo\nLIMIT 1000"
+        }
+      ],
+      "about": "Repositories where secret scanning is off. GitHub omits the whole security block for a non-admin caller, so a repository whose `security_settings_observability` is `unobservable` is missing from this list without being clean.",
+      "gryphon": [
+        "MATCH (r:github_core__github_repository)",
+        "WHERE r.data.configuration.security_and_analysis.secret_scanning.status = \"disabled\"",
+        "RETURN r.data.full_name AS repository, r.data.visibility AS visibility, r.data.configuration.archived AS archived"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_repository"
+      ],
+      "returns": [
+        "repository",
+        "visibility",
+        "archived"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "repos-vulnerable-to-workflow-secret-exfil",
+      "name": "Repos Vulnerable to Workflow Secret Exfiltration",
+      "category": "unlisted in saved-queries/README.md",
+      "severity": "unlisted",
+      "kind": "saved_query",
+      "bloodhound_description": "Secrets reachable by users who can create new branches (computed by Compute-GitHoundBranchAccess). The GH_CanCreateBranch edge accounts for branch protection rules, push restrictions, blocks_creations settings, and all bypass mechanisms (admin, push_protected_branch, pushAllowances). Edges emit from RepoRole in the common case; per-actor edges from User/Team are only present when per-rule allowances grant additional access beyond the role.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/repos-vulnerable-to-workflow-secret-exfil.json",
+            "openhound-github/extension/saved_searches/repos-vulnerable-to-workflow-secret-exfil.json"
+          ],
+          "cypher": "MATCH p1=(:GH_User)-[:GH_HasRole|GH_HasBaseRole|GH_MemberOf*1..]->(:GH_RepoRole)-[:GH_CanCreateBranch]->(repo:GH_Repository)-[:GH_HasSecret]->(s)\nWHERE (s:GH_RepoSecret\nOR s:GH_OrgSecret)\nOPTIONAL MATCH p2=(repo)<-[:GH_CanCreateBranch]-(:GH_User)\nOPTIONAL MATCH p3=(repo)<-[:GH_CanCreateBranch]-(:GH_Team)<-[:GH_HasRole|GH_MemberOf|GH_AddMember*1..]-(:GH_User)\nRETURN p1, p2, p3\nLIMIT 1000"
+        }
+      ],
+      "about": "Secrets reachable by anyone who can create a branch and push a workflow to it. BloodHound pre-computes `CanCreateBranch` from rulesets, push restrictions and bypasses; that derivation is the work.",
+      "gryphon": null,
+      "status": "blocked",
+      "stage": "B",
+      "needs": [
+        "github_core__github_account",
+        "github_core__github_team",
+        "github_core__github_repository",
+        "github_core__actions_secret",
+        "github_core__github_ruleset",
+        "HAS_REPO_PERMISSION",
+        "a derived can-create-branch judgement"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "variable-length path (tap#259)",
+        "OPTIONAL MATCH beyond v0",
+        "a derived branch-creation edge (rulesets + bypass) that nothing computes yet"
+      ],
+      "hatch": "the reachability runner plus a Python judgement over ruleset `creation` rules and bypass actors — a conclusion edge, which the vocabulary says to derive, not collect",
+      "caveat": ""
+    },
+    {
+      "id": "repository-workflows",
+      "name": "Repository Workflows",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all repository workflows",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/saved-queries/repository-workflows.json"
+          ],
+          "cypher": "MATCH p=(:GH_Repository)-[:GH_HasWorkflow]->(:GH_Workflow)\nRETURN p\nLIMIT 1000"
+        },
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/repository-workflows.json"
+          ],
+          "cypher": "MATCH p=(:GH_Repository)-[:GH_Contains]->(:GH_Workflow)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Every workflow file, by repository. The inventory the Actions half of the corpus is measured against.",
+      "gryphon": [
+        "MATCH (r:github_core__github_repository)-[:DEFINES_WORKFLOW__github_core]->(w:github_core__github_workflow)",
+        "RETURN r.data.full_name AS repository, w.data.path AS workflow, w.data.state AS state, w.data.workflow_id AS workflow_id"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_repository",
+        "github_core__github_workflow"
+      ],
+      "returns": [
+        "repository",
+        "workflow",
+        "state",
+        "workflow_id"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "saml-configuration",
+      "name": "SAML Configuration Mapping",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds SAML Identity Providers, their external identities, and mapped users.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/saml-configuration.json",
+            "openhound-github/extension/saved_searches/saml-configuration.json"
+          ],
+          "cypher": "MATCH p=(OIP:GH_SamlIdentityProvider)-[:GH_HasExternalIdentity]->(EI:GH_ExternalIdentity)\nMATCH p1=(OIP)<-[:GH_HasSamlIdentityProvider]-(:GH_Organization)\nMATCH p2=(EI)-[:GH_MapsToUser]->()\nRETURN p,p1,p2\nLIMIT 1000"
+        }
+      ],
+      "about": "SAML identity providers, their external identities and mapped users.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "SAML SSO (Enterprise / SSO-enabled org)"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "secret-scanning-alerts",
+      "name": "Secret Scanning Alerts",
+      "category": "Critical — Active Threats",
+      "severity": "critical",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all repositories that have secret scanning alerts.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/secret-scanning-alerts.json",
+            "openhound-github/extension/saved_searches/secret-scanning-alerts.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_Contains]->(:GH_SecretScanningAlert {state:'open'})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Repositories with open secret-scanning alerts — committed credentials GitHub found.",
+      "gryphon": null,
+      "status": "blocked",
+      "stage": "later",
+      "needs": [
+        "secret_scanning_alert detail node behind compliance_core__compliance_finding — the code-scanning pattern; App permission secret_scanning_alerts not granted"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "type not built"
+      ],
+      "hatch": "none that is honest — the alert listing must be collected first (github_core, `/repos/{r}/secret-scanning/alerts`, App permission secret_scanning_alerts); a module cannot conjure data the grid does not hold",
+      "caveat": ""
+    },
+    {
+      "id": "secret-scanning-disabled-new-repos",
+      "name": "Secret Scanning Disabled for New Repositories",
+      "category": "High — Organization Security Posture",
+      "severity": "high",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations where secret scanning is not automatically enabled for new repositories. New repositories will not detect committed credentials until manually enabled.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/secret-scanning-disabled-new-repos.json",
+            "openhound-github/extension/saved_searches/secret-scanning-disabled-new-repos.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {secret_scanning_enabled_for_new_repositories: false})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether secret scanning is on for new repositories.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.secret_scanning_enabled_for_new_repositories = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.secret_scanning_enabled_for_new_repositories AS secret_scanning_enabled_for_new_repositories"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "secret_scanning_enabled_for_new_repositories"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "secrets-reachable-by-user",
+      "name": "Secrets Reachable by User",
+      "category": "unlisted in saved-queries/README.md",
+      "severity": "unlisted",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all repo and org secrets reachable by users through write access. Users with write access can create GitHub Actions workflows to access secrets.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/secrets-reachable-by-user.json",
+            "openhound-github/extension/saved_searches/secrets-reachable-by-user.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasRole|GH_HasBaseRole|GH_MemberOf*1..]->(:GH_RepoRole)-[:GH_WriteRepoContents]->(:GH_Repository)-[:GH_HasSecret]->(s)\nWHERE s:GH_RepoSecret\nOR s:GH_OrgSecret\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Which secrets a user could read by writing a workflow. Write access to a repository is read access to every secret its workflows can name — the finding the secrets page hints at, asked from the person's side.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[:MEMBER_OF_TEAM__github_core|NESTED_IN_TEAM__github_core*1..]->(t:github_core__github_team)-[p:HAS_REPO_PERMISSION__github_core]->(r:github_core__github_repository)-[:DEFINES_SECRET__github_core]->(s:github_core__actions_secret)",
+        "WHERE p.data.properties.permission IN [\"write\", \"maintain\", \"admin\"]",
+        "RETURN u.data.login AS user, r.data.full_name AS repository, s.data.name AS secret"
+      ],
+      "status": "blocked",
+      "stage": "B",
+      "needs": [
+        "github_core__github_account",
+        "github_core__github_team",
+        "github_core__github_repository",
+        "github_core__actions_secret",
+        "MEMBER_OF_TEAM",
+        "NESTED_IN_TEAM",
+        "HAS_REPO_PERMISSION"
+      ],
+      "returns": [
+        "user",
+        "repository",
+        "secret"
+      ],
+      "blocked_on": [
+        "variable-length path + edge alternation (tap#259)"
+      ],
+      "hatch": "the reachability runner, extended one hop to DEFINES_SECRET; organization secrets join through their `visibility` (all / private / selected)",
+      "caveat": ""
+    },
+    {
+      "id": "self-hosted-runners-can-intercept-broad-token-jobs",
+      "name": "Self-Hosted Runners Can Intercept Broad-Token Jobs",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns self-hosted runners that can intercept workflow jobs whose effective GITHUB_TOKEN has high-impact write permissions. These jobs can materially increase the blast radius of runner compromise.",
+      "sources": [
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/self-hosted-runners-can-intercept-broad-token-jobs.json"
+          ],
+          "cypher": "MATCH p=(runner:GH_Runner)-[:GH_CanInterceptJob]->(job:GH_WorkflowJob)\nWHERE 'contents:write' IN job.effective_github_token_permissions\nOR 'actions:write' IN job.effective_github_token_permissions\nOR 'pull-requests:write' IN job.effective_github_token_permissions\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "The subset of interceptable jobs whose token has write on contents, Actions or pull requests.",
+      "gryphon": null,
+      "status": "blocked",
+      "stage": "later",
+      "needs": [
+        "github_core__github_runner",
+        "github_core__workflow_job"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "derived eligibility edge not built"
+      ],
+      "hatch": "same runner as workflow-jobs-interceptable-by-self-hosted-runners, filtered on declared write permissions",
+      "caveat": ""
+    },
+    {
+      "id": "shared-self-hosted-runners-can-intercept-secret-bearing-jobs",
+      "name": "Shared Self-Hosted Runners Can Intercept Secret-Bearing Jobs",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns organization- and enterprise-scoped self-hosted runners that can intercept workflow jobs with statically resolvable secret access. Shared runners are especially important to review because compromise can expose execution contexts across multiple repositories.",
+      "sources": [
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/shared-self-hosted-runners-can-intercept-secret-bearing-jobs.json"
+          ],
+          "cypher": "MATCH p=(runner:GH_Runner)-[:GH_CanInterceptJob]->(job:GH_WorkflowJob)-[:GH_CanAccessSecret]->(secret:GH_Secret)\nWHERE runner:GH_OrgRunner\nOR runner:GH_EnterpriseRunner\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Shared runners reaching jobs that read secrets. Runner groups are an organization/enterprise surface the collector does not read yet.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "organization- and enterprise-scoped runners (runner groups) — not collected; enterprise not on this plan"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-all-repo-admin-role",
+      "name": "Tier Zero All-Repo Admin Role",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "The synthetic all_repo_admin role grants admin access to every repository in the organization. This role is inherited by the owners role via GH_HasBaseRole and cascades admin permissions including branch protection editing, secret access, and deploy key management to all repositories.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-all-repo-admin-role.json",
+            "openhound-github/extension/privilege_zone_rules/t0-all-repo-admin-role.json"
+          ],
+          "cypher": "MATCH (n:GH_OrgRole) WHERE n.name CONTAINS 'ALL_REPO_ADMIN' RETURN n"
+        }
+      ],
+      "about": "The synthetic all-repository-admin role that the owners role inherits.",
+      "gryphon": [
+        "MATCH (role:github_core__github_org_role)",
+        "WHERE role.data.name CONTAINS \"all_repo_admin\"",
+        "RETURN role.data.name AS role, role.data.source AS source"
+      ],
+      "status": "expressible",
+      "stage": "C",
+      "needs": [
+        "github_org_role (github-core#112)"
+      ],
+      "returns": [
+        "role",
+        "source"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-app-installations-all-repos",
+      "name": "Tier Zero App Installations (All Repositories)",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "GitHub App installations scoped to all repositories in the organization that have at least one write permission. A compromised app credential grants write access to every repository. Installations with only read permissions are excluded — they pose a data exfiltration risk but do not grant control over the organization.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-app-installations-all-repos.json"
+          ],
+          "cypher": "MATCH (n:GH_AppInstallation {repository_selection:'all'})\nWHERE n.permissions CONTAINS '\"write\"'\nRETURN n"
+        },
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/privilege_zone_rules/t0-app-installations-all-repos.json"
+          ],
+          "cypher": "MATCH (n:GH_AppInstallation {repository_selection:'all'})\nWHERE ANY(permission IN n.permissions WHERE permission IN ['contents:write', 'administration:write', 'workflows:write', 'actions:write'])\nRETURN n"
+        }
+      ],
+      "about": "All-repository installations holding a write permission that matters — contents, administration, workflows or Actions. A leaked installation credential is a write to every repository.",
+      "gryphon": [
+        "MATCH (i:github_core__app_installation)",
+        "WHERE i.data.repository_selection = \"all\" AND (i.data.permissions.contents = \"write\" OR i.data.permissions.administration = \"write\" OR i.data.permissions.workflows = \"write\" OR i.data.permissions.actions = \"write\")",
+        "RETURN i.data.app_slug AS app, i.data.account_login AS account, i.data.permissions AS permissions"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__app_installation"
+      ],
+      "returns": [
+        "app",
+        "account",
+        "permissions"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-apps-all-repos",
+      "name": "Tier Zero Apps (All-Repository Installations)",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "GitHub App definitions whose installations have write access to all repositories. The app owner controls the private key that can generate tokens for any installation. Compromise of the app's private key grants write access to every repository in organizations where it is installed. Apps whose installations have only read permissions are excluded.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-apps-all-repos.json"
+          ],
+          "cypher": "MATCH (n:GH_App)-[:GH_InstalledAs]->(i:GH_AppInstallation {repository_selection:'all'})\nWHERE i.permissions CONTAINS '\"write\"'\nRETURN n"
+        },
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/privilege_zone_rules/t0-apps-all-repos.json"
+          ],
+          "cypher": "MATCH (n:GH_App)-[:GH_InstalledAs]->(i:GH_AppInstallation {repository_selection:'all'})\nWHERE ANY(permission IN i.permissions WHERE permission IN ['contents:write', 'administration:write', 'workflows:write', 'actions:write'])\nRETURN n"
+        }
+      ],
+      "about": "The Apps behind those installations — whoever holds the App's private key can mint a token for every installation.",
+      "gryphon": [
+        "MATCH (app:github_core__github_app)-[:REGISTERS_INSTALLATION__github_core]->(i:github_core__app_installation)",
+        "WHERE i.data.repository_selection = \"all\" AND (i.data.permissions.contents = \"write\" OR i.data.permissions.administration = \"write\" OR i.data.permissions.workflows = \"write\" OR i.data.permissions.actions = \"write\")",
+        "RETURN app.data.slug AS app, app.data.name AS name, i.data.account_login AS account"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_app",
+        "github_core__app_installation"
+      ],
+      "returns": [
+        "app",
+        "name",
+        "account"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-enterprise-owners-role",
+      "name": "Tier Zero Enterprise Owners Role",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "The enterprise owners role grants administrative control over the GitHub Enterprise account, including enterprise organizations, members, identity provider configuration, and enterprise-wide security settings.",
+      "sources": [
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/privilege_zone_rules/t0-enterprise-owners-role.json"
+          ],
+          "cypher": "MATCH (n:GH_EnterpriseRole {short_name:'owners'})\nRETURN n"
+        }
+      ],
+      "about": "The enterprise owners role.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "GitHub Enterprise"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-external-identities-owners",
+      "name": "Tier Zero External Identities (Owner-Mapped)",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "External identities from SAML/SCIM providers that map to GitHub users holding the owners role. Compromise of these external identities in the identity provider grants organizational owner access to GitHub via SSO.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-external-identities-owners.json",
+            "openhound-github/extension/privilege_zone_rules/t0-external-identities-owners.json"
+          ],
+          "cypher": "MATCH (n:GH_ExternalIdentity)-[:GH_MapsToUser]->(:GH_User)-[:GH_HasRole]->(:GH_OrgRole {short_name:'owners'})\nRETURN n"
+        }
+      ],
+      "about": "External identities mapped to owners.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "SAML / SCIM"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-organizations",
+      "name": "Tier Zero Organizations",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "GitHub organizations are the root trust boundary for all repositories, teams, users, and settings. Compromise of the organization grants full administrative control over all contained assets.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-organizations.json",
+            "openhound-github/extension/privilege_zone_rules/t0-organizations.json"
+          ],
+          "cypher": "MATCH (n:GH_Organization)\nRETURN n"
+        }
+      ],
+      "about": "The organizations on the grid — BloodHound's Tier Zero root. Everything else hangs off these.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\"",
+        "RETURN a.data.login AS organization, a.data.configuration.plan.name AS plan, a.data.configuration.two_factor_requirement_enabled AS two_factor_required, a.data.configuration.settings_observability AS settings_observed"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "plan",
+        "two_factor_required",
+        "settings_observed"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-owner-users",
+      "name": "Tier Zero Owner Users",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "Users who hold the organization owners role have full administrative control over the GitHub organization. Compromise of any owner account grants control over all repositories, secrets, SSO configuration, and cloud identities.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-owner-users.json",
+            "openhound-github/extension/privilege_zone_rules/t0-owner-users.json"
+          ],
+          "cypher": "MATCH (n:GH_User)-[:GH_HasRole]->(:GH_OrgRole {short_name:'owners'})\nRETURN n"
+        }
+      ],
+      "about": "Tier Zero: the accounts whose compromise is the organization's compromise.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[m:MEMBER_OF_ORG__github_core]->(o:github_core__github_account)",
+        "WHERE m.data.properties.role = \"admin\"",
+        "RETURN u.data.login AS user, o.data.login AS organization"
+      ],
+      "status": "expressible",
+      "stage": "B",
+      "needs": [
+        "github_core__github_account",
+        "MEMBER_OF_ORG {role}"
+      ],
+      "returns": [
+        "user",
+        "organization"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-owners-role",
+      "name": "Tier Zero Owners Role",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "The owners organization role grants full administrative control including all repository admin, member management, SSO configuration, app management, and billing. Owners inherit all_repo_admin, cascading admin access to every repository, secret, environment, and cloud identity in the organization.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-owners-role.json",
+            "openhound-github/extension/privilege_zone_rules/t0-owners-role.json"
+          ],
+          "cypher": "MATCH (n:GH_OrgRole {short_name:'owners'})\nRETURN n"
+        }
+      ],
+      "about": "The owners role as an object. With roles as edge properties there is no node to return; the honest equivalent is the owner count per organization.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[m:MEMBER_OF_ORG__github_core]->(o:github_core__github_account)",
+        "WHERE m.data.properties.role = \"admin\"",
+        "RETURN o.data.login AS organization, COUNT(u) AS owners"
+      ],
+      "status": "expressible",
+      "stage": "B",
+      "needs": [
+        "github_core__github_account",
+        "MEMBER_OF_ORG {role}"
+      ],
+      "returns": [
+        "organization",
+        "owners"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-pats-all-repos",
+      "name": "Tier Zero PATs (All Repositories)",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "Fine-grained personal access tokens scoped to all repositories in the organization that have at least one write permission. A single compromised token grants write access to every repository. PATs with only read permissions are excluded — they pose a data exfiltration risk but do not grant control over the organization.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-pats-all-repos.json"
+          ],
+          "cypher": "MATCH (n:GH_PersonalAccessToken {repository_selection:'all'})\nWHERE n.permissions CONTAINS '\"write\"'\nRETURN n"
+        },
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/privilege_zone_rules/t0-pats-all-repos.json"
+          ],
+          "cypher": "MATCH (n:GH_PersonalAccessToken {repository_selection:'all'})\nWHERE ANY(permission IN n.repository_permissions WHERE permission IN ['contents:write', 'administration:write', 'workflows:write', 'actions:write'])\nRETURN n"
+        }
+      ],
+      "about": "All-repository tokens with a write that matters — one token, every repository.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[:HOLDS_CREDENTIAL__identity_core]->(g:identity_core__credential_grant)",
+        "WHERE g.data.kind = \"pat\" AND g.data.repository_selection = \"all\" AND (g.data.permissions.contents = \"write\" OR g.data.permissions.administration = \"write\" OR g.data.permissions.workflows = \"write\" OR g.data.permissions.actions = \"write\")",
+        "RETURN u.data.login AS owner, g.data.name AS token, g.data.permissions AS permissions"
+      ],
+      "status": "expressible",
+      "stage": "C",
+      "needs": [
+        "credential_grant",
+        "HOLDS_CREDENTIAL"
+      ],
+      "returns": [
+        "owner",
+        "token",
+        "permissions"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "t0-privilege-escalation-roles",
+      "name": "Tier Zero Privilege Escalation Roles",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "Custom organization roles with write_organization_custom_org_role permission can modify organization role definitions, including setting the base_role to inherit all_repo_admin. Since this permission only exists on custom organization roles, the holder can escalate the role they already hold — a guaranteed self-escalation path to full organizational control.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-privilege-escalation-roles.json",
+            "openhound-github/extension/privilege_zone_rules/t0-privilege-escalation-roles.json"
+          ],
+          "cypher": "MATCH (n:GH_OrgRole)-[:GH_WriteOrganizationCustomOrgRole]->(:GH_Organization)\nRETURN n"
+        }
+      ],
+      "about": "Roles that may rewrite custom roles, including themselves.",
+      "gryphon": [
+        "MATCH (role:github_core__github_org_role)",
+        "WHERE role.data.permissions CONTAINS \"write_organization_custom_org_role\"",
+        "RETURN role.data.name AS role, role.data.source AS source"
+      ],
+      "status": "expressible",
+      "stage": "C",
+      "needs": [
+        "github_org_role (github-core#112)"
+      ],
+      "returns": [
+        "role",
+        "source"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "Written as a text CONTAINS over the permission list; a map shape (`permissions.write_organization_custom_org_role = true`) is the better model and is one of #112's questions."
+    },
+    {
+      "id": "t0-privilege-escalation-users",
+      "name": "Tier Zero Privilege Escalation Users",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "Users who hold custom organization roles with write_organization_custom_org_role permission. These users can modify organization role definitions — including the role they hold — to set the base_role to all_repo_admin, granting themselves admin access to every repository in the organization.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-privilege-escalation-users.json",
+            "openhound-github/extension/privilege_zone_rules/t0-privilege-escalation-users.json"
+          ],
+          "cypher": "MATCH (n:GH_User)-[:GH_HasRole|GH_HasBaseRole*1..]->(:GH_OrgRole)-[:GH_WriteOrganizationCustomOrgRole]->(:GH_Organization)\nRETURN n"
+        }
+      ],
+      "about": "Users whose custom role may edit custom roles — a self-escalation to owner.",
+      "gryphon": null,
+      "status": "blocked",
+      "stage": "C",
+      "needs": [
+        "github_org_role",
+        "HOLDS_ORG_ROLE"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "custom org roles not modelled (github-core#112)",
+        "variable-length path (tap#259)"
+      ],
+      "hatch": "one-hop filter for direct holders; base-role inheritance via the runner",
+      "caveat": ""
+    },
+    {
+      "id": "t0-saml-identity-providers",
+      "name": "Tier Zero SAML Identity Providers",
+      "category": "Privilege Zone rule (Tier Zero)",
+      "severity": "tier-zero",
+      "kind": "privilege_zone_rule",
+      "bloodhound_description": "SAML identity providers control authentication for all organization members via SSO. Compromise of the identity provider grants the ability to impersonate any user, including organization owners, by manipulating SAML assertions or resetting credentials.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/pz-rules/t0-saml-identity-providers.json",
+            "openhound-github/extension/privilege_zone_rules/t0-saml-identity-providers.json"
+          ],
+          "cypher": "MATCH (n:GH_SamlIdentityProvider)\nRETURN n"
+        }
+      ],
+      "about": "The identity providers that authenticate members.",
+      "gryphon": null,
+      "status": "not_observable",
+      "stage": "na",
+      "needs": [
+        "SAML SSO"
+      ],
+      "returns": [],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "team-membership-admin",
+      "name": "Team Membership Admins",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all users who hold the maintainer role over a team, this also represents team nesting.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/team-membership-admin.json",
+            "openhound-github/extension/saved_searches/team-membership-admin.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasRole]->(:GH_TeamRole)-[:GH_AddMember]->(team:GH_Team)\nMATCH p1=(team)<-[:GH_MemberOf]-(:GH_Team)<-[:GH_AddMember]-(:GH_TeamRole)<-[:GH_HasRole]-(:GH_User)\nRETURN p,p1\nLIMIT 1000"
+        }
+      ],
+      "about": "Team maintainers — the people who can add members, and through nesting, to the child teams too. The nested half is BloodHound's second, correlated clause (tap#433); the direct half is a filter.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[m:MEMBER_OF_TEAM__github_core]->(t:github_core__github_team)",
+        "WHERE m.data.properties.role = \"maintainer\"",
+        "RETURN t.data.slug AS team, u.data.login AS maintainer, t.data.parent_slug AS parent_team"
+      ],
+      "status": "expressible",
+      "stage": "B",
+      "needs": [
+        "github_core__github_account",
+        "github_core__github_team",
+        "MEMBER_OF_TEAM {role}"
+      ],
+      "returns": [
+        "team",
+        "maintainer",
+        "parent_team"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "team-structure",
+      "name": "Team Structure",
+      "category": "Low — Hygiene & Governance",
+      "severity": "low",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns the structure of teams within organizations, including team roles and their members.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/team-structure.json",
+            "openhound-github/extension/saved_searches/team-structure.json"
+          ],
+          "cypher": "MATCH p=(:GH_User)-[:GH_HasRole]->(:GH_TeamRole)-[:GH_MemberOf*1..]->(:GH_Team)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Who is on which team, with what role, and the team's parent. BloodHound walks the nesting with `*1..`; one level is a field here, deeper nesting waits on tap#259 or the reachability runner.",
+      "gryphon": [
+        "MATCH (u:github_core__github_account)-[m:MEMBER_OF_TEAM__github_core]->(t:github_core__github_team)",
+        "RETURN t.data.slug AS team, t.data.parent_slug AS parent_team, u.data.login AS member, m.data.properties.role AS role"
+      ],
+      "status": "expressible",
+      "stage": "B",
+      "needs": [
+        "github_core__github_account",
+        "github_core__github_team",
+        "MEMBER_OF_TEAM {role}",
+        "NESTED_IN_TEAM"
+      ],
+      "returns": [
+        "team",
+        "parent_team",
+        "member",
+        "role"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "unprotected-branches",
+      "name": "Unprotected Branches",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all unprotected branches in repositories.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/saved-queries/unprotected-branches.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_HasBranch]-(:GH_Branch {protected: false})\nRETURN p\nLIMIT 1000"
+        },
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/unprotected-branches.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_Contains]-(:GH_Branch {protected: false})\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Branches no ruleset protects. Feature branches are expected here; a default or release branch is not.",
+      "gryphon": [
+        "MATCH (g:github_core__github_repository)-[:HOSTS_REPOSITORY__github_core]->(r:git_core__git_repository)-[:DECLARES_REF__git_core]->(b:git_core__git_ref)",
+        "WHERE b.data.ref_type = \"branch\"",
+        "NOT EXISTS { MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b) }",
+        "RETURN g.data.full_name AS repository, b.data.name AS branch, b.data.is_default AS is_default"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_repository",
+        "git_core__git_repository",
+        "git_core__git_ref",
+        "github_core__github_ruleset"
+      ],
+      "returns": [
+        "repository",
+        "branch",
+        "is_default"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "unprotected-default-branch-with-workflow",
+      "name": "Repositories with Workflows and Unprotected Default Branch",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all repositories that have GitHub Actions workflows and an unprotected default branch. This means that users with GH_WriteRepoContents to the Repository can overwrite or change the workflow.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/saved-queries/unprotected-default-branch-with-workflow.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_HasWorkflow]->(:GH_Workflow)\nMATCH p1=(repo)-[:GH_HasBranch]->(branch:GH_Branch)\nWHERE repo.default_branch = branch.short_name\nRETURN p1\nLIMIT 1000"
+        },
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/unprotected-default-branch-with-workflow.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_Contains]->(:GH_Workflow)\nMATCH p1=(repo)-[:GH_Contains]->(branch:GH_Branch)\nWHERE repo.default_branch = branch.short_name\nAND branch.protected = false\nRETURN p1\nLIMIT 1000"
+        }
+      ],
+      "about": "Repositories that both run workflows and leave their default branch unprotected — so a write can also rewrite the automation. BloodHound writes this as two correlated clauses; one chain through the repository says the same thing.",
+      "gryphon": [
+        "MATCH (w:github_core__github_workflow)<-[:DEFINES_WORKFLOW__github_core]-(g:github_core__github_repository)-[:HOSTS_REPOSITORY__github_core]->(r:git_core__git_repository)-[:DECLARES_REF__git_core]->(b:git_core__git_ref)",
+        "WHERE b.data.is_default = true",
+        "NOT EXISTS { MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b) }",
+        "RETURN g.data.full_name AS repository, b.data.name AS branch, w.data.path AS workflow"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_workflow",
+        "github_core__github_repository",
+        "git_core__git_repository",
+        "git_core__git_ref",
+        "github_core__github_ruleset"
+      ],
+      "returns": [
+        "repository",
+        "branch",
+        "workflow"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "unprotected-default-branches",
+      "name": "Unprotected Default Branches",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns all default branches in repositories that are not protected.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound"
+          ],
+          "pins": [
+            "bcd3da1"
+          ],
+          "paths": [
+            "GitHound/saved-queries/unprotected-default-branches.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_HasBranch]-(branch:GH_Branch {protected: false})\nWHERE repo.default_branch = branch.short_name\nRETURN p\nLIMIT 1000"
+        },
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/unprotected-default-branches.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_Contains]-(branch:GH_Branch {protected: false})\nWHERE repo.default_branch = branch.short_name\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Default branches with no ruleset in front of them: anyone with write can push straight to what everyone builds from. BloodHound needs a property-to-property comparison here; `git_ref.is_default` makes it a filter.",
+      "gryphon": [
+        "MATCH (g:github_core__github_repository)-[:HOSTS_REPOSITORY__github_core]->(r:git_core__git_repository)-[:DECLARES_REF__git_core]->(b:git_core__git_ref)",
+        "WHERE b.data.is_default = true",
+        "NOT EXISTS { MATCH (rs:github_core__github_ruleset)-[:PROTECTS_REF__github_core]->(b) }",
+        "RETURN g.data.full_name AS repository, b.data.name AS branch"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_repository",
+        "git_core__git_repository",
+        "git_core__git_ref",
+        "github_core__github_ruleset"
+      ],
+      "returns": [
+        "repository",
+        "branch"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "web-commit-signoff-not-required",
+      "name": "Web Commit Signoff Not Required",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Finds organizations that do not require sign-off for web-based commits. Without signoff, commit attribution cannot be verified.",
+      "sources": [
+        {
+          "repos": [
+            "GitHound",
+            "openhound-github"
+          ],
+          "pins": [
+            "bcd3da1",
+            "056c0f8"
+          ],
+          "paths": [
+            "GitHound/saved-queries/web-commit-signoff-not-required.json",
+            "openhound-github/extension/saved_searches/web-commit-signoff-not-required.json"
+          ],
+          "cypher": "MATCH (org:GH_Organization {web_commit_signoff_required: false})\nRETURN org\nLIMIT 1000"
+        }
+      ],
+      "about": "Whether commits made in the web editor must carry a sign-off.",
+      "gryphon": [
+        "MATCH (a:github_core__github_account)",
+        "WHERE a.data.account_type = \"Organization\" AND a.data.configuration.web_commit_signoff_required = false",
+        "RETURN a.data.login AS organization, a.data.configuration.settings_observability AS settings_observed, a.data.configuration.web_commit_signoff_required AS web_commit_signoff_required"
+      ],
+      "status": "runs",
+      "stage": "A",
+      "needs": [
+        "github_core__github_account"
+      ],
+      "returns": [
+        "organization",
+        "settings_observed",
+        "web_commit_signoff_required"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "An organization whose policy block the credential could not read carries no such key and does not match — its `settings_observed` reads `public_only` or `unobservable` on the organization's own page. Absence of a row is not a clean bill."
+    },
+    {
+      "id": "workflow-jobs-interceptable-by-self-hosted-runners",
+      "name": "Workflow Jobs Interceptable by Self-Hosted Runners",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns workflow jobs whose future execution context may be exposed to an actor controlling a collected self-hosted runner that is not explicitly marked ephemeral.",
+      "sources": [
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/workflow-jobs-interceptable-by-self-hosted-runners.json"
+          ],
+          "cypher": "MATCH p=(runner:GH_Runner)-[:GH_CanInterceptJob]->(job:GH_WorkflowJob)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Jobs a self-hosted runner could pick up. The grid records the observed fact (`EXECUTED_ON_RUNNER`), not the eligibility; the eligibility is a label-set comparison the module hatch can do today.",
+      "gryphon": null,
+      "status": "blocked",
+      "stage": "later",
+      "needs": [
+        "github_core__github_runner",
+        "github_core__workflow_job",
+        "a derived RUNS_ON eligibility edge (runner labels ⊇ job runs-on, non-ephemeral)"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "derived eligibility edge not built (vocabulary: runner_group / MEMBER_OF_RUNNER_GROUP are friends-tier)"
+      ],
+      "hatch": "a module runner that intersects `github_runner.labels` with `workflow_job.runs_on` in Python and returns the pairs as edges",
+      "caveat": ""
+    },
+    {
+      "id": "workflow-jobs-with-broad-token-write-permissions",
+      "name": "Workflow Jobs with Broad GITHUB_TOKEN Write Permissions",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns workflow jobs whose calculated effective GITHUB_TOKEN permissions include write access to repository contents, Actions, or pull requests. These permissions can materially increase the impact of workflow compromise.",
+      "sources": [
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/workflow-jobs-with-broad-token-write-permissions.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_Contains]->(:GH_Workflow)-[:GH_Contains]->(job:GH_WorkflowJob)\nWHERE 'contents:write' IN job.effective_github_token_permissions\nOR 'actions:write' IN job.effective_github_token_permissions\nOR 'pull-requests:write' IN job.effective_github_token_permissions\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Jobs whose GITHUB_TOKEN is declared with write on contents, Actions or pull requests — the permissions that let a compromised step change code or approve itself.",
+      "gryphon": [
+        "MATCH (w:github_core__github_workflow)-[:DEFINES_JOB__github_core]->(j:github_core__workflow_job)",
+        "WHERE j.data.permissions.contents = \"write\" OR j.data.permissions.actions = \"write\" OR j.data.permissions[\"pull-requests\"] = \"write\" OR j.data.configuration.workflow_permissions.contents = \"write\" OR j.data.configuration.workflow_permissions.actions = \"write\" OR j.data.configuration.workflow_permissions[\"pull-requests\"] = \"write\"",
+        "RETURN w.data.full_name AS repository, w.data.path AS workflow, j.data.job_key AS job, j.data.permissions AS job_permissions, j.data.configuration.workflow_permissions AS workflow_permissions"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_workflow",
+        "github_core__workflow_job"
+      ],
+      "returns": [
+        "repository",
+        "workflow",
+        "job",
+        "job_permissions",
+        "workflow_permissions"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": "DECLARED permissions, on the job or inherited from the workflow. BloodHound computes the *effective* token from the repository's default-workflow-permissions policy too; that policy is not collected yet (a small follow-on to github-core#110)."
+    },
+    {
+      "id": "workflow-jobs-with-id-token-write",
+      "name": "Workflow Jobs with OIDC Token Permission",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns workflow jobs whose calculated effective GITHUB_TOKEN permissions include id-token:write. These jobs can request GitHub OIDC tokens, though additional step analysis is needed to determine whether the token is actually used.",
+      "sources": [
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/workflow-jobs-with-id-token-write.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_Contains]->(:GH_Workflow)-[:GH_Contains]->(job:GH_WorkflowJob)\nWHERE 'id-token:write' IN job.effective_github_token_permissions\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Jobs that may request an OIDC token — the jobs that can become a cloud identity. Whether they do is the next query.",
+      "gryphon": [
+        "MATCH (w:github_core__github_workflow)-[:DEFINES_JOB__github_core]->(j:github_core__workflow_job)",
+        "WHERE j.data.permissions[\"id-token\"] = \"write\" OR j.data.configuration.workflow_permissions[\"id-token\"] = \"write\"",
+        "RETURN w.data.full_name AS repository, w.data.path AS workflow, j.data.job_key AS job, j.data.environment AS environment"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__github_workflow",
+        "github_core__workflow_job"
+      ],
+      "returns": [
+        "repository",
+        "workflow",
+        "job",
+        "environment"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    },
+    {
+      "id": "workflow-jobs-with-id-token-write-on-self-hosted-runners",
+      "name": "OIDC-Capable Workflow Jobs Interceptable by Self-Hosted Runners",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns OIDC-capable workflow jobs whose execution context may be exposed to an actor controlling a collected self-hosted runner that is not explicitly marked ephemeral. These jobs are especially important to review because runner compromise could expose short-lived cloud federation tokens.",
+      "sources": [
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/workflow-jobs-with-id-token-write-on-self-hosted-runners.json"
+          ],
+          "cypher": "MATCH p=(runner:GH_Runner)-[:GH_CanInterceptJob]->(job:GH_WorkflowJob)\nWHERE 'id-token:write' IN job.effective_github_token_permissions\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "Interceptable jobs that can also mint a cloud identity.",
+      "gryphon": null,
+      "status": "blocked",
+      "stage": "later",
+      "needs": [
+        "github_core__github_runner",
+        "github_core__workflow_job"
+      ],
+      "returns": [],
+      "blocked_on": [
+        "derived eligibility edge not built"
+      ],
+      "hatch": "same runner, filtered on id-token: write",
+      "caveat": ""
+    },
+    {
+      "id": "workflow-jobs-with-observed-oidc-auth-steps",
+      "name": "Workflow Jobs with Observed OIDC Authentication Steps",
+      "category": "Medium — Branch Protection & Privilege Escalation",
+      "severity": "medium",
+      "kind": "saved_query",
+      "bloodhound_description": "Returns OIDC-capable workflow jobs with direct descendant steps that show likely OIDC token consumption, including common AWS, Azure, GitHub Pages, and direct token-request patterns. This is evidence of likely use, not a complete classifier for every possible OIDC consumer; reusable workflow callers may require following GH_CallsWorkflow to find the consuming steps.",
+      "sources": [
+        {
+          "repos": [
+            "openhound-github"
+          ],
+          "pins": [
+            "056c0f8"
+          ],
+          "paths": [
+            "openhound-github/extension/saved_searches/workflow-jobs-with-observed-oidc-auth-steps.json"
+          ],
+          "cypher": "MATCH p=(repo:GH_Repository)-[:GH_Contains]->(:GH_Workflow)-[:GH_Contains]->(job:GH_WorkflowJob)-[:GH_Contains]->(step:GH_WorkflowStep)\nWHERE 'id-token:write' IN job.effective_github_token_permissions\nAND (\n  step.action_slug = 'aws-actions/configure-aws-credentials'\n  OR step.action_slug = 'azure/login'\n  OR step.action_slug = 'Azure/login'\n  OR step.action_slug = 'actions/deploy-pages'\n  OR step.contents CONTAINS 'getIDToken'\n  OR step.contents CONTAINS 'ACTIONS_ID_TOKEN_REQUEST_URL'\n  OR step.contents CONTAINS 'ACTIONS_ID_TOKEN_REQUEST_TOKEN'\n)\nRETURN p\nLIMIT 1000"
+        }
+      ],
+      "about": "OIDC-capable jobs that visibly exchange the token for a cloud credential — the AWS, Azure and Pages login actions. The `getIDToken` / `ACTIONS_ID_TOKEN_REQUEST_URL` half of BloodHound's filter reads step bodies, which the grid keeps as text in `configuration.steps` and Gryphon cannot search inside arrays.",
+      "gryphon": [
+        "MATCH (j:github_core__workflow_job)-[u:USES_ACTION__github_core]->(act:github_core__github_action)",
+        "WHERE (j.data.permissions[\"id-token\"] = \"write\" OR j.data.configuration.workflow_permissions[\"id-token\"] = \"write\") AND act.data.action_path IN [\"aws-actions/configure-aws-credentials\", \"azure/login\", \"Azure/login\", \"actions/deploy-pages\"]",
+        "RETURN j.data.full_name AS repository, j.data.workflow_path AS workflow, j.data.job_key AS job, act.data.action_path AS action, u.data.properties.declared_ref AS declared_ref, u.data.properties.pin_kind AS pin"
+      ],
+      "status": "runs",
+      "stage": "today",
+      "needs": [
+        "github_core__workflow_job",
+        "github_core__github_action"
+      ],
+      "returns": [
+        "repository",
+        "workflow",
+        "job",
+        "action",
+        "declared_ref",
+        "pin"
+      ],
+      "blocked_on": [],
+      "hatch": "",
+      "caveat": ""
+    }
+  ]
+}
