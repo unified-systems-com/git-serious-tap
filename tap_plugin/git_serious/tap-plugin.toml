@@ -11,6 +11,7 @@ description = "Visualize, track, and secure your CI/CD system — for humans and
 depends_on = [
     { slug = "administrivia", note = "The product record seeds administrivia's admin pages beside the landing; the landing links to them." },
     { slug = "github_core", note = "The landing, org and repository pages are GRIFT over github_core's vocabulary (searches name github_core__* types; the machinery projection is github_core's)." },
+    { slug = "zizmor", optional = true, note = "The secrets pages read zizmor's FLAGS_WORKFLOW findings onto each consuming workflow WHEN the scanner is installed (panels/secrets.py, guarded import); without it the findings column is absent, not empty. Soft: git-serious does not require the scanner." },
 ]
 
 # Pure composition — no crypto, no native deps (spec-fips.md, req-tap-plugin-manifest-v0-fips).
@@ -23,6 +24,7 @@ org = "grift/org.grift.json"
 gate = "grift/gate.grift.json"
 schedule = "grift/schedule.grift.json"
 repository = "grift/repository.grift.json"
+secrets = "grift/secrets.grift.json"
 
 # In-package boot record (req-boot-bootstrap-records-in-package): THE product composition.
 # Digest is the canonical sha256 of the record (sorted keys, tight separators) — regenerate
@@ -31,9 +33,9 @@ repository = "grift/repository.grift.json"
 [[boot.records]]
 name = "git_serious"
 description = "git-serious standing against one GitHub account: github_core (account-scoped collector) + identity_core + administrivia + the git-serious landing page. required_secrets declares the read-only github_pat."
-sha256 = "5faa2369989ea424630f98788444e883a0cd2ca2d17391fac8bbc49adab2542c"
+sha256 = "2502aaccd709de76b7cba779d80e8f3d72166bd93f1c7bdff8c510ff57d82649"
 
 [[boot.records]]
 name = "ci"
 description = "RESERVED NAME (req-boot-bootstrap-ci-record): the stack this plugin's own tests run in — depends_on closure + self, offline, credential-free. The consumer flips self to editable."
-sha256 = "3cbb6c96b016a8be3208487713ad1f082784c84c03d3ef43e84c39c5413ecd30"
+sha256 = "314770046b5afeb222dcadd361be77db6b6a2ae1161855c93d8becb4f4ba85e4"

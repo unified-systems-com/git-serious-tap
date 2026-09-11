@@ -35,7 +35,7 @@ dependencies = [
     # purely additive for everything git-serious touches (18/18 referenced types and
     # edges survive unchanged; the only edits to models read here were node colours),
     # but that is a fact about 0.7, not a promise about 0.8.
-    "tap-plugin-github-core>=0.8.0,<0.9",
+    "tap-plugin-github-core>=0.9.0,<0.10",
     "tap-plugin-identity-core",
     "tap-plugin-administrivia",
 ]
