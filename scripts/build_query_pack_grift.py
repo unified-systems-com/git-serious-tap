@@ -209,7 +209,7 @@ def render() -> str:
 
 def check() -> int:
     """Exit 1 when the committed bundle differs from what the pack would generate now."""
-    if OUT.exists() and OUT.read_text() == render():
+    if OUT.exists() and OUT.read_text(encoding="utf-8") == render():
         print("queries.grift.json is current")
         return 0
     print("queries.grift.json is STALE — re-run without --check (and bump BATCH if content changed)")
@@ -218,7 +218,9 @@ def check() -> int:
 
 def write() -> int:
     """Rewrite the committed bundle. The output path is the module constant OUT — never an argument."""
-    OUT.write_text(render())
+    with OUT.open("w", encoding="utf-8") as fh:
+        json.dump(build(), fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
     print(f"wrote {OUT.relative_to(ROOT)}")
     return 0
 
