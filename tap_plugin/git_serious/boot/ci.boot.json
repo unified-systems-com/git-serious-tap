@@ -91,5 +91,17 @@
         "note": "Own GRIFT: seeding it proves the bundle parses and its panel types resolve against a real registry."
       }
     ]
-  }
+  },
+  "fips_waivers": [
+    {
+      "artifact": "*/bin/zizmor",
+      "provider": "boringssl",
+      "reason": "Carried from zizmor-tap's own ci record: zizmor is a static YAML linter for GitHub Actions workflows; the shipped Rust binary links boringssl and aws-lc-rs for its HTTPS client (fetching remote workflow references), which TAP never invokes in the operational request path — the plugin runs zizmor on local files only. No TAP data is encrypted, signed or hashed by these providers. Waived for the plugin's own test stack (zizmor-tap#10 owns the product decision: declare in [fips] or build against system OpenSSL). git_serious installs zizmor in its CI stack only because the strict validator requires the depends_on closure to be installed (optional dependency, guarded import); the product record does not install it."
+    },
+    {
+      "artifact": "*/bin/zizmor",
+      "provider": "rust-aws-lc-rs",
+      "reason": "Carried from zizmor-tap's own ci record: zizmor is a static YAML linter for GitHub Actions workflows; the shipped Rust binary links boringssl and aws-lc-rs for its HTTPS client (fetching remote workflow references), which TAP never invokes in the operational request path — the plugin runs zizmor on local files only. No TAP data is encrypted, signed or hashed by these providers. Waived for the plugin's own test stack (zizmor-tap#10 owns the product decision: declare in [fips] or build against system OpenSSL). git_serious installs zizmor in its CI stack only because the strict validator requires the depends_on closure to be installed (optional dependency, guarded import); the product record does not install it."
+    }
+  ]
 }
