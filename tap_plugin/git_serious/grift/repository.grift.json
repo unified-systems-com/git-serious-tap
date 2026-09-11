@@ -6,15 +6,15 @@
   "batches": [
     {
       "batch_entity": {
-        "entity_id": "01a08766-f51c-72d0-a9f1-ae7ef0f32cf2",
+        "entity_id": "01a08d7d-83b2-76a0-88be-d700188c9eb7",
         "entity_type": "batch",
         "name": "git-serious repository page v0.1.0",
         "dimensions": {}
       },
       "batch_node": {
         "source": "plugins.git_serious.grift.repository",
-        "name": "git-serious repository page v0.2.0",
-        "description": "First light (git-serious-tap#56): ONE repository, read top to bottom — who it is, its CI/CD machinery (github_core's machinery projection over this page's own scene searches, scoped by ?repo=owner/name), the open pull requests with the check verdict on each head, and the status wall filtered to this repository alone. Current state only: failure overlays and the dig into the machinery are named non-goals. No new code: searches, table panels and one graph panel over entities the collectors already land."
+        "name": "git-serious repository page v0.2.1",
+        "description": "First light (git-serious-tap#56): ONE repository, read top to bottom — who it is, its CI/CD machinery (github_core's machinery projection over this page's own scene searches, scoped by ?repo=owner/name), the open pull requests with the check verdict on each head, and the status wall filtered to this repository alone. Current state only: failure overlays and the dig into the machinery are named non-goals. No new code: searches, table panels and one graph panel over entities the collectors already land. v0.2.1 (git-serious-tap#75): every workflow and job click opens github_core's workflow page by GitHub's numeric id — /github_core/workflow?workflow_id=… — the key that page takes since tap-plugin-github-core#101; Panel node upserts only; every id stable, batch id moved. Also v0.2.1: the page leaves the top navigation (discoverable: false) — it is parameterized by ?repo= and opens on nothing from the menu."
       },
       "nodes": [
         {
@@ -59,7 +59,8 @@
                   }
                 }
               }
-            }
+            },
+            "discoverable": false
           }
         },
         {
@@ -256,11 +257,11 @@
                 },
                 {
                   "entity_type": "github_core__github_workflow",
-                  "url_template": "/github_core/workflow?repo={data.full_name}&workflow={data.path}"
+                  "url_template": "/github_core/workflow?workflow_id={data.workflow_id}"
                 },
                 {
                   "entity_type": "github_core__workflow_job",
-                  "url_template": "/github_core/workflow?repo={data.full_name}&workflow={data.workflow_path}"
+                  "url_template": "/github_core/workflow?workflow_id={data.workflow_id}"
                 },
                 {
                   "entity_type": "github_core__github_app",

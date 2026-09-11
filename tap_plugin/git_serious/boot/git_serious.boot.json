@@ -43,14 +43,24 @@
         "note": "Package-mode (tap_plugin.identity_core). Install-only substrate: the oidc_issuer convergence node github_core mints. No GRIFT seed."
       },
       {
+        "slug": "compliance_core",
+        "enabled": true,
+        "source": {
+          "type": "git",
+          "url": "https://github.com/unified-systems-com/tap-plugin-compliance-core",
+          "rev": "v0.3.0"
+        },
+        "note": "Package-mode (tap_plugin.compliance_core). github_core v0.8.0 declares `tap-plugin-compliance-core>=0.3.0,<0.4` and the pre-boot install fails closed without it; ordered BEFORE github_core, which depends on it. Install-only substrate: no GRIFT seed."
+      },
+      {
         "slug": "github_core",
         "enabled": true,
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/tap-plugin-github-core",
-          "rev": "v0.7.0"
+          "rev": "v0.8.0"
         },
-        "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector, account-scoped (req-github-core-org-scope), pinned at v0.7.0; NOT seeded here — its repo landing page is samsite-shaped (/samsite/repo) and git-serious owns its own pages."
+        "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector, account-scoped (req-github-core-org-scope), pinned at v0.8.0; NOT seeded here — its repo landing page is samsite-shaped (/samsite/repo) and git-serious owns its own pages."
       },
       {
         "slug": "git_serious",
@@ -72,6 +82,13 @@
         "plugin": "administrivia",
         "enabled": true,
         "note": "TAP admin pages + grid landing."
+      },
+      {
+        "type": "seed-plugin",
+        "plugin": "github_core",
+        "bundle": "workflow-page",
+        "enabled": true,
+        "note": "ONLY the workflow page: every workflow node on git-serious's graphs and the status wall's History column open /github_core/workflow, and installing github_core does not populate it (git-serious-tap#75). The repo-landing bundle stays out — it seeds /samsite/repo and git-serious owns the repository page. Before git_serious, so a later edge into this page finds it."
       },
       {
         "type": "seed-plugin",
