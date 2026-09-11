@@ -1,3 +1,4 @@
+{% load git_serious_icons %}
 <div class="tap-panel tap-panel--git-serious-query tap-gs">
 {% if state == "no_selection" %}
     <p class="tap-gs__empty">Open this page with <code>?id=&lt;bloodhound-id&gt;</code> — it is reached from the <a href="{{ pack_url }}">query pack</a>.</p>
@@ -6,27 +7,35 @@
 {% else %}
     <article>
         <header class="tap-gs__head {% if q.severity == 'critical' or q.severity == 'tier-zero' %}tap-gs__head--loud{% endif %}">
-            <p class="tap-gs__kind">query pack · <a href="{{ pack_url }}">BloodHound GitHub</a> · <span class="tap-gs-sev tap-gs-sev--{{ q.severity }}">{{ q.severity }}</span></p>
-            <h3>{{ q.name }}</h3>
+            <p class="tap-gs__kind"><a href="{{ pack_url }}">query pack</a> · BloodHound GitHub · <span class="tap-gs-sev tap-gs-sev--{{ q.severity }}">{{ q.severity }}</span></p>
+            <h3>{% if q.primary_type %}{% type_icon q.primary_type "tap-gs-icon tap-gs-icon--title" %}{% endif %}{{ q.name }}</h3>
             <p class="tap-gs__sub">{{ q.category }} · <code>{{ q.id }}</code></p>
             <p class="tap-gs__badges">
                 <span class="tap-gs-status tap-gs-status--{{ q.status }}">{{ q.status_label }}</span>
-                <span class="tap-gs-stage tap-gs-stage--{{ q.stage }}">{{ q.stage_label }}</span>
-                {% if q.stage_issue %}<span class="tap-gs-badge tap-gs-badge--muted">{{ q.stage_issue }}</span>{% endif %}
+                <span class="tap-gs-stage tap-gs-stage--{{ q.stage }}">{{ q.stage }}</span>
                 {% if q.variant_count > 1 %}<span class="tap-gs-badge tap-gs-badge--muted">{{ q.variant_count }} upstream variants</span>{% endif %}
             </p>
         </header>
 
+        <dl class="tap-gs-subject">
+            <div><dt>State</dt><dd>{{ q.status_label }}</dd></div>
+            <div><dt>Stage</dt><dd>{{ q.stage_label }}{% if q.stage_issue %} <span class="tap-gs__muted">· {{ q.stage_issue }}</span>{% endif %}</dd></div>
+            <div><dt>About</dt><dd>{% for t in q.type_needs %}<span class="tap-gs-nowrap">{% type_icon t %}{{ t|type_label }}</span>{% if not forloop.last %} · {% endif %}{% empty %}<span class="tap-gs__muted">no type on this grid</span>{% endfor %}</dd></div>
+            <div><dt>Answer here</dt><dd>{% if answer.state == "ran" %}<strong>{{ answer.row_count }}</strong> row{{ answer.row_count|pluralize }}{% elif answer.state == "failed" %}<span class="tap-gs-badge tap-gs-badge--bad">executor refused</span>{% elif answer.state == "absent" %}<span class="tap-gs-badge tap-gs-badge--warn">search not imported</span>{% else %}<span class="tap-gs__muted">not run — {{ q.status_label }}</span>{% endif %}</dd></div>
+            <div><dt>Upstream</dt><dd>{% for s in q.sources %}{{ s.repos|join:" + " }} <span class="tap-gs__muted">@ {{ s.pins|join:", " }}</span>{% if not forloop.last %}; {% endif %}{% endfor %}</dd></div>
+        </dl>
+
         <section class="tap-gs-section tap-gs-section--lead">
             <h4>What it asks</h4>
-            <p class="tap-gs__meaning">{{ q.about }}</p>
-            <p class="tap-gs__fact"><span class="tap-gs__muted">SpecterOps:</span> {{ q.bloodhound_description }}</p>
+            <p class="tap-gs__meaning">In our words first, then SpecterOps' description of the same query.</p>
+            <p class="tap-gs__fact">{{ q.about }}</p>
+            <p class="tap-gs__fact tap-gs__quote"><span class="tap-gs__muted">SpecterOps —</span> {{ q.bloodhound_description }}</p>
             {% if q.caveat %}<p class="tap-gs__fact"><span class="tap-gs-badge tap-gs-badge--warn">read the answer with this</span> {{ q.caveat }}</p>{% endif %}
         </section>
 
         <section class="tap-gs-section">
             <h4>Their Cypher, our Gryphon</h4>
-            <p class="tap-gs__meaning">The Cypher is verbatim from the pinned upstream file. The Gryphon is the same question asked of the TAP grid: BloodHound's <code>GH_*</code> kinds become github_core and git_core types, roles become edge properties, and <code>RETURN p</code> becomes named columns — a table, not a path picture.</p>
+            <p class="tap-gs__meaning">The Cypher is verbatim from the pinned upstream file. The Gryphon asks the same question of the TAP grid: <code>GH_*</code> kinds become github_core and git_core types, roles become edge properties, and <code>RETURN p</code> becomes named columns.</p>
             <div class="tap-gs-twin">
                 <div>
                     {% for s in q.sources %}
@@ -37,7 +46,7 @@
                 <div>
                     {% if q.gryphon_text %}
                     <pre class="tap-gs-code tap-gs-code--gryphon {% if q.status == 'blocked' %}tap-gs-code--blocked{% endif %}">{{ q.gryphon_text }}</pre>
-                    <p class="tap-gs-code__cap">{% if q.status == "runs" %}Gryphon — seeded as a Search on this grid{% elif q.status == "expressible" %}Gryphon — written against the types {{ q.stage_label }}; not seeded until they exist{% else %}Gryphon as it would be written — the dashed border marks a construct the executor refuses today{% endif %}</p>
+                    <p class="tap-gs-code__cap">{% if q.status == "runs" %}Gryphon — seeded as a Search on this grid{% elif q.status == "expressible" %}Gryphon — written against the types that arrive {{ q.stage_label }}; not seeded until they exist{% else %}Gryphon as it would be written — the dashed rule marks a construct the executor refuses today{% endif %}</p>
                     {% else %}
                     <pre class="tap-gs-code tap-gs-code--blocked">— no Gryphon yet —</pre>
                     <p class="tap-gs-code__cap">{% if q.status == "not_observable" %}Nothing to translate to: the kinds this query walks are not observable for this organisation.{% else %}The translation waits on the edges named below.{% endif %}</p>
@@ -48,18 +57,18 @@
 
         <section class="tap-gs-section">
             <h4>What it needs on the grid</h4>
-            <p class="tap-gs__meaning">The types, edges and fields the Gryphon touches. A stage names the collector build that puts them there; a blocker names the Gryphon construct that is missing and the break-glass way around it.</p>
-            <div class="tap-gs-chips">{% for n in q.needs %}<code>{{ n }}</code>{% endfor %}</div>
+            <p class="tap-gs__meaning">The types and edges the Gryphon touches. A stage names the collector build that puts them there; a blocker names the missing Gryphon construct and the break-glass way around it.</p>
+            <div class="tap-gs-chips">{% for n in q.type_needs %}<span class="tap-gs-typechip">{% type_icon n %}{{ n|type_label }}<small>{{ n }}</small></span>{% endfor %}{% for n in q.other_needs %}<code>{{ n }}</code>{% endfor %}</div>
             {% if q.blocked_on %}<p class="tap-gs__fact"><span class="tap-gs-badge tap-gs-badge--bad">blocked on</span> {{ q.blocked_on|join:"; " }}</p>{% endif %}
             {% if q.hatch %}<p class="tap-gs__fact"><span class="tap-gs-badge tap-gs-badge--muted">hatch today</span> {{ q.hatch }} <span class="tap-gs__muted">— break-glass under req-grid-search-canonical-read; the urge to write it is the demand signal for the Gryphon build.</span></p>{% endif %}
-            {% if q.returns %}<p class="tap-gs__fact"><span class="tap-gs__muted">Returns</span> one row per match with columns {% for c in q.returns %}<code>{{ c }}</code>{% if not forloop.last %}, {% endif %}{% endfor %}.</p>{% endif %}
+            {% if q.returns %}<p class="tap-gs__fact"><span class="tap-gs__muted">Returns</span> one row per match: {% for c in q.returns %}<code>{{ c }}</code>{% if not forloop.last %}, {% endif %}{% endfor %}.</p>{% endif %}
         </section>
 
-        <section class="tap-gs-section">
+        <section class="tap-gs-section tap-gs-section--answer">
             <h4>The answer on this grid</h4>
             {% if answer.state == "ran" %}
                 {% if answer.row_count %}
-                <p class="tap-gs__meaning"><strong>{{ answer.row_count }}</strong> row{{ answer.row_count|pluralize }}{% if answer.truncated %} — showing the first {{ answer.rows|length }}{% endif %}. Executed live against this grid's read-only search connection when the page rendered.</p>
+                <p class="tap-gs__meaning"><strong>{{ answer.row_count }}</strong> row{{ answer.row_count|pluralize }}{% if answer.truncated %} — showing the first {{ answer.rows|length }}{% endif %}, executed live over the read-only search connection when this page rendered.</p>
                 <div class="tap-gs-answer__wrap"><table class="tap-gs-answer">
                     <thead><tr>{% for c in answer.columns %}<th>{{ c }}</th>{% endfor %}</tr></thead>
                     <tbody>{% for row in answer.rows %}<tr>{% for v in row %}<td>{% if v is None %}<span class="tap-gs__absent">null</span>{% else %}{{ v }}{% endif %}</td>{% endfor %}</tr>{% endfor %}</tbody>
@@ -82,7 +91,10 @@
             <span>{% if next_q %}<a href="{{ next_q.url }}">{{ next_q.name }}</a> →{% endif %}</span>
         </nav>
 
-        <p class="tap-gs-prov">Query text and description © SpecterOps, Apache-2.0, from {% for s in q.sources %}<code>{{ s.paths.0 }}</code>{% if not forloop.last %} and {% endif %}{% endfor %}. Translation, stage and state from git-serious's pack (<code>data/bloodhound_queries.json</code>, built {{ pack.built }}).</p>
+        <details class="tap-gs-prov">
+            <summary>Provenance</summary>
+            <p class="tap-gs__meaning">Query text and description © SpecterOps, Apache-2.0, from {% for s in q.sources %}<code>{{ s.paths.0 }}</code>{% if not forloop.last %} and {% endif %}{% endfor %}. Translation, stage and state from git-serious's pack (<code>data/bloodhound_queries.json</code>, built {{ pack.built }}); the Search this page executes carries the id derived from the query's own (<code>search_entity_id</code>), so the answer is the seeded translation, not a copy.</p>
+        </details>
     </article>
 {% endif %}
 </div>

@@ -1,55 +1,88 @@
-<div class="tap-panel tap-panel--git-serious-query-pack tap-gs">
+{% load git_serious_icons %}
+<div class="tap-panel tap-panel--git-serious-query-pack tap-gs" id="tap-gs-pack">
     <article>
         <header class="tap-gs__head">
             <p class="tap-gs__kind">git-serious · query pack · BloodHound GitHub</p>
-            <h3>{{ o.total }} questions a GitHub attack-path graph asks — and how many this grid can answer</h3>
-            <p class="tap-gs__sub">SpecterOps ships {{ o.total }} saved queries with its BloodHound GitHub extension. Each is here with its original Cypher, our Gryphon, and an honest state: <strong>{{ o.by_status.runs|default:0 }}</strong> run on this grid, <strong>{{ o.by_status.expressible|default:0 }}</strong> are written and waiting on a collector build, <strong>{{ o.by_status.blocked|default:0 }}</strong> wait on a Gryphon construct, <strong>{{ o.by_status.not_observable|default:0 }}</strong> ask about things this organisation does not have.</p>
+            <h3>{{ o.total }} questions an attack-path graph asks of GitHub</h3>
+            <p class="tap-gs__sub">SpecterOps' saved queries, each with its Cypher, our Gryphon, and an honest state. Pick a row to see the question, both texts, and its answer on this grid.</p>
         </header>
 
-        <dl class="tap-gs-subject">
-            <div><dt>Upstream</dt><dd>{% for repo, pin in o.pack.upstream.items %}<code>{{ repo }}</code> @ <code>{{ pin }}</code>{% if not forloop.last %} · {% endif %}{% endfor %}</dd></div>
-            <div><dt>Licence</dt><dd>{{ o.pack.license }}</dd></div>
-            <div><dt>Seeded searches</dt><dd>{{ o.seeded }}<span class="tap-gs__muted"> — the translations that run; the rest are shown, not executed</span></dd></div>
-            <div><dt>Blocked, with a hatch</dt><dd>{{ o.blocked_hatch }}<span class="tap-gs__muted"> — a module runner could answer these today; tap#259 and tap#433 are the language builds</span></dd></div>
-        </dl>
+        <div class="tap-gs-tiles" role="list">
+            <a class="tap-gs-tile tap-gs-tile--ok" role="listitem" href="#pack-list" data-filter="runs">
+                <span class="tap-gs-tile__n">{{ o.by_status.runs|default:0 }}</span>
+                <span class="tap-gs-tile__k">run here</span>
+                <span class="tap-gs-tile__d">Gryphon executes it and the data is on this grid — {{ o.seeded }} seeded Searches</span>
+            </a>
+            <a class="tap-gs-tile tap-gs-tile--info" role="listitem" href="#pack-list" data-filter="expressible">
+                <span class="tap-gs-tile__n">{{ o.by_status.expressible|default:0 }}</span>
+                <span class="tap-gs-tile__k">written, waiting on data</span>
+                <span class="tap-gs-tile__d">translated; a named github_core build puts the types on the grid</span>
+            </a>
+            <a class="tap-gs-tile tap-gs-tile--bad" role="listitem" href="#pack-list" data-filter="blocked">
+                <span class="tap-gs-tile__n">{{ o.by_status.blocked|default:0 }}</span>
+                <span class="tap-gs-tile__k">blocked on Gryphon</span>
+                <span class="tap-gs-tile__d">a construct the executor lacks — {{ o.blocked_hatch }} have a module hatch today</span>
+            </a>
+            <a class="tap-gs-tile tap-gs-tile--muted" role="listitem" href="#pack-list" data-filter="not_observable">
+                <span class="tap-gs-tile__n">{{ o.by_status.not_observable|default:0 }}</span>
+                <span class="tap-gs-tile__k">not observable</span>
+                <span class="tap-gs-tile__d">Enterprise, SAML or another cloud — this organisation cannot expose it</span>
+            </a>
+        </div>
 
-        <section class="tap-gs-section tap-gs-section--lead">
+        <section class="tap-gs-section">
             <h4>The ladder</h4>
-            <p class="tap-gs__meaning">Cumulative: how many of the {{ o.total }} are answerable once each collector build lands. The data is the bottleneck, not the language — every stage below is a github_core change, and each is a filed issue.</p>
+            <p class="tap-gs__meaning">Cumulative: how many of the {{ o.total }} are answerable once each collector build lands. The data is the bottleneck, not the language — every stage is a github_core change with a filed issue.</p>
             <div class="tap-gs-ladder" role="img" aria-label="Queries answerable by stage">
                 {% for step in o.ladder %}
-                <div class="tap-gs-ladder__label">{{ step.label }}</div>
+                <div class="tap-gs-ladder__label"><span class="tap-gs-stage tap-gs-stage--{{ step.stage }}">{{ step.stage }}</span> {% if step.stage != "today" %}{{ step.label }}{% else %}runs today{% endif %}</div>
                 <div class="tap-gs-ladder__track"><div class="tap-gs-ladder__fill tap-gs-ladder__fill--{{ step.stage }}" style="width: {% widthratio step.cumulative o.total 100 %}%"></div><span class="tap-gs-ladder__num">{{ step.cumulative }}</span></div>
-                {% if step.issue %}<div class="tap-gs-ladder__note">{{ step.issue }}</div>{% endif %}
                 {% endfor %}
-                <div class="tap-gs-ladder__label">ceiling</div>
-                <div class="tap-gs-ladder__note" style="grid-column: 2">{{ o.total|add:"-0" }} minus {{ o.by_stage.na|default:0 }} not observable minus {{ o.by_stage.later|default:0 }} awaiting a type — the rest is Gryphon's to close.</div>
+                <div class="tap-gs-ladder__label"></div>
+                <div class="tap-gs-ladder__note">ceiling {{ o.total }} − {{ o.by_stage.na|default:0 }} not observable − {{ o.by_stage.later|default:0 }} awaiting a type; the rest is Gryphon's to close (tap#259, tap#433).</div>
             </div>
         </section>
 
-        <section class="tap-gs-section">
+        <section class="tap-gs-section" id="pack-list">
             <h4>Every query, by the stage that answers it</h4>
-            <p class="tap-gs__meaning">Click a row for the question, both texts, what it needs and — where it runs — the answer on this grid. Severity and category are BloodHound's; the stage and state are ours.</p>
+            <p class="tap-gs__meaning">Grouped by the build that makes it askable; the icon is the type the question is about. Severity and category are BloodHound's; state and stage are ours.</p>
+            <div class="tap-gs-filter" role="group" aria-label="Filter the list">
+                <input type="search" id="tap-gs-pack-search" class="tap-gs-filter__input" placeholder="Filter by name, id or category…" aria-label="Filter queries">
+                <div class="tap-gs-filter__chips">
+                    <button type="button" class="tap-gs-chip is-active" data-filter="all">all {{ o.total }}</button>
+                    <button type="button" class="tap-gs-chip" data-filter="runs">run here {{ o.by_status.runs|default:0 }}</button>
+                    <button type="button" class="tap-gs-chip" data-filter="expressible">waiting {{ o.by_status.expressible|default:0 }}</button>
+                    <button type="button" class="tap-gs-chip" data-filter="blocked">blocked {{ o.by_status.blocked|default:0 }}</button>
+                    <button type="button" class="tap-gs-chip" data-filter="not_observable">not observable {{ o.by_status.not_observable|default:0 }}</button>
+                </div>
+                <span class="tap-gs-filter__count" id="tap-gs-pack-count" aria-live="polite">{{ o.total }} shown</span>
+            </div>
             <table class="tap-gs-pack">
-                <thead><tr><th>Query</th><th>Severity</th><th>State</th><th>Stage</th><th>Returns</th></tr></thead>
+                <thead><tr><th>Query</th><th>State</th><th>Severity</th><th>Returns</th></tr></thead>
                 <tbody>
                 {% regroup o.rows by stage as groups %}
                 {% for g in groups %}
-                <tr class="tap-gs-pack__group"><td colspan="5"><span class="tap-gs-stage tap-gs-stage--{{ g.grouper }}">{{ g.list.0.stage_label }}</span><small>{{ g.list|length }} quer{{ g.list|length|pluralize:"y,ies" }}{% if g.list.0.stage_issue %} · {{ g.list.0.stage_issue }}{% endif %}</small></td></tr>
+                <tr class="tap-gs-pack__group" data-stage="{{ g.grouper }}"><td colspan="4"><span class="tap-gs-stage tap-gs-stage--{{ g.grouper }}">{{ g.grouper }}</span> {{ g.list.0.stage_label }}<small><span class="tap-gs-pack__gcount">{{ g.list|length }}</span> quer{{ g.list|length|pluralize:"y,ies" }}{% if g.list.0.stage_issue %} · {{ g.list.0.stage_issue }}{% endif %}</small></td></tr>
                 {% for r in g.list %}
-                <tr class="tap-gs-pack__row" onclick="window.location='{{ r.url }}'">
-                    <td class="tap-gs-pack__name"><a href="{{ r.url }}">{{ r.name }}</a><small><code>{{ r.id }}</code> · {{ r.category }}</small></td>
-                    <td><span class="tap-gs-sev tap-gs-sev--{{ r.severity }}">{{ r.severity }}</span></td>
+                <tr class="tap-gs-pack__row" data-status="{{ r.status }}" data-stage="{{ r.stage }}" data-text="{{ r.name|lower }} {{ r.id }} {{ r.category|lower }}" onclick="window.location='{{ r.url }}'">
+                    <td class="tap-gs-pack__name">
+                        <span class="tap-gs-pack__icon">{% if r.primary_type %}{% type_icon r.primary_type %}{% endif %}</span>
+                        <span class="tap-gs-pack__text"><a href="{{ r.url }}">{{ r.name }}</a><small><code>{{ r.id }}</code> · {{ r.category }}</small></span>
+                    </td>
                     <td><span class="tap-gs-status tap-gs-status--{{ r.status }}">{{ r.status_label }}</span></td>
-                    <td><span class="tap-gs-stage tap-gs-stage--{{ r.stage }}">{{ r.stage }}</span></td>
-                    <td class="tap-gs__muted">{% if r.returns %}{{ r.returns|join:", " }}{% elif r.status == "not_observable" %}—{% else %}graph{% endif %}</td>
+                    <td><span class="tap-gs-sev tap-gs-sev--{{ r.severity }}">{{ r.severity }}</span></td>
+                    <td class="tap-gs__muted tap-gs-pack__returns">{% if r.returns %}{{ r.returns|join:", " }}{% elif r.status == "not_observable" %}—{% else %}graph{% endif %}</td>
                 </tr>
                 {% endfor %}
                 {% endfor %}
                 </tbody>
             </table>
+            <p class="tap-gs__absent tap-gs-pack__none" id="tap-gs-pack-none" hidden>Nothing matches that filter.</p>
         </section>
 
-        <p class="tap-gs-prov">Pack built {{ o.pack.built }} from <code>data/bloodhound_queries.json</code>; the Searches on this grid were generated from the same file. Query names, categories and descriptions are SpecterOps' (Apache-2.0); translations, stages and states are git-serious's.</p>
+        <details class="tap-gs-prov">
+            <summary>Provenance — the corpus, the licence, the method</summary>
+            <p class="tap-gs__meaning">Upstream: {% for repo, pin in o.pack.upstream.items %}<code>{{ repo }}</code> @ <code>{{ pin }}</code>{% if not forloop.last %} · {% endif %}{% endfor %}. {{ o.pack.license }}. Query names, categories and descriptions are SpecterOps'; translations, stages and states are git-serious's, authored per query in <code>data/bloodhound_queries.json</code> (built {{ o.pack.built }}). The Searches on this grid were generated from that file, one per translation that runs; the counts above are derived from it at render, never typed.</p>
+        </details>
     </article>
 </div>

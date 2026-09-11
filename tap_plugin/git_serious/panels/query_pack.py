@@ -83,6 +83,8 @@ def gryphon_text(q: dict[str, Any]) -> str:
 def decorate(q: dict[str, Any]) -> dict[str, Any]:
     """The record plus the display fields every template wants."""
     stage = STAGES.get(q["stage"], STAGES["later"])
+    # A need that is an entity-type slug (`plugin__type`) gets the type's icon; prose needs stay chips.
+    type_needs = [n for n in q.get("needs") or [] if "__" in n and " " not in n]
     return {
         **q,
         "stage_label": stage["label"],
@@ -93,6 +95,9 @@ def decorate(q: dict[str, Any]) -> dict[str, Any]:
         "search_id": str(search_entity_id(q["id"])) if is_seeded(q) else "",
         "url": f"/git-serious/query?id={q['id']}",
         "variant_count": len(q.get("sources") or []),
+        "type_needs": type_needs,
+        "other_needs": [n for n in q.get("needs") or [] if n not in type_needs],
+        "primary_type": type_needs[0] if type_needs else "",
     }
 
 

@@ -18,7 +18,7 @@ class GitSeriousQueryPackPanelType:
     label: ClassVar[str] = "git-serious Query Pack"
     view: ClassVar[str] = "git_serious/panels/query_pack.html"
     css: ClassVar[list[str]] = ["git_serious/css/secrets.css", "git_serious/css/queries.css"]
-    js: ClassVar[list[str]] = []
+    js: ClassVar[list[str]] = ["git_serious/js/queries.js"]
     editor_view: ClassVar[str] = ""
     config_defaults: ClassVar[dict[str, Any]] = {}
 

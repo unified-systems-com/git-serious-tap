@@ -167,3 +167,33 @@ def test_pack_overview_context_shape() -> None:
     stages_in_order = [r["stage"] for r in o["rows"]]
     order = [query_pack.STAGE_ORDER.index(s) for s in stages_in_order]
     assert order == sorted(order), "rows are grouped by stage in ladder order"
+
+
+# ---------------------------------------------------------------------------------------------
+# Icons by slug (design-page skill): the type's own ENTITY_ICON, decorative, nothing for an unknown slug
+# ---------------------------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_type_icon_renders_the_registered_icon_and_nothing_for_an_unknown_slug() -> None:
+    from tap_plugin.git_serious.templatetags import git_serious_icons as tags
+
+    tags._icon_url.cache_clear()
+    html = str(tags.type_icon("github_core__actions_secret"))
+    # Under the test harness the EntityType row exists only when github_core is registered on this grid;
+    # either the icon renders as a decorative <img> or nothing renders — never a broken tag.
+    assert html == "" or (html.startswith("<img ") and 'aria-hidden="true"' in html and "/icons/" in html), html
+    assert tags.type_icon("no_such_plugin__no_such_type") == ""
+    assert tags.type_label("github_core__github_account") == "account"
+    assert tags.type_label("git_core__git_ref") == "ref"
+    assert tags.type_label("github_core__actions_secret") == "secret"
+    assert tags.holder_type("organisation") == "github_core__github_account"
+    assert tags.holder_type("weird") == ""
+
+
+def test_decorated_records_separate_typed_needs_from_prose() -> None:
+    q = query_pack.decorate(query_pack.query("t0-apps-all-repos"))  # type: ignore[arg-type]
+    assert q["type_needs"] == ["github_core__github_app", "github_core__app_installation"]
+    assert q["primary_type"] == "github_core__github_app"
+    blocked = query_pack.decorate(query_pack.query("dangerous-branch-perms"))  # type: ignore[arg-type]
+    assert all("__" in n for n in blocked["type_needs"]) and blocked["other_needs"]

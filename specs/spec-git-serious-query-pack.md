@@ -85,6 +85,25 @@ the pack's order.
 | req-git-serious-query-page-2 | The Answer Has Three States | Implemented | A seeded query renders `ran` (rows, possibly zero), `absent` (bundle not imported) or `failed` (executor text); an unseeded query renders `not_seeded` with the stage that makes it runnable. | same |
 | req-git-serious-query-page-3 | Nothing Rendered From Nothing | Implemented | An `expressible`, `blocked` or `not_observable` query never shows an empty results table. | template: the *not run* branch |
 
+## Design (design-page skill, 2026-09-11)
+
+**Job.** *Which of BloodHound's questions can this grid answer, what does each one mean, and what lands the rest?*
+The pack page is a **board**; the query page is a **profile**.
+
+- **Board:** a four-tile summary strip (run here / written, waiting on data / blocked on Gryphon / not
+  observable — the four states as tones, each tile a filter), the derived ladder, then one list grouped by
+  stage with the count in each group header. Four columns: query (the primary type's icon + name + id · category),
+  state, severity, returned columns. Chips and a search box filter client-side (`queries.js`); the live count
+  and a "nothing matches" line keep an empty list a stated state. Provenance collapsed at the foot.
+- **Profile:** kind line linking back to the board; the primary type's icon on the title; a subject block
+  (state, stage + issue, the types it is about with icons, the answer here, upstream); then *what it asks*,
+  *their Cypher / our Gryphon* side by side, *what it needs* (typed chips with icons, prose needs as code),
+  and *the answer* last and widest. Prev / next follow the board's order.
+- **Loud element:** the red header rule for `critical` and `tier-zero` only.
+- **Icons:** `{% type_icon <slug> %}` (`templatetags/git_serious_icons.py`) renders the type's own
+  `ENTITY_ICON` by slug; concepts without a type (a stage, a severity, a PAT grant before slice C) get a tone
+  badge or a monospace chip, never a bespoke pictogram.
+
 ## Out Of Scope (v0)
 
 - Executing the `expressible` translations on a grid that has the types (they seed automatically once the

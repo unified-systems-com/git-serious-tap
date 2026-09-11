@@ -114,6 +114,15 @@ secret renders that secret. A bad or unknown parameter renders a not-found state
 | req-git-serious-secret-page-3 | A Name Is A Page Too | Implemented | `?name=` for an unresolved name renders its workflows, scopes read, spellings; for a defined name renders that secret; for nothing renders not-found. | same |
 | req-git-serious-secret-page-4 | Bad Input Is A State | Implemented | A malformed `secret_id` or an absent parameter renders a state, not an error. | same |
 
+## Design (design-page skill, 2026-09-11)
+
+Both pages are the reference the skill was extracted from; the 2026-09-11 pass added **iconography** and
+nothing else: the `actions_secret` icon on the kind line, every card name and every unfound-name row (ghosted,
+because the name is not a node); the holder's own type icon (account / repository / environment) on each
+card's holder line and the secret page's Holder fact; the workflow icon on every consumer row and on the
+*In use* / *Files read* facts. Icons are the types' own `ENTITY_ICON`s rendered by slug; the text beside
+each carries the identity.
+
 ## Out Of Scope (v0)
 
 Secret values (GitHub never returns them). Which environment a job selects at runtime (chosen at
