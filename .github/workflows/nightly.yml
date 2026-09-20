@@ -23,11 +23,11 @@ jobs:
     secrets:
       harness_pat: ${{ secrets.TAP_CORE_RO_PAT }}
   latest:
-    name: vs latest core release (v0.1.6, informational)
+    name: vs latest core release (v0.2.0, informational)
     uses: unified-systems-com/tap/.github/workflows/plugin-ci.yml@e68b1165e71f5eb106196f4ba138ea806f6d563b
     with:
       plugin_slug: git_serious
-      harness_ref: v0.1.6
+      harness_ref: v0.2.0
     secrets:
       harness_pat: ${{ secrets.TAP_CORE_RO_PAT }}
   owner-issue:
