@@ -48,9 +48,9 @@
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/tap-plugin-compliance-core",
-          "rev": "v0.3.0"
+          "rev": "v0.4.0"
         },
-        "note": "Package-mode (tap_plugin.compliance_core). github_core v0.8.0 declares `tap-plugin-compliance-core>=0.3.0,<0.4` and the pre-boot install fails closed without it; ordered BEFORE github_core, which depends on it. Install-only substrate: no GRIFT seed."
+        "note": "Package-mode (tap_plugin.compliance_core). github_core v0.12.0 declares `tap-plugin-compliance-core>=0.4.0,<0.5` and the pre-boot install fails closed without it; ordered BEFORE github_core, which depends on it. Install-only substrate: no GRIFT seed."
       },
       {
         "slug": "github_core",
@@ -58,10 +58,10 @@
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/tap-plugin-github-core",
-          "rev": "v0.11.0",
-          "commit": "2c7f95e3e0db4bc98ed7cdd940e0caca0cd357c7"
+          "rev": "v0.12.0",
+          "commit": "d1e08b9277c8e26f835502a1dfde85515a8baf34"
         },
-        "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector, account-scoped (req-github-core-org-scope), pinned at v0.11.0, released 2026-09-20: phase 3 adopts core reconciliation — CONTAINMENT_EDGES on the owned types, completeness surfaces, and the [falsifiers] declaration for shapes A and B (tap-plugin-github-core#151). Requires core >=0.2.0, which is why this plugin's requires_tap floor moves with it."
+        "note": "Package-mode (tap_plugin.github_core). The GitHub vocabulary + collector, account-scoped (req-github-core-org-scope), pinned at v0.12.0, released 2026-09-21: the reliability seam that classifies a truncated (IncompleteRead) GraphQL read as transient and retries it instead of failing the whole collection. Moved from v0.11.0 (released 2026-09-20: phase 3 adopts core reconciliation — CONTAINMENT_EDGES on the owned types, completeness surfaces, and the [falsifiers] declaration for shapes A and B, tap-plugin-github-core#151). Requires core >=0.2.0, unchanged from v0.11.0."
       },
       {
         "slug": "git_serious",

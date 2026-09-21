@@ -24,18 +24,29 @@ dynamic = ["version"]
 # published under; the legacy tap-plugin-* names rename in the tap#147 wave.
 dependencies = [
     "git-core-tap>=0.1.0,<0.2",
-    # FLOOR 0.11.0. Two separate facts hold it up. The PAGES need >= 0.7.0: the
+    # FLOOR 0.12.0. Two separate facts hold it up. The PAGES need >= 0.7.0: the
     # repository page's GRIFT matches the entity type `github_core__pull_request`
     # and reads `github_repository.pull_requests_total`, `.custom_properties`,
     # `.custom_properties_observability` and `.pull_requests_observability`, none of
-    # which exist before v0.7.0. The floor sits at 0.11.0 rather than 0.7.0 because
+    # which exist before v0.7.0. The floor sits at 0.11.0+ rather than 0.7.0 because
     # that is the release whose types declare CONTAINMENT_EDGES and ship the
     # [falsifiers] declaration (tap-plugin-github-core#151): before it, retiring an
     # observed-gone node left its children behind with nothing to cascade through.
     # v0.11.0 also requires core >= 0.2.0, which is why this plugin's requires_tap
-    # floor moves in the same commit. Ceiling stays one minor wide by convention —
-    # it records that 0.11 was verified against these pages, not a promise about 0.12.
-    "tap-plugin-github-core>=0.11.0,<0.12",
+    # floor moved in that commit (unchanged again at 0.12.0). Moved 0.11.0 -> 0.12.0
+    # 2026-09-21: the earlier IncompleteRead crash on the pull-request GraphQL layer
+    # (double-tap's scheduled collector missing two ticks in a row) is fixed by
+    # v0.12.0's reliability seam, which classifies a truncated read as transient and
+    # retries it instead of failing the whole collection. Verified against these
+    # pages before moving: the five model classes this plugin imports (ActionsSecret,
+    # GithubActionsRun, GithubEnvironment, GithubRepository, GithubWorkflow) gained
+    # only a NATURAL_KEY and a dimension-key rename (`github.platform` -> `git.host`,
+    # `github.surface` folded into it) between 0.11.0 and 0.12.0 — no field this
+    # plugin reads was renamed or removed, and this plugin references neither
+    # renamed dimension key anywhere. requires_tap floor unchanged at 0.12.0.
+    # Ceiling stays one minor wide by convention — it records that 0.12 was verified
+    # against these pages, not a promise about 0.13.
+    "tap-plugin-github-core>=0.12.0,<0.13",
     "tap-plugin-identity-core",
     "tap-plugin-administrivia",
 ]
