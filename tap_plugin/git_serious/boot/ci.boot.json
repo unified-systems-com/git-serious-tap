@@ -29,7 +29,8 @@
         "source": {
           "type": "git",
           "url": "https://github.com/unified-systems-com/tap-plugin-compliance-core",
-          "rev": "v0.4.0"
+          "rev": "v0.4.0",
+          "commit": "e5464e4dd87758d41552d45df42c0303b0de48e3"
         },
         "note": "Package-mode (tap_plugin.compliance_core). github_core v0.12.0 declares `tap-plugin-compliance-core>=0.4.0,<0.5` and the pre-boot install fails closed without it; ordered BEFORE github_core, which depends on it. Install-only substrate: no GRIFT seed."
       },
