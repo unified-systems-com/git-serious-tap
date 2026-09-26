@@ -34,9 +34,9 @@ queries = "grift/queries.grift.json"
 [[boot.records]]
 name = "git_serious"
 description = "git-serious standing against one GitHub account: github_core (account-scoped collector) + identity_core + administrivia + the git-serious landing page. required_secrets declares the read-only github_pat."
-sha256 = "5e6769af91c02a719c7a07559439b5107ada0d904c75557bc6af11645e537803"
+sha256 = "288448cf43c6c4b107ec7cd7b129edb5ca1e62dc248591511b20296d07b248f4"
 
 [[boot.records]]
 name = "ci"
 description = "RESERVED NAME (req-boot-bootstrap-ci-record): the stack this plugin's own tests run in — depends_on closure + self, offline, credential-free. The consumer flips self to editable."
-sha256 = "a377952997b20fd5940d9346b2abad0fc5d53e9fdf3aa1508ff973866db84b35"
+sha256 = "659042c073ca93b610cbb067119a56492fcee19181d5f59382c78457d8b2981e"
