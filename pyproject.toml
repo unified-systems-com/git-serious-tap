@@ -34,8 +34,15 @@ dependencies = [
     # observed-gone node left its children behind with nothing to cascade through.
     # v0.11.0 also requires core >= 0.2.0, which is why this plugin's requires_tap
     # floor moves in the same commit. Ceiling stays one minor wide by convention —
-    # it records that 0.11 was verified against these pages, not a promise about 0.12.
-    "tap-plugin-github-core>=0.11.0,<0.12",
+    # it records the highest version actually verified against these pages, not a
+    # promise about the one after. CEILING WIDENED TO 0.12 (git-serious-tap#113):
+    # every github_core__* entity/edge type these pages, searches and boot record
+    # reference (17 symbols) still exists at v0.12.2 with the same shape; v0.12
+    # additionally ships a retry/backoff seam (`github_call.py`) the 0.11 line never
+    # had, which the running instance's collector needed. Verified live: pre-boot's
+    # conformance and compatibility gates pass and every git_serious bundle still
+    # seeds against an editable v0.12.2 checkout.
+    "tap-plugin-github-core>=0.11.0,<0.13",
     "tap-plugin-identity-core",
     "tap-plugin-administrivia",
 ]
