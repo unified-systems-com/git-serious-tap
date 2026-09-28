@@ -9,7 +9,7 @@ related_docs:
   - docs/doc-git-serious-overlay-consensus.md
 ---
 
-> **Strategic plan, 2026-09-28 (decisions and phases settled same day; tap#874/PR#876 confirmed merged; state model corrected to an appended edge with no falsifier, no containment declaration and a diff-before-append rule, after cross-session review with demo-dev).** How git-serious tracks a scanner's findings across repeated runs, resolves them when they are fixed, and excuses them on the record, starting with zizmor. Written by an AI support session at the maintainer's direction, from read-only research; claims are marked read, inferred or not observed. All eight decisions are settled, and the phase sequence follows the four goals agreed with the maintainer. Current state lives in the issues. Nothing here is canon — requirements live in specs.
+> **Strategic plan, 2026-09-28 (decisions and phases settled same day; tap#874/PR#876 confirmed merged; state model corrected to an appended edge with no falsifier, no containment declaration and a diff-before-append rule, after cross-session review with demo-dev; a node-table contradiction the same design left behind was caught by AI review and fixed).** How git-serious tracks a scanner's findings across repeated runs, resolves them when they are fixed, and excuses them on the record, starting with zizmor. Written by an AI support session at the maintainer's direction, from read-only research; claims are marked read, inferred or not observed. All eight decisions are settled, and the phase sequence follows the four goals agreed with the maintainer. Current state lives in the issues. Nothing here is canon — requirements live in specs.
 
 # Findings over time
 
@@ -139,7 +139,7 @@ Names follow the add-edge skill: an action verb plus an object noun, the initiat
 
 | Kind | Name | Status | What it carries or connects |
 | --- | --- | --- | --- |
-| Node | `zizmor__finding` | Exists | Gains the scanned content hash, a state, and a state reason. |
+| Node | `zizmor__finding` | Exists | Gains the scanned content hash. No state field: its current state is derived by reading the latest `CHANGES_FINDING_STATE` edge, never stored on the row. |
 | Node | `zizmor__run` | Exists | Gains the completeness statement. |
 | Node | scope | New ([zizmor-tap#42](https://github.com/unified-systems-com/zizmor-tap/issues/42)) | “This scanner’s claims about this workflow under this persona.” It survives between runs. |
 | Node | exception | New, or extends `compliance_exception` | The record above, including the reference source code cites. |
