@@ -30,7 +30,6 @@ text{font-family:"Source Sans 3",Helvetica,Arial,sans-serif;fill:#1c1e22;font-si
     </g>
     <line x1="0" y1="52" x2="720" y2="52" class="ln"/>
 
-    <!-- Row 1 fixed by an edit -->
     <text x="0" y="84" class="b">Fixed by an edit</text>
     <text x="0" y="101" class="m">remediated at R4</text>
     <line x1="250" y1="90" x2="650" y2="90" class="ln"/>
@@ -40,9 +39,8 @@ text{font-family:"Source Sans 3",Helvetica,Arial,sans-serif;fill:#1c1e22;font-si
     <circle cx="490" cy="90" r="7" class="abs"/>
     <circle cx="570" cy="90" r="7" class="abs"/>
     <circle cx="650" cy="90" r="7" class="abs"/>
-    <text x="490" y="72" text-anchor="middle" class="ac">file edited, audit ran</text>
+    <text x="490" y="72" text-anchor="middle" class="ac">file edited, audit unchanged by bump</text>
 
-    <!-- Row 2 audit left the set -->
     <text x="0" y="154" class="b">Audit left the set</text>
     <text x="0" y="171" class="m">stays open, not observed</text>
     <line x1="250" y1="160" x2="650" y2="160" class="ln"/>
@@ -54,7 +52,6 @@ text{font-family:"Source Sans 3",Helvetica,Arial,sans-serif;fill:#1c1e22;font-si
     <rect x="643" y="153" width="14" height="14" class="nc"/>
     <text x="490" y="142" text-anchor="middle" class="ac">audit not scheduled</text>
 
-    <!-- Row 3 fixed then returned -->
     <text x="0" y="224" class="b">Fixed, then returned</text>
     <text x="0" y="241" class="m">reopened at R4</text>
     <line x1="250" y1="230" x2="650" y2="230" class="ln"/>
@@ -67,7 +64,6 @@ text{font-family:"Source Sans 3",Helvetica,Arial,sans-serif;fill:#1c1e22;font-si
     <text x="330" y="212" text-anchor="middle" class="ac">remediated</text>
     <text x="490" y="212" text-anchor="middle" class="ac">regression</text>
 
-    <!-- Row 4 excepted -->
     <text x="0" y="294" class="b">Excepted</text>
     <text x="0" y="311" class="m">still open, disposition live</text>
     <line x1="250" y1="300" x2="650" y2="300" class="ln"/>

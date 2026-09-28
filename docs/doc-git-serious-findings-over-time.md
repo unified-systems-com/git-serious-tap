@@ -168,7 +168,7 @@ A finding may leave *open* for *remediated* only if a later run completed, evalu
 
 | What changed | Finding is absent. Conclusion: |
 | --- | --- |
-| File edited, audit ran, run complete | Remediated. Record the concluding run, the new content hash and the audit that ran. |
+| File edited, audit ran at a compatible scanner version and persona, run complete | Remediated. Record the concluding run, the new content hash and the audit that ran. |
 | File identical, scanner version bumped | Not observed, labelled “no longer reported by the scanner”. This is the scanner changing its mind, and it is not a fix. |
 | File identical, same scanner, still absent | An anomaly. A deterministic offline scan should not change its answer. Raise a flaw and conclude nothing. |
 | Audit missing from the run’s scheduled set, or skipped | Not covered. The finding keeps its last state and is shown as not observed since that run. |
@@ -180,7 +180,7 @@ A finding may leave *open* for *remediated* only if a later run completed, evalu
 
 ![Four findings across six runs. Filled circles are observed, open circles are absent in a run that covered the finding, hatched squares are runs that did not cover it.](images/findings-over-time-states.svg)
 
-*Four findings over six runs. A filled circle is a run that reported the finding. An open circle is a run that covered the finding and did not report it. A hatched square is a run that could not have seen it, so nothing is concluded. Only the first row and the third end in a conclusion about a fix.*
+*Four findings over six runs. A filled circle is a run that reported the finding. An open circle is a run that covered the finding and did not report it. A hatched square is a run that could not have seen it, so nothing is concluded. Only the first row and the third end in a conclusion about a fix. R4 is a scanner bump. The first finding’s audit is unchanged across it, so its absence still counts. The second finding’s audit is not scheduled after it, so nothing is concluded.*
 
 ### What repeated runs are for
 
