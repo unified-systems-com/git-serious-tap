@@ -16,6 +16,7 @@ The platform's docs describe the platform; these describe *this product*.
 | [doc-git-serious-shape-of-a-pipeline.md](doc-git-serious-shape-of-a-pipeline.md) | A working model of git-based CI/CD — five nouns, the trust boundary, identity, the gate, supply chain — built from our own pipelines outward, with the seven organising principles and the walk-in order for an unfamiliar org. |
 | [doc-git-serious-overlay-consensus.md](doc-git-serious-overlay-consensus.md) | The nine features every GitHub-overlay tool rebuilds (the **table-stakes** list), the seven-category coverage matrix, and the tenth feature none of them has: the shape of the system held over time. |
 | [doc-git-serious-standing-at-day-one.md](doc-git-serious-standing-at-day-one.md) | Archival end-of-day audit of the first build day (2026-08-27): built / open / broken, and the second look at the via-negativa thesis. Dated snapshot; current state lives in the issues. |
+| [doc-git-serious-findings-over-time.md](doc-git-serious-findings-over-time.md) | A strategic plan for tracking, resolving and excusing scanner findings across repeated runs, starting with zizmor: three layers (observation, state, disposition), nine guarantees, five phases, and the prior art behind them. |
 
 **Status.** These are dated research passes, not canon. Requirements live in specs; what is
 committed and moving lives in this repo's issues and milestones.

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 316" width="720" height="316" role="img" aria-label="Four findings across six runs. Filled circles are observed, open circles are absent in a run that covered the finding, hatched squares are runs that did not cover it.">
+<style>
+text{font-family:"Source Sans 3",Helvetica,Arial,sans-serif;fill:#1c1e22;font-size:12px}
+.m{fill:#5f646d}
+.b{font-weight:600}
+.ac{fill:#1d4f7c;font-weight:600}
+.ln{stroke:#d8dade;stroke-width:1}
+.dot{fill:#1c1e22}
+.abs{fill:#fbfbf8;stroke:#1c1e22;stroke-width:1.5}
+.nc{fill:url(#hatch);stroke:#5f646d;stroke-width:1}
+.exc{stroke:#1d4f7c;stroke-width:2}
+.hatchline{stroke:#5f646d;stroke-width:1}
+</style>
+<rect width="720" height="316" fill="#fbfbf8"/>
+    <defs>
+      <pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="4" class="hatchline"/>
+      </pattern>
+    </defs>
+
+    <text x="0" y="20" class="m">Run</text>
+    <text x="0" y="38" class="m">What the run could see</text>
+    <g text-anchor="middle">
+      <text x="250" y="20" class="b">R1</text><text x="250" y="38" class="m">complete</text>
+      <text x="330" y="20" class="b">R2</text><text x="330" y="38" class="m">complete</text>
+      <text x="410" y="20" class="b">R3</text><text x="410" y="38" class="m">run failed</text>
+      <text x="490" y="20" class="b">R4</text><text x="490" y="38" class="m">scanner bump</text>
+      <text x="570" y="20" class="b">R5</text><text x="570" y="38" class="m">complete</text>
+      <text x="650" y="20" class="b">R6</text><text x="650" y="38" class="m">complete</text>
+    </g>
+    <line x1="0" y1="52" x2="720" y2="52" class="ln"/>
+
+    <!-- Row 1 fixed by an edit -->
+    <text x="0" y="84" class="b">Fixed by an edit</text>
+    <text x="0" y="101" class="m">remediated at R4</text>
+    <line x1="250" y1="90" x2="650" y2="90" class="ln"/>
+    <circle cx="250" cy="90" r="7" class="dot"/>
+    <circle cx="330" cy="90" r="7" class="dot"/>
+    <rect x="403" y="83" width="14" height="14" class="nc"/>
+    <circle cx="490" cy="90" r="7" class="abs"/>
+    <circle cx="570" cy="90" r="7" class="abs"/>
+    <circle cx="650" cy="90" r="7" class="abs"/>
+    <text x="490" y="72" text-anchor="middle" class="ac">file edited, audit ran</text>
+
+    <!-- Row 2 audit left the set -->
+    <text x="0" y="154" class="b">Audit left the set</text>
+    <text x="0" y="171" class="m">stays open, not observed</text>
+    <line x1="250" y1="160" x2="650" y2="160" class="ln"/>
+    <circle cx="250" cy="160" r="7" class="dot"/>
+    <circle cx="330" cy="160" r="7" class="dot"/>
+    <rect x="403" y="153" width="14" height="14" class="nc"/>
+    <rect x="483" y="153" width="14" height="14" class="nc"/>
+    <rect x="563" y="153" width="14" height="14" class="nc"/>
+    <rect x="643" y="153" width="14" height="14" class="nc"/>
+    <text x="490" y="142" text-anchor="middle" class="ac">audit not scheduled</text>
+
+    <!-- Row 3 fixed then returned -->
+    <text x="0" y="224" class="b">Fixed, then returned</text>
+    <text x="0" y="241" class="m">reopened at R4</text>
+    <line x1="250" y1="230" x2="650" y2="230" class="ln"/>
+    <circle cx="250" cy="230" r="7" class="dot"/>
+    <circle cx="330" cy="230" r="7" class="abs"/>
+    <rect x="403" y="223" width="14" height="14" class="nc"/>
+    <circle cx="490" cy="230" r="7" class="dot"/>
+    <circle cx="570" cy="230" r="7" class="dot"/>
+    <circle cx="650" cy="230" r="7" class="dot"/>
+    <text x="330" y="212" text-anchor="middle" class="ac">remediated</text>
+    <text x="490" y="212" text-anchor="middle" class="ac">regression</text>
+
+    <!-- Row 4 excepted -->
+    <text x="0" y="294" class="b">Excepted</text>
+    <text x="0" y="311" class="m">still open, disposition live</text>
+    <line x1="250" y1="300" x2="650" y2="300" class="ln"/>
+    <circle cx="250" cy="300" r="7" class="dot"/>
+    <circle cx="330" cy="300" r="7" class="dot"/>
+    <rect x="403" y="293" width="14" height="14" class="nc"/>
+    <circle cx="490" cy="300" r="7" class="dot"/>
+    <circle cx="570" cy="300" r="7" class="dot"/>
+    <circle cx="650" cy="300" r="7" class="dot"/>
+    <line x1="330" y1="286" x2="650" y2="286" class="exc"/>
+    <text x="336" y="280" class="ac">exception live from R2</text>
+  </svg>
