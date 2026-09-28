@@ -9,7 +9,7 @@ related_docs:
   - docs/doc-git-serious-overlay-consensus.md
 ---
 
-> **Strategic plan, 2026-09-28 (decisions and phases settled same day; tap#874/PR#876 confirmed merged; state model corrected to an appended edge with no falsifier, no containment declaration and a diff-before-append rule, after cross-session review with demo-dev; a node-table contradiction the same design left behind was caught by AI review and fixed).** How git-serious tracks a scanner's findings across repeated runs, resolves them when they are fixed, and excuses them on the record, starting with zizmor. Written by an AI support session at the maintainer's direction, from read-only research; claims are marked read, inferred or not observed. All eight decisions are settled, and the phase sequence follows the four goals agreed with the maintainer. Current state lives in the issues. Nothing here is canon — requirements live in specs.
+> **Strategic plan, 2026-09-28.** How git-serious tracks a scanner's findings across repeated runs, resolves them when they are fixed, and excuses them on the record, starting with zizmor. All eight decisions are settled, and the phase sequence follows four agreed goals: a working re-run that does not duplicate findings, exceptions as first-class grid citizens, resolution across a changed file at one scanner version, and resolution across a scanner or rule change. A finding's state is never a mutable field; it is derived from an append-only edge, deliberately unfalsified and non-containment, appended only on an actual change. Claims throughout are marked read, inferred or not observed. Current state lives in the issues. Nothing here is canon — requirements live in specs.
 
 # Findings over time
 
@@ -321,7 +321,7 @@ Where the resolution table ends in “not observed”, one or more models could 
 | --- | --- | --- |
 | 1 | Is observation, state, disposition the frame for this work, with zizmor as the first tenant? | Settled: yes. |
 | 2 | Which is the “existing exception tracking”? The search found compliance_exception, fips_waivers and break-glass merges, and none has a consumer for findings. | Settled: exceptions are their own grid nodes, source code cites them, and the node extends `compliance_exception`. |
-| 3 | Finding identity: keep the symbolic key, add a content tier, version it, and move to assigned ids with a natural key? | Settled: yes, with the natural key declared over the `location` JSON ([tap#874](https://github.com/unified-systems-com/tap/issues/874)) and existing findings discarded. The content tier is still sized by the Phase 2 route test. |
+| 3 | Finding identity: keep the symbolic key, add a content tier, version it, and move to assigned ids with a natural key? | Settled: yes, with the natural key declared over the `location` JSON ([tap#874](https://github.com/unified-systems-com/tap/issues/874)) and existing findings discarded. The content tier is still sized by the Phase 1 route test. |
 | 4 | Is remediation a state change and never a tombstone, as [tap#684](https://github.com/unified-systems-com/tap/issues/684) says? | Settled: yes. A tombstone stays for a deleted workflow only. |
 | 5 | Is one covered absence enough, or should it take two runs? | Settled: one, gated on the completeness statement. A two-run rule applies only where completeness was not stated. |
 | 6 | Repository-side ignores and config: show them, or honor them? | Settled: show them as unreviewed claims. Never apply them to a gate. |
