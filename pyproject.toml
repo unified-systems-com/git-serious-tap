@@ -25,24 +25,17 @@ dynamic = ["version"]
 # administrivia-tap from v0.2.1).
 dependencies = [
     "git-core-tap>=0.1.0,<0.2",
-    # FLOOR 0.11.0. Two separate facts hold it up. The PAGES need >= 0.7.0: the
-    # repository page's GRIFT matches the entity type `github_core__pull_request`
-    # and reads `github_repository.pull_requests_total`, `.custom_properties`,
-    # `.custom_properties_observability` and `.pull_requests_observability`, none of
-    # which exist before v0.7.0. The floor sits at 0.11.0 rather than 0.7.0 because
-    # that is the release whose types declare CONTAINMENT_EDGES and ship the
+    # FLOOR 0.13.0, the first release published as github-core-tap. The PAGES need >= 0.7.0
+    # (the repository page's GRIFT matches `github_core__pull_request` and reads
+    # `github_repository.pull_requests_total`, `.custom_properties`,
+    # `.custom_properties_observability` and `.pull_requests_observability`), and the 0.11.0
+    # floor this replaces was the release whose types declare CONTAINMENT_EDGES and ship the
     # [falsifiers] declaration (tap-plugin-github-core#151): before it, retiring an
-    # observed-gone node left its children behind with nothing to cascade through.
-    # v0.11.0 also requires core >= 0.2.0, which is why this plugin's requires_tap
-    # floor moves in the same commit. Ceiling stays one minor wide by convention —
-    # it records the highest version actually verified against these pages, not a
-    # promise about the one after. CEILING WIDENED TO 0.12 (git-serious-tap#113):
-    # every github_core__* entity/edge type these pages, searches and boot record
-    # reference (17 symbols) still exists at v0.12.2 with the same shape; v0.12
-    # additionally ships a retry/backoff seam (`github_call.py`) the 0.11 line never
-    # had, which the running instance's collector needed. Verified live: pre-boot's
-    # conformance and compatibility gates pass and every git_serious bundle still
-    # seeds against an editable v0.12.2 checkout.
+    # observed-gone node left its children behind. 0.13.0 carries both. CEILING <0.15: the CI
+    # record boots v0.14.0 (zizmor v0.1.1 requires 0.14.x), which is the highest line this
+    # plugin's own tests have run against. The 17-symbol check of the entity and edge types the
+    # pages, searches and boot record reference (git-serious-tap#113) was last done at v0.12.2;
+    # it was not repeated for 0.13/0.14, so CI's boot-and-test is the evidence for those.
     "github-core-tap>=0.13.0,<0.15",
     "identity-core-tap>=0.1.4",
     "administrivia-tap>=0.2.1",

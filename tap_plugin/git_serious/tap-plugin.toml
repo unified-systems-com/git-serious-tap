@@ -34,7 +34,7 @@ queries = "grift/queries.grift.json"
 [[boot.records]]
 name = "git_serious"
 description = "git-serious standing against one GitHub account: github_core (account-scoped collector) + identity_core + administrivia + the git-serious landing page. required_secrets declares the read-only github_pat."
-sha256 = "fab2b393aa6ab98bb1220ceb7da672e86b70bdceb7efe5acf3ead2124bee534d"
+sha256 = "9dbb795cdb97140bf5911272378054ef943a278967a7e828992c0890112a6f2f"
 
 [[boot.records]]
 name = "ci"
