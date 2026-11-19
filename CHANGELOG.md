@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.3](https://github.com/unified-systems-com/git-serious-tap/compare/v0.1.2...v0.1.3) (2026-11-19)
+
+
+### Features
+
+* **ci:** add the hourly product-health check [via bom-bom-support] ([86fbc47](https://github.com/unified-systems-com/git-serious-tap/commit/86fbc4771bacd2b2939f08f9a59dcd847fb42b6a))
+
+
+### Bug Fixes
+
+* **ci-record:** pin the dependency releases that carry their Dimension seeds ([7142474](https://github.com/unified-systems-com/git-serious-tap/commit/71424741110af412da59332c5d8fa53222dcabf9))
+* **ci-record:** pin the dependency releases that carry their Dimension seeds ([9099130](https://github.com/unified-systems-com/git-serious-tap/commit/90991302d34b7b0edab3eecbfebe8dd9c3827af5))
+
 ## [0.1.2](https://github.com/unified-systems-com/git-serious-tap/compare/v0.1.1...v0.1.2) (2026-11-05)
 
 
