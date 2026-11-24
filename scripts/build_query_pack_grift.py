@@ -181,7 +181,13 @@ def build() -> dict:
             )
         )
     return {
-        "metadata": {"grift_version": "0"},
+        # Format "1" header, as tap v0.4.9's `manage.py restamp_grift` states it: spine and every
+        # type this pack names at version 1 (req-grift-header-versions rule 12).
+        "metadata": {
+            "grift_version": "1",
+            "spine_version": 1,
+            "type_versions": {"USES_PANEL": 1, "USES_SEARCH": 1, "batch": 1, "page": 1, "panel": 1, "search": 1},
+        },
         "_reserved": {},
         "batches": [
             {
