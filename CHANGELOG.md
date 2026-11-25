@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/unified-systems-com/git-serious-tap/compare/v0.1.3...v0.1.4) (2026-11-25)
+
+
+### Miscellaneous Chores
+
+* release 0.1.4 ([904821e](https://github.com/unified-systems-com/git-serious-tap/commit/904821e3b6f26961f7b9bee96c281792c2431748))
+
 ## [0.1.3](https://github.com/unified-systems-com/git-serious-tap/compare/v0.1.2...v0.1.3) (2026-11-19)
 
 
